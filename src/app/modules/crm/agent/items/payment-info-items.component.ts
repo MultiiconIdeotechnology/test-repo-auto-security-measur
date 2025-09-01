@@ -73,10 +73,10 @@ import { Subject } from 'rxjs';
 export class PaymentInfoItemComponent {
     cols = [];
     total = 0;
-
+    @Input() servicesDetail: any[] = [];
     columns = [
         {
-            key: 'itemName',
+            key: 'serviceName',
             name: 'Service',
             is_date: false,
             date_formate: '',
@@ -86,7 +86,7 @@ export class PaymentInfoItemComponent {
             align: '',
             indicator: false,
             tooltip: false,
-            itemName: true
+            serviceName: true
         },
         {
             key: 'status',
@@ -102,7 +102,7 @@ export class PaymentInfoItemComponent {
             toColor: true
         },
         {
-            key: 'acivation_date',
+            key: 'activationDate',
             name: 'Activation Date',
             is_date: true,
             date_formate: 'dd-MM-yyyy',
@@ -114,7 +114,7 @@ export class PaymentInfoItemComponent {
             tooltip: false,
         },
         {
-            key: 'expiry_date',
+            key: 'expiryDate',
             name: 'Expiry Date',
             is_date: true,
             date_formate: 'dd-MM-yyyy',
@@ -142,13 +142,30 @@ export class PaymentInfoItemComponent {
     public sortColumn: any;
     public sortDirection: any;
 
-    @Input() servicesDetail: any;
+    // @Input() servicesDetail: any;
 
     module_name = module_name.crmagent
     filter: any = {}
     record: any;
     agentId: any;
     productId: any;
+
+     constructor(
+        @Inject(MAT_DIALOG_DATA) public data: any = {},
+        private alertService: ToasterService,
+        private crmService: CrmService
+    ) {
+        this.record = data?.data ?? {}
+        // this.dataList = this.record?.item;
+        this.cols = this.columns.map(x => x.key);
+        this.key = this.module_name;
+        this.sortColumn = 'priorityid';
+        this.sortDirection = 'desc';
+        this.Mainmodule = this;
+        this.agentId = this.record?.agentid;
+         // this.productId = this.record?.product_id;
+         this.productId = this.record?.id;
+    }
 
     ngOnInit(): void {
         setTimeout(() => {
@@ -198,22 +215,7 @@ export class PaymentInfoItemComponent {
         }
     }
 
-    constructor(
-        @Inject(MAT_DIALOG_DATA) public data: any = {},
-        private alertService: ToasterService,
-        private crmService: CrmService
-    ) {
-        this.record = data?.data ?? {}
-        // this.dataList = this.record?.item;
-        this.cols = this.columns.map(x => x.key);
-        this.key = this.module_name;
-        this.sortColumn = 'priorityid';
-        this.sortDirection = 'desc';
-        this.Mainmodule = this;
-        this.agentId = this.record?.agentid;
-         // this.productId = this.record?.product_id;
-         this.productId = this.record?.id;
-    }
+   
 
     getNodataText(): string {
         if (this.isLoading)

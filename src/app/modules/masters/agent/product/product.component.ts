@@ -31,32 +31,34 @@ import { agentPermissions, messages, Security } from 'app/security';
 import { PurchaseProductEntrySettingsComponent } from "../../../crm/agent/purchase-product-entry-settings/purchase-product-entry-settings.component";
 import { CRMSalesReturnRightComponent } from "../../../crm/agent/sales-return-right/sales-return-right.component";
 import { GlobalSearchService } from 'app/services/global-search.service';
+import { MasterAgentComponent } from 'app/modules/crm/agent/master-agent/master-agent.component';
+import { BlockReasonComponent } from '../../supplier/block-reason/block-reason.component';
 
 @Component({
     selector: 'app-product',
     standalone: true,
     imports: [
-    CommonModule,
-    NgIf,
-    NgFor,
-    NgClass,
-    DatePipe,
-    RouterOutlet,
-    ReactiveFormsModule,
-    MatInputModule,
-    MatButtonModule,
-    MatIconModule,
-    MatTableModule,
-    MatFormFieldModule,
-    MatProgressSpinnerModule,
-    MatTooltipModule,
-    MatSortModule,
-    MatPaginatorModule,
-    MatMenuModule,
-    MatDividerModule,
-    PurchaseProductEntrySettingsComponent,
-    CRMSalesReturnRightComponent
-],
+        CommonModule,
+        NgIf,
+        NgFor,
+        NgClass,
+        DatePipe,
+        RouterOutlet,
+        ReactiveFormsModule,
+        MatInputModule,
+        MatButtonModule,
+        MatIconModule,
+        MatTableModule,
+        MatFormFieldModule,
+        MatProgressSpinnerModule,
+        MatTooltipModule,
+        MatSortModule,
+        MatPaginatorModule,
+        MatMenuModule,
+        MatDividerModule,
+        PurchaseProductEntrySettingsComponent,
+        CRMSalesReturnRightComponent
+    ],
     templateUrl: './product.component.html',
     styleUrls: ['./product.component.scss']
 })
@@ -76,14 +78,14 @@ export class ProductComponent {
 
     columns = [
         'options',
-        'product_name',
+        'productName',
         'itemCount',
-        'count',
-        'product_status',
-        'purchase_amount',
-        'due_Amount',
-        'start_integration',
-        'entry_date_time',
+        'installmentCount',
+        'status',
+        'purchasePrice',
+        'dueAmount',
+        'startIntegration',
+        'expiryDate',
     ];
 
     constructor(
@@ -120,7 +122,7 @@ export class ProductComponent {
             next: (res) => {
                 this.dataSource.data = res.data;
                 this._paginator.length = res.total;
-                if(res?.data && res.data?.length){
+                if (res?.data && res.data?.length) {
                     this.globalService.setCurrencySymbol(res.data[0]?.currencySymbol?.trim());
                 }
                 this.loading = false;
@@ -133,11 +135,11 @@ export class ProductComponent {
 
     info(record): void {
         //     this.matDialog.open(TimelineAgentProductInfoComponent, {
-        //       data: { data: record, agencyName: record.product_name, readonly: true, account_receipt: false},
+        //       data: { data: record, agencyName: record.productName, readonly: true, account_receipt: false},
         //       disableClose: true
         //   });
         this.matDialog.open(AgentProductInfoComponent, {
-            data: { data: record, agencyName: record.product_name, readonly: true, agentInfo: true },
+            data: { data: record, agencyName: record.productName, readonly: true, agentInfo: true },
             disableClose: true
         });
     }
@@ -181,7 +183,7 @@ export class ProductComponent {
         const label: string = 'Delete Purchase product'
         this.conformationService.open({
             title: label,
-            message: 'Are you sure to ' + label.toLowerCase() + ' ' + record.product_name + ' ?'
+            message: 'Are you sure to ' + label.toLowerCase() + ' ' + record.productName + ' ?'
         }).afterClosed().subscribe(res => {
             if (res === 'confirmed') {
                 // const json = {
@@ -220,7 +222,7 @@ export class ProductComponent {
                 if (res?.action === 'confirmed') {
                     let newJson = {
                         id: record.id,
-                        cancel_remark: res?.statusRemark ? res?.statusRemark : ""
+                        CancelRemark: res?.statusRemark ? res?.statusRemark : ""
                     }
                     this.crmService.cancelPurchaseProduct(newJson).subscribe({
                         next: (res) => {
@@ -262,10 +264,75 @@ export class ProductComponent {
         this.entityService.raiseCRMSalesReturnCall({ add: true, data: record })
     }
 
+    setBlockUnblock(record): void {
+        // if (!Security.hasPermission(agentsPermissions.blockUnblockPermissions)) {
+        //     return this.alertService.showToast('error', messages.permissionDenied);
+        // }
+
+        if (record.isBlocked) {
+            const label: string = 'Unblock Product'
+            this.conformationService.open({
+                title: label,
+                message: 'Are you sure to ' + label.toLowerCase() + ' ' + record.productName + ' ?'
+            }).afterClosed().subscribe(res => {
+                if (res === 'confirmed') {
+                    const json = {
+                        ProductId: record.id,
+                        Isblock: false,
+                        BlockRemarks: ''
+                    }
+                    this.crmService.blockUnblock(json).subscribe({
+                        next: () => {
+                            record.isBlocked = !record.isBlocked;
+                            this.alertService.showToast('success', "Product has been Unblock!", "top-right", true);
+                            this.refreshItems();
+
+                        },
+                        error: (err) => {
+                            this.alertService.showToast('error', err, 'top-right', true);
+                        },
+                    })
+                }
+            })
+        } else {
+            this.matDialog.open(BlockReasonComponent, {
+                data: record,
+                disableClose: true
+            }).afterClosed().subscribe(res => {
+                if (res) {
+                    const json = {
+                        ProductId: record.id,
+                        Isblock: true,
+                        BlockRemarks: res
+                    }
+                    this.crmService.blockUnblock(json).subscribe({
+                        next: () => {
+                            record.isBlocked = !record.isBlocked;
+                            this.alertService.showToast('success', "Product has been Block!", "top-right", true);
+                            this.refreshItems();
+
+                        },
+                        error: (err) => {
+                            this.alertService.showToast('error', err, 'top-right', true);
+                        },
+                    })
+                }
+            })
+        }
+    }
+
+    shiftProduct(record) {
+        console.log(record);
+        this.matDialog.open(MasterAgentComponent, {
+            data: record,
+            disableClose: true
+        })
+    }
+
     getStartIntegrationColor(data: any): any {
-        if (data?.start_integration == true) {
+        if (data?.startIntegration == true) {
             return 'text-green-600';
-        } else if (data?.start_integration == false) {
+        } else if (data?.startIntegration == false) {
             return 'text-red-600';
         } else {
             return '';
@@ -281,7 +348,7 @@ export class ProductComponent {
         this.conformationService
             .open({
                 title: label,
-                message: 'Are you sure to ' + label.toLowerCase() + ' ' + record.product_name + ' ?',
+                message: 'Are you sure to ' + label.toLowerCase() + ' ' + record.productName + ' ?',
             })
             .afterClosed()
             .subscribe((res) => {

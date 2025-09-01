@@ -61,7 +61,8 @@ export class BulkAssignDialogComponent implements OnInit {
     private toasterService: ToasterService,
     @Inject(MAT_DIALOG_DATA) public data: any = {}
   ) {
-
+    console.log("data", data);
+    
     this.record = data.record;
     this.title = data.title;
 

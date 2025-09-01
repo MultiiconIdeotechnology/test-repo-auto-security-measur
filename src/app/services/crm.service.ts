@@ -66,7 +66,7 @@ export class CrmService {
     
 
     getProductPurchaseMasterList(model: any): Observable<any> {
-        return this.http.post<any>(this.baseUrl + 'ProductPurchaseMaster/getProductPurchaseMasterList', model);
+        return this.http.post<any>(this.baseUrl + 'ProductPurchase/list', model);
     }
 
     getProductNameList(model: any): Observable<any> {
@@ -74,11 +74,11 @@ export class CrmService {
     }
 
     createPurchaseProduct(model: any): Observable<any> {
-        return this.http.post<any>(this.baseUrl + 'ProductPurchaseMaster/createProduct', model);
+        return this.http.post<any>(this.baseUrl + 'ProductPurchase/create', model);
     }
 
     deletePurchaseProduct(id: string): Observable<any> {
-        return this.http.post<any>(this.baseUrl + 'ProductPurchaseMaster/delete', { id: id });
+        return this.http.post<any>(this.baseUrl + 'ProductPurchase/delete', { id: id });
     }
 
     expiryProduct(model: any): Observable<any> {
@@ -98,16 +98,22 @@ export class CrmService {
     }
 
     updateInstallment(model: any): Observable<any> {
-        return this.http.post<any>(this.baseUrl + 'ProductPurchaseMaster/Updateinstallmentdate', model);
+        return this.http.post<any>(this.baseUrl + 'ProductPurchase/updateInstallmentDate', model);
     }
 
     createSalesreturn(model: any): Observable<any> {
-        return this.http.post<any>(this.baseUrl + 'ProductPurchaseMaster/createSalesreturn', model);
+        return this.http.post<any>(this.baseUrl + 'ProductPurchase/salesReturn', model);
     }
 
     createReceipt(model: any): Observable<any> {
         return this.http.post<any>(this.baseUrl + 'ProductPurchaseMaster/createReceiptMaster', model);
     }
+    
+    createReceiptNew(model: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'ProductPurchase/createReceipt', model);
+    }
+
+
 
     getReceipt(model: any): Observable<any> {
         return this.http.post<any>(this.baseUrl + 'ProductPurchaseMaster/getReceiptMasterList', model);
@@ -115,6 +121,10 @@ export class CrmService {
 
     getProductInfoList(model: any): Observable<any> {
         return this.http.post<any>(this.baseUrl + 'ProductPurchaseMaster/getProductInfo', model);
+    }
+
+    getDataProduct(id: string): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'ProductPurchase/getData', {id: id});
     }
 
     getInstallmentList(model: any): Observable<any> {
@@ -131,6 +141,10 @@ export class CrmService {
 
     Invoice(agentId: string): Observable<any> {
         return this.http.post<any>(this.baseUrl + "ProductPurchaseMaster/PrintInvoice", { agent_id: agentId });
+    }
+    
+    shiftProduct(model: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + "ProductPurchase/shiftProduct", model);
     }
 
     dormant(agentId: string): Observable<any> {
@@ -243,13 +257,16 @@ export class CrmService {
     }
 
     cancelPurchaseProduct(model: any): Observable<any> {
-        return this.http.post<any>(this.baseUrl + 'ProductPurchaseMaster/CancelProduct', model);
+        return this.http.post<any>(this.baseUrl + 'ProductPurchase/cancel', model);
     }
 
     salesReturnDownloadInvoice(bookingId: any): Observable<any> {
         return this.http.post<any>(this.baseUrl + 'ProductPurchaseMaster/printInvoice', { invoiceId: bookingId });
     }
 
+    blockUnblock(model: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'ProductPurchase/blockUnblock', model);
+    }
 
     // getBusinessAnalyticsApiData(payload: any): Observable<any> {
     //     const apiData: any = {

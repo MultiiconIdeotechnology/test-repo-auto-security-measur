@@ -117,6 +117,8 @@ export class ReceiptRightComponent implements OnInit, OnDestroy {
         { value: 'Online', viewValue: 'Online' },
     ];
 
+    productId: any
+
     editpaymentAttachmentSelectedFile: any;
     editproofAttachmentSelectedFile: any;
     proofAttachmentSelectedFile: any = File;
@@ -142,6 +144,9 @@ export class ReceiptRightComponent implements OnInit, OnDestroy {
             next: (item) => {
                 this.settingsDrawer.toggle()
                 this.record = item ?? {}
+                this.productId = this.record?.id
+                console.log("145 this.record", this.record);
+                
 
                 this.formGroup.patchValue({
                     amount: "",
@@ -160,13 +165,13 @@ export class ReceiptRightComponent implements OnInit, OnDestroy {
                 if (item?.edit) {
                     this.record = item?.data ?? {}
 
-                    if (this.record?.receiptid) {
+                    if (this.record?.receiptId) {
                         this.title = "Edit Receipt";
-                        this.formGroup.get('amount').patchValue(this.record?.payment_amount);
+                        this.formGroup.get('amount').patchValue(this.record?.paymentAmount);
                         this.formGroup.get('mop').patchValue(this.record?.mop);
-                        this.formGroup.get('remark').patchValue(this.record?.receipt_remark);
-                        this.editproofAttachmentSelectedFile = this.record?.proof_attachmentfile;
-                        this.editpaymentAttachmentSelectedFile = this.record?.payment_attachmentfile;
+                        this.formGroup.get('remark').patchValue(this.record?.receiptRemark);
+                        this.editproofAttachmentSelectedFile = this.record?.proofAttachment;
+                        this.editpaymentAttachmentSelectedFile = this.record?.paymentAttachment;
 
                         if (this.record?.mop == 'Wallet') {
                             this.showProofAttachment = true;
@@ -224,21 +229,21 @@ export class ReceiptRightComponent implements OnInit, OnDestroy {
         return true;
     }
 
-    refreshItems(): void {
-        const filterReq = GridUtils.GetFilterReq(
-            this._paginator,
-            this._sort,
-            this.searchInputControl.value
-        );
-        this.crmService.getProductPurchaseMasterList(filterReq).subscribe({
-            next: (data) => {
-                this.dataList = data.data;
-            },
-            error: (err) => {
-                this.alertService.showToast('error', err, 'top-right', true);
-            },
-        });
-    }
+    // refreshItems(): void {
+    //     const filterReq = GridUtils.GetFilterReq(
+    //         this._paginator,
+    //         this._sort,
+    //         this.searchInputControl.value
+    //     );
+    //     this.crmService.getProductPurchaseMasterList(filterReq).subscribe({
+    //         next: (data) => {
+    //             this.dataList = data.data;
+    //         },
+    //         error: (err) => {
+    //             this.alertService.showToast('error', err, 'top-right', true);
+    //         },
+    //     });
+    // }
 
     onProofAttachmentFile(event: any) {
         const file = (event.target as HTMLInputElement).files[0];
@@ -330,25 +335,29 @@ export class ReceiptRightComponent implements OnInit, OnDestroy {
             json.payment_attachment = this.paymentAttachjFile
         }
 
-        if (this.record?.receiptid) {
+        if (this.record?.receiptId) {
+            console.log("this.record?.id", this.record?.id);
+            
             const newJson = {
-                id: this.record?.receiptid ? this.record?.receiptid : "",
-                receipt_to_id: this.record?.agentid ? this.record?.agentid : "",
-                payment_amount: json.amount ? json.amount : "",
-                mode_of_payment: json.mop ? json.mop : "",
-                receipt_remark: json.remark ? json.remark : "",
-                payment_attachment: json.payment_attachment,
-                proof_attachment: json.proof_attachment,
-                service_for_id: this.record?.purid ? this.record?.purid : ""
+                id: this.record?.receiptId ? this.record?.receiptId : "",
+                receiptToId: this.record?.agentId ? this.record?.agentId : "",
+                paymentAmount: json.amount ? json.amount : "",
+                modeOfPayment: json.mop ? json.mop : "",
+                receiptRemark: json.remark ? json.remark : "",
+                PaymentAttachment: json.payment_attachment,
+                ProofAttachment: json.proof_attachment,
+                serviceForId: this.productId || ""
             }
 
-            this.crmService.createReceipt(newJson).subscribe({
-                next: () => {
-                    this.router.navigate([this.leadListRoute]);
-                    this.disableBtn = false;
-                    this.entityService.raiserefreshReceiptCall(true);
-                    this.settingsDrawer.close()
-                    this.alertService.showToast('success', 'Record modified', 'top-right', true);
+            this.crmService.createReceiptNew(newJson).subscribe({
+                next: (res) => {
+                    if(res){
+                        this.router.navigate([this.leadListRoute]);
+                        this.disableBtn = false;
+                        this.entityService.raiserefreshReceiptCall(true);
+                        this.settingsDrawer.close()
+                        this.alertService.showToast('success', 'Record modified', 'top-right', true);
+                    }
                 },
                 error: (err) => {
                     this.alertService.showToast('error', err, 'top-right', true);
@@ -359,22 +368,24 @@ export class ReceiptRightComponent implements OnInit, OnDestroy {
         if (this.record?.data?.id) {
             const newJson = {
                 id: "",
-                receipt_to_id: this.record?.data?.agentid ? this.record?.data?.agentid : "",
-                payment_amount: json.amount ? json.amount : "",
-                mode_of_payment: json.mop ? json.mop : "",
-                receipt_remark: json.remark ? json.remark : "",
-                payment_attachment: json.payment_attachment,
-                proof_attachment: json.proof_attachment,
-                service_for_id: this.record?.data?.id ? this.record?.data?.id : ""
+                receiptToId: this.record?.data?.agentId ? this.record?.data?.agentId : "",
+                paymentAmount: json.amount ? json.amount : "",
+                modeOfPayment: json.mop ? json.mop : "",
+                receiptRemark: json.remark ? json.remark : "",
+                PaymentAttachment: json.payment_attachment,
+                ProofAttachment: json.proof_attachment,
+                serviceForId: this.record?.data?.id ? this.record?.data?.id : ""
             }
 
-            this.crmService.createReceipt(newJson).subscribe({
-                next: () => {
-                    this.router.navigate([this.leadListRoute]);
-                    this.disableBtn = false;
-                    this.settingsDrawer.close();
-                    this.entityService.raiserefreshReceiptCall(true);
-                    this.alertService.showToast('success', 'New record added', 'top-right', true);
+            this.crmService.createReceiptNew(newJson).subscribe({
+                next: (res) => {
+                    if(res){
+                        this.router.navigate([this.leadListRoute]);
+                        this.disableBtn = false;
+                        this.settingsDrawer.close();
+                        this.entityService.raiserefreshReceiptCall(true);
+                        this.alertService.showToast('success', 'New record added', 'top-right', true);
+                    }
                 },
                 error: (err) => {
                     this.alertService.showToast('error', err, 'top-right', true);

@@ -155,6 +155,8 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
             next: (item) => {
                 this.settingsDrawer?.toggle()
                 if (item) {
+                    console.log("item", item);
+                    
                     if (item?.addFlag) {
                         this.addAgentId = item?.data.agentid;
                         this.addFlag = item?.addFlag;
@@ -232,21 +234,21 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
         }
     }
 
-    refreshItems(): void {
-        const filterReq = GridUtils.GetFilterReq(
-            this._paginator,
-            this._sort,
-            this.searchInputControl.value
-        );
-        this.crmService.getProductPurchaseMasterList(filterReq).subscribe({
-            next: (data) => {
-                this.dataList = data.data;
-            },
-            error: (err) => {
-                this.alertService.showToast('error', err, 'top-right', true);
-            },
-        });
-    }
+    // refreshItems(): void {
+    //     const filterReq = GridUtils.GetFilterReq(
+    //         this._paginator,
+    //         this._sort,
+    //         this.searchInputControl.value
+    //     );
+    //     this.crmService.getProductPurchaseMasterList(filterReq).subscribe({
+    //         next: (data) => {
+    //             this.dataList = data.data;
+    //         },
+    //         error: (err) => {
+    //             this.alertService.showToast('error', err, 'top-right', true);
+    //         },
+    //     });
+    // }
 
     numberOnly(event): boolean {
         const charCode = (event.which) ? event.which : event.keyCode;
@@ -383,12 +385,12 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
             "",
         );
         // filterReq['agent_id'] = this.record?.editData?.agentid ? this.record?.editData?.agentid : "",
-        filterReq['Id'] = this.record?.editData?.product_id ? this.record?.editData?.id : ""
-        this.crmService.getProductInfoList(filterReq).subscribe({
+        const Id = this.record?.editData?.id 
+        this.crmService.getDataProduct(Id).subscribe({
             next: (res) => {
-                this.productList = res[0];
+                this.productList = res;
                 if (this.record?.editData?.id) {
-                    this.formGroup.patchValue(res?.[0]);
+                    this.formGroup.patchValue(res);
                     this.formGroup.get("product").patchValue(res?.[0]?.product_name);
                     this.formGroup.get('price').patchValue(res?.[0]?.purchase_amount);
                     this.formGroup.get('rm_remark').patchValue(res?.[0]?.rm_remark);
@@ -463,14 +465,14 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
         // }
 
         const newJson = {
-            agent_id: this.addFlag ? this.addAgentId : this.editAgentId,
+            agentId: this.addFlag ? this.addAgentId : this.editAgentId,
             id: this.productPurchaseMasterId ? this.productPurchaseMasterId : "",
-            product_id: this.productId ? this.productId : "",
-            purchase_amount: json?.price,
+            productId: this.productId ? this.productId : "",
+            purchaseAmount: json?.price,
             max_installment: json?.installments,
-            installmentArr: this.installmentsArray,
-            rm_remark: json.rm_remark,
-            proof_attachment: json.proof_attachment
+            installments: this.installmentsArray,
+            rmRemark: json.rm_remark,
+            ProofAttachment: json.proof_attachment
         };
 
         // if (this.formGroup.get("price").value != "" && totalAmount != 0 && this.validateDates() == true) {

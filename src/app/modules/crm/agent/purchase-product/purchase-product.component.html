@@ -17,7 +17,7 @@
         <ng-container>
             <div class="grid ">
                 <div class="tbl-grid gridwidth z-10 sticky top-0 grid py-2 px-0 md:pr-8 pl-0 shadow text-md font-semibold text-secondary dark:bg-gray-700 bg-white border-b"
-                    matSort matSortDisableClear matSortActive="entry_date" matSortDirection="desc"
+                    matSort matSortDisableClear matSortActive="entryDate" matSortDirection="desc"
                     (matSortChange)="refreshItems()">
                     <div style="text-align: center" class="sticky left-0 dark:bg-gray-700 bg-white z-99 text-secondary">
                         #
@@ -46,48 +46,55 @@
                                     <mat-icon class="mat-18">info</mat-icon>
                                     <span style="font-weight: 600">Info</span>
                                 </button>
+
                                 <button mat-menu-item (click)="editProduct(ListItem)"
-                                    *ngIf="ListItem.receipt_status !== 'Confirmed'">
+                                    *ngIf="ListItem.ReceiptStatus !== 'Confirmed'">
                                     <mat-icon class="mat-18">edit</mat-icon>
                                     <span style="font-weight: 600">Modify</span>
                                 </button>
-                                <!--*ngIf="ListItem.receipt_status !== 'Confirmed'"   for delete-->
-
-                                <!-- <button mat-menu-item (click)="deleteProduct(ListItem)" *ngIf="ListItem.receipt_status !== 'Confirmed'">
-                                    <mat-icon class="mat-18">delete</mat-icon>
-                                    <span style="font-weight: 600">Delete</span>
-                                </button> -->
-
-                                <button mat-menu-item (click)="deleteProduct(ListItem)"
-                                    *ngIf="(ListItem.product_status.purchase_amount > 0 && ListItem.receipt_status !== 'Confirmed' && ListItem.product_status !== 'Delivered') || (ListItem.product_status.purchase_amount == 0 && ListItem.product_status !== 'Delivered')">
-                                    <mat-icon class="mat-18">delete</mat-icon>
-                                    <span style="font-weight: 600">Delete</span>
-                                </button>
-
-                                <!-- *ngIf="((ListItem.receipt_status == 'Confirmed' && ListItem.product_status == 'Delivered') && (ListItem.product_status !== 'Pending' || ListItem.product_status !== 'Sales Return'))" -->
 
                                 <button mat-menu-item (click)="cancelProduct(ListItem)"
-                                    *ngIf="ListItem.product_status == 'Delivered' || ListItem.receipt_status == 'Confirmed'">
+                                    *ngIf="ListItem.status == 'Delivered' || ListItem.ReceiptStatus == 'Confirmed'">
                                     <mat-icon class="mat-18">close</mat-icon>
                                     <span style="font-weight: 600">Cancel</span>
                                 </button>
 
-                                <button mat-menu-item (click)="salesReturnProduct(ListItem)"
-                                    *ngIf="ListItem.receipt_status == 'Confirmed' && ListItem.product_status != 'Sales Return'">
+                                 <button mat-menu-item (click)="deleteProduct(ListItem)" *ngIf="ListItem.ReceiptStatus !== 'Confirmed'">
+                                    <mat-icon class="mat-18">delete</mat-icon>
+                                    <span style="font-weight: 600">Delete</span>
+                                </button>
+
+                                 <button mat-menu-item (click)="salesReturnProduct(ListItem)"
+                                    *ngIf="ListItem.ReceiptStatus == 'Confirmed' && ListItem.status != 'Sales Return'">
                                     <mat-icon svgIcon="heroicons_outline:currency-rupee"></mat-icon>
                                     <span style="font-weight: 600">Sales Return</span>
                                 </button>
 
                                 <button mat-menu-item (click)="expiryProduct(ListItem)"
-                                    *ngIf="ListItem.product_status == 'Delivered'">
+                                    *ngIf="ListItem.status == 'Delivered'">
                                     <mat-icon svgIcon="mat_solid:history_toggle_off"></mat-icon>
                                     <span style="font-weight: 600">Expiry</span>
                                 </button>
 
-                                <button mat-menu-item (click)="setBlockUnblock(element)">
-                                    <mat-icon class="mat-18 icon-size-5">{{element.is_blocked ? "highlight_off" : "check_circle"}}</mat-icon>
-                                    <span style="font-weight: 500">{{element.is_blocked ? "Unblock" : "Block"}}</span>
+                                <button mat-menu-item (click)="setBlockUnblock(ListItem)">
+                                    <mat-icon class="mat-18 icon-size-5">{{ListItem.isBlocked ? "highlight_off" : "check_circle"}}</mat-icon>
+                                    <span style="font-weight: 500">{{ListItem.isBlocked ? "Unblock" : "Block"}}</span>
                                 </button>
+
+                                <button mat-menu-item (click)="shiftProduct(ListItem)" *ngIf="ListItem.status == 'Delivered'">
+                                    <mat-icon svgIcon="heroicons_outline:arrows-right-left"></mat-icon>
+                                    <span style="font-weight: 600">Shift Product</span>
+                                </button>
+
+                                <!--*ngIf="ListItem.ReceiptStatus !== 'Confirmed'"   for delete-->
+
+                                <!-- <button mat-menu-item (click)="deleteProduct(ListItem)"
+                                    *ngIf="(ListItem.status.purchasePrice > 0 && ListItem.ReceiptStatus !== 'Confirmed' && ListItem.status !== 'Delivered') || (ListItem.status.purchasePrice == 0 && ListItem.status !== 'Delivered')">
+                                    <mat-icon class="mat-18">delete</mat-icon>
+                                    <span style="font-weight: 600">Delete</span>
+                                </button> -->
+
+                                <!-- *ngIf="((ListItem.ReceiptStatus == 'Confirmed' && ListItem.status == 'Delivered') && (ListItem.status !== 'Pending' || ListItem.status !== 'Sales Return'))" -->
 
                                 <!-- <button mat-menu-item (click)="paymentProduct(ListItem)">
                                     <mat-icon svgIcon="heroicons_solid:currency-rupee"></mat-icon>
@@ -97,7 +104,7 @@
                             <ng-container *ngFor="let col of columns">
                                 <div [class]="'flex flex-row items-center space-x-2 truncate pl-0' + col.class"
                                     [ngClass]="col.align === 'center' ? 'justify-center' : col.align === 'right' ? 'justify-end' : ''">
-                                    <span *ngIf="col.toColor && col.key === 'product_status'">
+                                    <span *ngIf="col.toColor && col.key === 'status'">
                                         <span *ngIf="col.name == 'Status'"
                                             [ngClass]="getStatusColor(ListItem[col.key])">{{ ListItem[col.key] }}
                                         </span>
@@ -113,21 +120,21 @@
                                         <span class="">{{ ListItem[col.key] == true ? 'Yes' : 'No' }}</span>
                                     </span>
 
-                                    <span *ngIf="col.key == 'product_name'"
+                                    <span *ngIf="col.key == 'productName'"
                                         class="cursor-pointer border-b border-gray-500"
                                         (click)="purchaseProductInfo(ListItem, this.record?.agencyName)">
                                         <span class="">{{ ListItem[col.key]}}</span>
                                     </span>
 
-                                    <span *ngIf="col.key == 'start_integration'"
+                                    <span *ngIf="col.key == 'startIntegration'"
                                         [ngClass]="getStartIntegrationColor(ListItem[col.key])">
                                         <span class="">{{ ListItem[col.key] == true ? 'Yes' : 'No' }}</span>
                                     </span>
 
-                                    <!-- {{ ListItem['purchase_amount'] || '-' }} -->
+                                    <!-- {{ ListItem['purchasePrice'] || '-' }} -->
                                     <span *ngIf="col.price">
                                         <span class=" pr-[10px]">
-                                            {{ ListItem['purchase_amount'] != null ? (ListItem['purchase_amount'] |
+                                            {{ ListItem['purchasePrice'] != null ? (ListItem['purchasePrice'] |
                                             currency: (ListItem['currency'] || 'INR') : 'symbol' : '1.2-2') : '-' }}
                                         </span>
                                     </span>
@@ -145,8 +152,7 @@
                                         <span class="truncate"
                                             *ngIf="!col.toColor && !col.payment && !col.startIntegration && !col.applied && !col.toProduct && !col.price && !col.dueAmount"
                                             [matTooltip]="col.tooltip ? ListItem[col.key] : ''">
-                                            {{ col.is_date ? (ListItem[col.key] | date: col.date_formate) ||
-                                            " - " : ListItem[col.key] || " - " }}
+                                            {{  ListItem[col.key] || " - " }}
                                         </span>
                                     </div>
                                 </div>

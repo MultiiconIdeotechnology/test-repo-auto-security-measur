@@ -102,6 +102,8 @@ export class ReceiptsInfoItemComponent {
     productId: any;
 
     @Input() receiptDetail: any;
+    @Input() recordId: any;
+
     columns = [
         // {
         //     key: 'index',
@@ -119,7 +121,7 @@ export class ReceiptsInfoItemComponent {
         //     reject_reason: false
         // },
         {
-            key: 'receipt_ref_no',
+            key: 'receiptRefNo',
             name: 'Reference Number',
             is_date: false,
             date_formate: '',
@@ -135,7 +137,7 @@ export class ReceiptsInfoItemComponent {
             reference_number: true
         },
         {
-            key: 'receipt_date',
+            key: 'receiptDate',
             name: 'Date',
             is_date: true,
             date_formate: 'dd-MM-yyyy',
@@ -152,7 +154,7 @@ export class ReceiptsInfoItemComponent {
             reference_number: false
         },
         {
-            key: 'payment_amount',
+            key: 'paymentAmount',
             name: 'Amount',
             is_date: false,
             date_formate: '',
@@ -184,7 +186,7 @@ export class ReceiptsInfoItemComponent {
             reference_number: false
         },
         {
-            key: 'receipt_reject_reason',
+            key: 'rejectReason',
             name: 'Reject Reason',
             is_date: false,
             date_formate: '',
@@ -226,7 +228,10 @@ export class ReceiptsInfoItemComponent {
         this.entityService.onrefreshReceiptCalll().pipe(takeUntil(this._unsubscribeAll)).subscribe({
             next: (item) => {
                 if (item) {
-                    this.refreshItemsNew();
+                    console.log("recepet refresh");
+                    if(this.recordId){
+                        this.refreshItemsNew();
+                    }
                 }
             }
         })
@@ -261,27 +266,27 @@ export class ReceiptsInfoItemComponent {
     }
 
     getTooltip(ListItem: any): string {
-        if (ListItem?.receipt_Status == 'Rejected') {
-            return ListItem?.receipt_reject_reason ? ListItem?.receipt_reject_reason : '-';
+        if (ListItem?.receiptStatus == 'Rejected') {
+            return ListItem?.rejectReason ? ListItem?.rejectReason : '-';
         }
     }
 
-    createReceipt() {
-        // if (!Security.hasPermission(partnerPurchaseProductPermissions.purchaseProductPermissions)) {
-        //     return this.alertService.showToast('error', messages.permissionDenied);
-        // }
+    // createReceipt() {
+    //     // if (!Security.hasPermission(partnerPurchaseProductPermissions.purchaseProductPermissions)) {
+    //     //     return this.alertService.showToast('error', messages.permissionDenied);
+    //     // }
 
-        this.matDialog.open(ReceiptInfoEntryComponent, {
-            data: this.record,
-            disableClose: true,
-        }).afterClosed().subscribe({
-            next: (res) => {
-                if (res) {
-                    this.refreshItemsNew();
-                }
-            }
-        });
-    }
+    //     this.matDialog.open(ReceiptInfoEntryComponent, {
+    //         data: this.record,
+    //         disableClose: true,
+    //     }).afterClosed().subscribe({
+    //         next: (res) => {
+    //             if (res) {
+    //                 this.refreshItemsNew();
+    //             }
+    //         }
+    //     });
+    // }
 
     getPaymentIndicatorClass(priority: boolean): string {
         if (priority == true) {
@@ -293,17 +298,20 @@ export class ReceiptsInfoItemComponent {
 
     refreshItemsNew() {
         this.isLoading = true;
-        const filterReq = GridUtils.GetFilterReq(
-            this._paginator,
-            this._sort,
-            "",
-        );
-        // filterReq['agent_id'] = this.agentId ? this.agentId : ""
-        filterReq['Id'] = this.productId ? this.productId : ""
-        this.crmService.getProductInfoList(filterReq).subscribe({
+        // const filterReq = GridUtils.GetFilterReq(
+        //     this._paginator,
+        //     this._sort,
+        //     "",
+        // );
+        // // filterReq['agent_id'] = this.agentId ? this.agentId : ""
+        // filterReq['Id'] = this.productId ? this.productId : ""
+
+        const Id = this.recordId
+
+        this.crmService.getDataProduct(Id).subscribe({
             next: (res) => {
                 this.isLoading = false;
-                this.receiptDetail = res[0];
+                this.receiptDetail = res.receipts;
             },
             error: (err) => {
                 this.alertService.showToast('error', err, 'top-right', true);
@@ -343,7 +351,7 @@ export class ReceiptsInfoItemComponent {
         //         }
         //     });
 
-        this.entityService.raisereceiptCall({ data: record, edit: true });
+        this.entityService.raisereceiptCall({ data: record, edit: true, id: this.recordId });
         // this.entityService.onrefreshReceiptCalll().pipe(takeUntil(this._unsubscribeAll)).subscribe({
         //     next: (item) => {
         //         if (item) {
@@ -363,7 +371,7 @@ export class ReceiptsInfoItemComponent {
             .afterClosed()
             .subscribe((res) => {
                 if (res === 'confirmed') {
-                    this.crmService.deleteProductReceipt(record?.receiptid).subscribe({
+                    this.crmService.deleteProductReceipt(record?.receiptId).subscribe({
                         next: () => {
                             this.alertService.showToast(
                                 'success',
@@ -420,7 +428,7 @@ export class ReceiptsInfoItemComponent {
             next: (res) => {
                 if (res === 'confirmed') {
                     let json = {
-                        reference_table_id: data?.receiptid || "",
+                        reference_table_id: data?.receiptId || "",
                         service_for: "Receipt",
                         mop: data?.mop || ""
                     }

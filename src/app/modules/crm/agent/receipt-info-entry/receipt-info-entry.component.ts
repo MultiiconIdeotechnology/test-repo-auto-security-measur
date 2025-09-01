@@ -149,21 +149,21 @@ export class ReceiptInfoEntryComponent {
         return true;
     }
 
-    refreshItems(): void {
-        const filterReq = GridUtils.GetFilterReq(
-            this._paginator,
-            this._sort,
-            this.searchInputControl.value
-        );
-        this.crmService.getProductPurchaseMasterList(filterReq).subscribe({
-            next: (data) => {
-                this.dataList = data.data;
-            },
-            error: (err) => {
-                this.alertService.showToast('error', err, 'top-right', true);
-            },
-        });
-    }
+    // refreshItems(): void {
+    //     const filterReq = GridUtils.GetFilterReq(
+    //         this._paginator,
+    //         this._sort,
+    //         this.searchInputControl.value
+    //     );
+    //     this.crmService.getProductPurchaseMasterList(filterReq).subscribe({
+    //         next: (data) => {
+    //             this.dataList = data.data;
+    //         },
+    //         error: (err) => {
+    //             this.alertService.showToast('error', err, 'top-right', true);
+    //         },
+    //     });
+    // }
 
     onProofAttachmentFile(event: any) {
         const file = (event.target as HTMLInputElement).files[0];

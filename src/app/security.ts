@@ -631,7 +631,9 @@ export const partnerPurchaseProductPermissions = {
     dormantsPermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Partner Dormant', category_name: category_name.operation },
     itemsTabPermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Items Tab', category_name: category_name.view },
     installmentsTabPermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Installments Tab', category_name: category_name.view },
-    receiptsTabPermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Receipts Tab', category_name: category_name.view }
+    receiptsTabPermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Receipts Tab', category_name: category_name.view },
+    logsTabPermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Logs Tab', category_name: category_name.view },
+    statusChangeLogsTabPermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Status Change Logs Tab', category_name: category_name.view }
 }
 
 export const crmLeadPermissions = {

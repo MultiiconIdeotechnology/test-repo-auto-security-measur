@@ -102,6 +102,8 @@ export class InstallmentRightComponent implements OnInit, OnDestroy {
     ) {
         this.entityService.onInstallmentCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
             next: (item) => {
+                console.log("item instam", item);
+                
                 this.settingsDrawer.toggle();
                 this.record = item ?? {}
                 if (item?.edit) {
@@ -135,21 +137,21 @@ export class InstallmentRightComponent implements OnInit, OnDestroy {
         return true;
     }
 
-    refreshItems(): void {
-        const filterReq = GridUtils.GetFilterReq(
-            this._paginator,
-            this._sort,
-            this.searchInputControl.value
-        );
-        this.crmService.getProductPurchaseMasterList(filterReq).subscribe({
-            next: (data) => {
-                this.dataList = data.data;
-            },
-            error: (err) => {
-                this.alertService.showToast('error', err, 'top-right', true);
-            },
-        });
-    }
+    // refreshItems(): void {
+    //     const filterReq = GridUtils.GetFilterReq(
+    //         this._paginator,
+    //         this._sort,
+    //         this.searchInputControl.value
+    //     );
+    //     this.crmService.getProductPurchaseMasterList(filterReq).subscribe({
+    //         next: (data) => {
+    //             this.dataList = data.data;
+    //         },
+    //         error: (err) => {
+    //             this.alertService.showToast('error', err, 'top-right', true);
+    //         },
+    //     });
+    // }
 
     ngOnDestroy(): void {
         this._unsubscribeAll.next(null);
@@ -170,8 +172,8 @@ export class InstallmentRightComponent implements OnInit, OnDestroy {
         const json = this.formGroup.getRawValue();
 
         const newJson = {
-            id: this.record?.insid ? this.record?.insid : "",
-            installment_date: json?.installment_date ? json?.installment_date : ""
+            id: this.record?.id ? this.record?.id : "",
+            NewInstallmentDate: json?.installment_date ? json?.installment_date : ""
         }
 
         this.disableBtn = true;
