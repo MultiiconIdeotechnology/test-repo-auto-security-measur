@@ -97,7 +97,7 @@ export class TechDashboardExpiredComponent extends BaseListingComponent {
     public sortColumn: any;
     public sortDirection: any;
 
-    module_name = module_name.lead;
+    module_name = module_name.techDashboard;
     filter_table_name = filter_module_name.tech_dashboard_expired;
     private settingsUpdatedSubscription: Subscription;
     data: any;

@@ -268,12 +268,10 @@ export class PspSetupComponent extends BaseListingComponent {
         minWidth: '470px'
       }
     ).afterClosed().subscribe((res:any) => {
-      if(res){
-        console.log("res>>", res);
+      if(res){  
         if(!res.is_all_agent){
           record.agents_count = res?.count;
-        } else {
-          console.log("res.isallagent", res.is_all_agent);
+        } else {       
           record.agents_count = -1;
         }
         this.dataList = [...this.dataList];

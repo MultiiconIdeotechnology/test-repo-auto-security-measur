@@ -109,7 +109,6 @@ export class PspEntyProfileFormComponent {
     ).subscribe({
       next: data => {
         this.agentList = data;
-        console.log("profileData", this.profileData)
         this.formGroup.get("profile_for_id").patchValue(this.profileData?.profile_for_id || this.agentList[0].id);
       }
     });
