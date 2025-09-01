@@ -26,6 +26,7 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
 import { ItemService } from 'app/services/item.service';
 import { GlobalSearchService } from 'app/services/global-search.service';
 import { CancelledComponent } from '../cancelled/cancelled.component';
+import { SslComponent } from '../ssl/ssl.component';
 
 @Component({
     selector: 'app-crm-tech-dashboard-list',
@@ -54,7 +55,8 @@ import { CancelledComponent } from '../cancelled/cancelled.component';
         TechDashboardCompletedComponent,
         TechDashboardExpiredComponent,
         TechDashboardBlockedComponent,
-        CancelledComponent
+        CancelledComponent,
+        SslComponent,
     ],
 })
 export class CRMTechDashboardListComponent implements OnDestroy {
@@ -63,6 +65,7 @@ export class CRMTechDashboardListComponent implements OnDestroy {
     @ViewChild('blocked') blocked: TechDashboardBlockedComponent;
     @ViewChild('expired') expired: TechDashboardExpiredComponent;
     @ViewChild('cancelled') cancelled: CancelledComponent;
+    @ViewChild('ssl') ssl: SslComponent;
 
     module_name = module_name.techDashboard;
     filter_table_name = filter_module_name;
@@ -75,6 +78,7 @@ export class CRMTechDashboardListComponent implements OnDestroy {
     isThird: boolean = true;
     isFourth: boolean = true;
     isFive: boolean = true;
+    isSix: boolean = true;
     filterData: any = {};
     searchInputControlPending = new FormControl('');
     _unsubscribeAll: Subject<any> = new Subject<any>();
@@ -106,6 +110,9 @@ export class CRMTechDashboardListComponent implements OnDestroy {
         }
         if (tab == 'cancelled') {
             return Security.hasPermission(techDashPermissions.cancelledTabPermissions)
+        }
+        if (tab == 'ssl') {
+            return Security.hasPermission(techDashPermissions.sslTabPermissions)
         }
     }
 
@@ -156,6 +163,14 @@ export class CRMTechDashboardListComponent implements OnDestroy {
                 this.isFive = false;
                 // }
                 break;
+
+            case 'SSL':
+                this.tab = 'ssl';
+                // if (this.isFourth) {
+                this.ssl?.refreshItems();
+                this.isSix = false;
+                // }
+                break;
         }
     }
 
@@ -168,6 +183,8 @@ export class CRMTechDashboardListComponent implements OnDestroy {
             this._filterService.openDrawer(this.filter_table_name.tech_dashboard_blocked, this.blocked.primengTable);
         } else if (this.tabNameStr == 'Cancelled') {
             this._filterService.openDrawer(this.filter_table_name.tech_dashboard_cancelled, this.cancelled.primengTable);
+        } else if (this.tabNameStr == 'SSL') {
+            this._filterService.openDrawer(this.filter_table_name.tech_dashboard_ssl, this.ssl.primengTable);
         } else {
             this._filterService.openDrawer(this.filter_table_name.tech_dashboard_expired, this.expired.primengTable);
         }
@@ -190,6 +207,9 @@ export class CRMTechDashboardListComponent implements OnDestroy {
             case 'Cancelled':
                 this.cancelled?.refreshItems();
                 break;
+            case 'SSL':
+                this.ssl?.refreshItems();
+                break;
         }
     }
 
@@ -200,8 +220,10 @@ export class CRMTechDashboardListComponent implements OnDestroy {
             this.completed.exportExcel();
         else if (this.tab == 'blocked')
             this.blocked.exportExcel();
-        else if(this.tab == 'cancelled')
+        else if (this.tab == 'cancelled')
             this.cancelled.exportExcel()
+        else if (this.tab == 'ssl')
+            this.ssl.exportExcel()
         else
             this.expired.exportExcel();
     }
@@ -224,13 +246,16 @@ export class CRMTechDashboardListComponent implements OnDestroy {
     blockedRefresh(event: any) {
         this.blocked.searchInputControlBlocked.patchValue(event);
         this.blocked?.refreshItems();
-    } 
-    
+    }
+
     cancelledRefresh(event: any) {
         this.cancelled.searchInputControlCancelled.patchValue(event);
         this.cancelled?.refreshItems();
-        // this.cancelled.searchInputControlCancelled.patchValue(event);
-        // this.cancelled?.refreshItems();
+    }
+    
+    sslRefresh(event: any) {
+        this.ssl.searchInputControlSSL.patchValue(event);
+        this.ssl?.refreshItems();
     }
 
     ngOnDestroy(): void {

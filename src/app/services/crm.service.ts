@@ -200,6 +200,10 @@ export class CrmService {
         return this.http.post<any>(this.baseUrl + 'ProductPurchaseService/getExpiredProductList', model);
     }
 
+    domainList(model: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'ProductPurchaseService/domainList', model);
+    }
+
     getCancelledProductList(model: any): Observable<any> {
         return this.http.post<any>(this.baseUrl + 'ProductPurchaseService/getCancelledProductList', model);
     }
