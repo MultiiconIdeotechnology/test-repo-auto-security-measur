@@ -177,13 +177,14 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
 
                     this.proofAttachment = false;
                     if (item?.editFlag) {
-                        if (item?.editData?.proof_attachment) {
+                        this.title =  "Edit Product"
+                        if (item?.editData?.proofAttachment) {
                             this.proofAttachment = true;
                         }
-                        this.editAgentId = item?.editData?.agentid;
+                        this.editAgentId = item?.editData?.agentId;
                         this.editRecord = item?.editData ?? {}
 
-                        this.editproofAttachmentSelectedFile = this.editRecord?.proof_attachment_file;
+                        this.editproofAttachmentSelectedFile = this.editRecord?.proofAttachment_file;
                     }
 
                     this.record = item ?? {}
@@ -353,7 +354,7 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
 
     getProducts() {
         this.productPurchaseMasterId = ""
-        this.crmService.getProductNameList({AgentId :this.agentId}).subscribe({
+        this.crmService.getProductNameListNew({AgentId :this.agentId}).subscribe({
             next: (data) => {
                 this.productList = data;
                 this.filteredProducts = [...this.productList]; // Initialize filtered list
@@ -391,14 +392,14 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
                 this.productList = res;
                 if (this.record?.editData?.id) {
                     this.formGroup.patchValue(res);
-                    this.formGroup.get("product").patchValue(res?.[0]?.product_name);
-                    this.formGroup.get('price').patchValue(res?.[0]?.purchase_amount);
-                    this.formGroup.get('rm_remark').patchValue(res?.[0]?.rm_remark);
-                    this.formGroup.get('installments').patchValue(res?.[0]?.installmentCount);
-                    this.selectedMaxInstallment = res?.[0]?.max_installment;
-                    this.installmentsArray = res?.[0]?.installment?.map(x => ({ installment_amount: x.installment_amount, installment_date: x.installment_date }));
-                    this.productId = res?.[0]?.productid;
-                    this.productPurchaseMasterId = res?.[0]?.id;
+                    this.formGroup.get("product").patchValue(res?.productName);
+                    this.formGroup.get('price').patchValue(res?.purchasePrice);
+                    this.formGroup.get('rm_remark').patchValue(res?.rmRemark);
+                    this.formGroup.get('installments').patchValue(res?.installmentCount);
+                    this.selectedMaxInstallment = res?.maxInstallment;
+                    this.installmentsArray = res?.installments?.map(x => ({ installment_amount: x.installmentAmount, installment_date: x.installmentDate }));
+                    this.productId = res?.productId;
+                    this.productPurchaseMasterId = res?.id;
                 }
             },
             error: (err) => {
@@ -447,17 +448,17 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
         // }
 
         if (!this.proofAttachjFile) {
-            json.proof_attachment = {
+            json.proofAttachment = {
                 fileName: '',
                 fileType: '',
                 base64: '',
             };
         } else {
-            json.proof_attachment = this.proofAttachjFile
+            json.proofAttachment = this.proofAttachjFile
         }
 
         // if (!this.record) {
-        //     if (json.proof_attachment == null || !json.proof_attachment.fileName) {
+        //     if (json.proofAttachment == null || !json.proofAttachment.fileName) {
         //         this.disableBtn = false;
         //         this.alertService.showToast('error', 'Proof Attachment is required.')
         //         return;
@@ -472,7 +473,7 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
             max_installment: json?.installments,
             installments: this.installmentsArray,
             rmRemark: json.rm_remark,
-            ProofAttachment: json.proof_attachment
+            ProofAttachment: json.proofAttachment
         };
 
         // if (this.formGroup.get("price").value != "" && totalAmount != 0 && this.validateDates() == true) {

@@ -172,6 +172,10 @@ export class ProductComponent {
     }
 
     editProduct(record) {
+         if (record.status != 'New') {
+            this.alertService.showToast('error', 'Please update the status to New for editing.', 'top-right', true);
+            return
+        }
         this.entityService.raiseproductPurchaseCall({ editData: record, editFlag: true })
     }
 

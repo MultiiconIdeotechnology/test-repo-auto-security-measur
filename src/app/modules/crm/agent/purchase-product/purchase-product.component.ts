@@ -91,6 +91,8 @@ export class PurchaseProductComponent {
         @Inject(MAT_DIALOG_DATA) public data: any = {}
     ) {
         this.record = data?.data ?? {}
+        console.log("product open record", this.record);
+        
         this.cols = this.columns.map(x => x.key);
         this.key = this.module_name;
         this.sortColumn = 'priorityid';

@@ -63,7 +63,7 @@ export class CrmService {
     getPotentialLeadAgentList(model: any): Observable<any> {
         return this.http.post<any>(this.baseUrl + 'CRM/agent/agentPotentialsDashboard', model);
     }
-    
+
 
     getProductPurchaseMasterList(model: any): Observable<any> {
         return this.http.post<any>(this.baseUrl + 'ProductPurchase/list', model);
@@ -71,6 +71,10 @@ export class CrmService {
 
     getProductNameList(model: any): Observable<any> {
         return this.http.post<any>(this.baseUrl + 'ProductPurchaseMaster/GetProductCombo', model);
+    }
+
+    getProductNameListNew(model: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'ProductPurchase/getProductCombo', model);
     }
 
     createPurchaseProduct(model: any): Observable<any> {
@@ -108,7 +112,7 @@ export class CrmService {
     createReceipt(model: any): Observable<any> {
         return this.http.post<any>(this.baseUrl + 'ProductPurchaseMaster/createReceiptMaster', model);
     }
-    
+
     createReceiptNew(model: any): Observable<any> {
         return this.http.post<any>(this.baseUrl + 'ProductPurchase/createReceipt', model);
     }
@@ -124,7 +128,7 @@ export class CrmService {
     }
 
     getDataProduct(id: string): Observable<any> {
-        return this.http.post<any>(this.baseUrl + 'ProductPurchase/getData', {id: id});
+        return this.http.post<any>(this.baseUrl + 'ProductPurchase/getData', { id: id });
     }
 
     getInstallmentList(model: any): Observable<any> {
@@ -142,7 +146,7 @@ export class CrmService {
     Invoice(agentId: string): Observable<any> {
         return this.http.post<any>(this.baseUrl + "ProductPurchaseMaster/PrintInvoice", { agent_id: agentId });
     }
-    
+
     shiftProduct(model: any): Observable<any> {
         return this.http.post<any>(this.baseUrl + "ProductPurchase/shiftProduct", model);
     }
@@ -172,7 +176,7 @@ export class CrmService {
     }
 
     getData(id: string): Observable<any> {
-        return this.http.post<any>(this.baseUrl + 'ProductPurchaseService/getData', {id: id});
+        return this.http.post<any>(this.baseUrl + 'ProductPurchaseService/getData', { id: id });
     }
 
     googleClosedTesting(model: any): Observable<any> {
