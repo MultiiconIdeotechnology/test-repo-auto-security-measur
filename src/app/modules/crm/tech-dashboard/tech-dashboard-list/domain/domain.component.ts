@@ -111,8 +111,8 @@ export class TechDashboardDomainComponent extends BaseListingComponent {
     }
 
     ngOnInit(): void {
-        this.sidebarDialogService.onModalChange().pipe(takeUntil(this._unsubscribeAll)).subscribe((res:any) => {
-            if(res && res.key == 'crm-domain-generate-success') {
+        this.sidebarDialogService.onModalChange().pipe(takeUntil(this._unsubscribeAll)).subscribe((res: any) => {
+            if (res && res.key == 'crm-domain-generate-success') {
                 this.refreshItems();
             }
         })
@@ -171,13 +171,51 @@ export class TechDashboardDomainComponent extends BaseListingComponent {
         this.sidebarDialogService.openModal('crm-domain-info', record);
     }
 
-    toggleSelection(row: any) {
-        const index = this.selection.findIndex(u => u.id === row.id);
+    // toggleSelection(row: any) {
+    //     const index = this.selection.findIndex(u => u.id === row.id);
+    //     if (index >= 0) {
+    //         this.selection.splice(index, 1);
+    //     } else {
+    //         this.selection.push({ AgentId: row?.agent_id, DomainName: row?.domain_name, id: row.id });
+    //     }
+    // }
+
+    toggleSelection(element: any) {
+        const index = this.selection.findIndex(u => u.id === element.id);
         if (index >= 0) {
             this.selection.splice(index, 1);
         } else {
-            this.selection.push({ AgentId: row?.agent_id, DomainName: row?.domain_name, id: row.id });
+            this.selection.push({
+                AgentId: element?.agent_id,
+                DomainName: element?.domain_name,
+                id: element.id
+            });
         }
+    }
+
+    toggleAllSelection(event: any) {
+        if (event.checked) {
+            this.selection = this.dataList.map(el => ({
+                AgentId: el.agent_id,
+                DomainName: el.domain_name,
+                id: el.id
+            }));
+        } else {
+            this.selection = [];
+        }
+    }
+
+
+    isAllSelected(): boolean {
+        return this.selection.length === this.dataList.length && this.dataList.length > 0;
+    }
+
+    isSelected(element: any): boolean {
+        return this.selection.some(u => u.id === element.id);
+    }
+
+    isIndeterminate(): boolean {
+        return this.selection.length > 0 && this.selection.length < this.dataList.length;
     }
 
     openSelectedDomain() {
@@ -213,7 +251,7 @@ export class TechDashboardDomainComponent extends BaseListingComponent {
                 'Domain',
                 [
                     // { header: 'Code', property: 'agent_code' },
-                    { header: 'Agent Code', property: 'Agent Code' },
+                    { header: 'Agent Code', property: 'agentCode' },
                     { header: 'Domain Name', property: 'domain_name' },
                     { header: 'IP Address', property: 'ip_address' },
                     { header: 'SSL Expiry Date', property: 'ssl_expire_date_time' },

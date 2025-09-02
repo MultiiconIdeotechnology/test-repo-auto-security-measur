@@ -48,7 +48,6 @@ export class SelectedSslInfoComponent implements OnInit {
 
   ngOnInit(): void {
     this.sidebarDialogService.onModalChange().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-      console.log("res from domain sleected ", res)
       if (res && res.data) {
         if (res['type'] == 'crm-selected-domain') {
             this.selectedSslList = cloneDeep(res.data);

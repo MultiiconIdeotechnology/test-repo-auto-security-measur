@@ -26,7 +26,8 @@
                 <th pSortableColumn="ip_address" pResizableColumn [ngClass]="{'min-w-[180px]': isFilterShowDomain}">
                     IP Address <p-sortIcon field="ip_address" />
                 </th>
-                <th pSortableColumn="ssl_expire_date_time" pResizableColumn [ngClass]="{'min-w-[250px]': isFilterShowDomain}">
+                <th pSortableColumn="ssl_expire_date_time" pResizableColumn
+                    [ngClass]="{'min-w-[250px]': isFilterShowDomain}">
                     SSL Expiry Date <p-sortIcon field="ssl_expire_date_time" />
                 </th>
                 <th class="w-full" pSortableColumn="is_domain_pointed" pResizableColumn>
@@ -37,7 +38,16 @@
 
             <tr *ngIf="isFilterShowDomain">
                 <th class="left-[-1px] dark:bg-gray-800 bg-gray-50" pFrozenColumn></th>
-                <th class="left-[-1px] dark:bg-gray-800 bg-gray-50" pFrozenColumn></th>
+                <!-- <th class="left-[-1px] dark:bg-gray-800 bg-gray-50" pFrozenColumn></th> -->
+                <th class="text-center dark:bg-gray-800 bg-gray-50" pFrozenColumn>
+                    <mat-checkbox (change)="toggleAllSelection($event)" [checked]="isAllSelected()"
+                        [indeterminate]="isIndeterminate()">
+                    </mat-checkbox>
+                </th>
+
+
+
+
                 <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.agentCode" class="min-w-[110px]">
                     <p-columnFilter field="agentCode" type="numeric" placeholder="Search by Agent Id"
                         ariaLabel="Filter Agent Id"></p-columnFilter>
@@ -115,11 +125,22 @@
                         </button>
                     </mat-menu>
                 </td>
+                <!-- <td alignFrozen="left" pFrozenColumn class="text-center dark:bg-gray-900 bg-gray-50">
+                    <mat-checkbox (change)="toggleSelection(element)"
+                        [checked]="selection.some(u => u.id === element.id)">
+                    </mat-checkbox>
+                </td> -->
+                <!-- <td alignFrozen="left" pFrozenColumn class="text-center dark:bg-gray-900 bg-gray-50">
+                    <mat-checkbox (change)="toggleSelection(element)"
+                        [checked]="selection.some(u => u.id === element.id)">
+                    </mat-checkbox>
+                </td> -->
                 <td alignFrozen="left" pFrozenColumn class="text-center dark:bg-gray-900 bg-gray-50">
-                    <mat-checkbox (change)="toggleSelection(element)" [checked]="selection.includes(element)">
+                    <mat-checkbox (change)="toggleSelection(element)" [checked]="isSelected(element)">
                     </mat-checkbox>
                 </td>
-                <td>{{ element.agentCode || '-' }}</td>  
+
+                <td>{{ element.agentCode || '-' }}</td>
                 <td>{{ element.domain_name || '-' }}</td>
                 <td>{{ element.ip_address || '-' }}</td>
                 <td>{{ element.ssl_expire_date_time ? (element.ssl_expire_date_time | date: 'dd-MM-yyyy'):'-' }}
