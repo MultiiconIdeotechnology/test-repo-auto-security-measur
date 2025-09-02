@@ -82,7 +82,7 @@ export class TechDashboardBlockedComponent extends BaseListingComponent {
     @ViewChild(MatPaginator) public _paginator: MatPaginator;
     @ViewChild(MatSort) public _sortArchive: MatSort;
 
-    module_name = module_name.lead;
+    module_name = module_name.techDashboard;
     filter_table_name = filter_module_name.tech_dashboard_blocked;
     private settingsUpdatedSubscription: Subscription;
     cols = [];

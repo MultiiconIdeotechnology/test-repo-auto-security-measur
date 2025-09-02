@@ -30,7 +30,7 @@ export class ImagesComponent {
   profile_pictureid: any;
   profile_picture: any;
   readonly: boolean = false;
-  titleName:any
+  titleName: any
 
   constructor(
     public matDialogRef: MatDialogRef<ImagesComponent>,
@@ -40,12 +40,12 @@ export class ImagesComponent {
     private productFixDepartureService: ProductFixDepartureService,
     @Inject(MAT_DIALOG_DATA) public data: any = {}
   ) {
-    this.record = data?.data?? {}
-    this.titleName = data.name 
+    this.record = data?.data ?? {}
+    this.titleName = data.name
   }
-  
+
   ngOnInit(): void {
-    
+
     if (this.record.image?.length >= 1) {
       var profile = this.record.image.find((x) => x.img_type == 'Cover Photo')?.url;
 
@@ -66,8 +66,15 @@ export class ImagesComponent {
     }
   }
 
-  onProfileInputforcoverphoto(event: any) {
+  async onProfileInputforcoverphoto(event: any) {
     const file = (event.target as HTMLInputElement).files[0];
+    let maxWidth = 225;
+    let maxHeight = 225;
+    const resolutionValidation = {
+      file: file,
+      width: Number(maxWidth || 0),
+      height: Number(maxHeight || 0)
+    };
 
     const extantion: string[] = CommonUtils.valuesArray(imgExtantions);
     var validator: DocValidationDTO = CommonUtils.isDocValid(file, extantion, null, 2);
@@ -77,38 +84,59 @@ export class ImagesComponent {
       return;
     }
 
-    CommonUtils.getJsonFile(file, (reader, jFile) => {
-        const json: any = {
-            id: '',
-            img_for: this.titleName,
-            img_for_id: this.record.id,
-            img_type: 'Cover Photo',
-            img_name: jFile,
-        };
-        this.productFixDepartureService.Imagecreate(json).subscribe({
-            next: (res) => {
-                this.profile_picture = reader.result;
-                this.alertService.showToast(
-                    'success',
-                    'Cover Image Saved'
-                );
-            },
-            error: (err) => {
-                this.alertService.showToast('error', err);
-            },
-        });
-    });
-}
+    validator = await CommonUtils.isResolutionValidation(resolutionValidation);
+    if (!validator.valid) {
+      this.alertService.showToast('error', validator.alertMessage, 'top-right', true);
+      (event.target as HTMLInputElement).value = '';
+      return;
+    }
 
-  public onProfileInput(event: any): void {
+    CommonUtils.getJsonFile(file, (reader, jFile) => {
+      const json: any = {
+        id: '',
+        img_for: this.titleName,
+        img_for_id: this.record.id,
+        img_type: 'Cover Photo',
+        img_name: jFile,
+      };
+      this.productFixDepartureService.Imagecreate(json).subscribe({
+        next: (res) => {
+          this.profile_picture = reader.result;
+          this.alertService.showToast(
+            'success',
+            'Cover Image Saved'
+          );
+        },
+        error: (err) => {
+          this.alertService.showToast('error', err);
+        },
+      });
+    });
+  }
+
+  public async onProfileInput(event: any): Promise<void> {
 
     const filew: File = event.target.files[0];
     const file = (event.target as HTMLInputElement).files[0];
+    let maxWidth = 225;
+    let maxHeight = 225;
+    const resolutionValidation = {
+      file: file,
+      width: Number(maxWidth || 0),
+      height: Number(maxHeight || 0)
+    };
 
     const extantion: string[] = CommonUtils.valuesArray(imgExtantions);
     var validator: DocValidationDTO = CommonUtils.isDocValid(file, extantion, null, 2);
     if (!validator.valid) {
       this.alertService.showToast('error', validator.alertMessage);
+      (event.target as HTMLInputElement).value = '';
+      return;
+    }
+
+    validator = await CommonUtils.isResolutionValidation(resolutionValidation);
+    if (!validator.valid) {
+      this.alertService.showToast('error', validator.alertMessage, 'top-right', true);
       (event.target as HTMLInputElement).value = '';
       return;
     }

@@ -119,6 +119,7 @@ export const appRoutes: Route[] = [
             { path: Routes.account.withdraw_path, loadChildren: () => import('app/modules/account/withdraw/withdraw.routes') },
             { path: Routes.account.payment_path, loadChildren: () => import('app/modules/reports/account/payment-list/payment.routes') },
             { path: Routes.account.payment_link_path, loadChildren: () => import('app/modules/account/payment-link-list/payment-link.routes') },
+            { path: Routes.account.proforma_invoice_path, loadChildren: () => import('app/modules/account/proforma-invoice/proforma-invoice.routes') },
             { path: Routes.account.receipt_path, loadChildren: () => import('app/modules/reports/account/receipt-list/receipt.routes') },
             { path: Routes.account.agent_balance_path, loadChildren: () => import('app/modules/reports/agent-balance/agent-balance.routes') },
             { path: Routes.account.sale_path, loadChildren: () => import('app/modules/reports/sale-book/sale-book/sale.routes') },
@@ -133,6 +134,8 @@ export const appRoutes: Route[] = [
             { path: Routes.account.agent_wise_service_wise_path, loadChildren: () => import('app/modules/reports/account/agent-wise-service-wise/agent-wise-service-wise.component.routes') },
             { path: Routes.account.agent_ledger_wallet_missmatch_path, loadChildren: () => import('app/modules/reports/account/agent-ledger-wallet-missmatch/agent-ledger-wallet-missmatch.component.routes') },
             { path: Routes.account.purchase_register_path_2, loadChildren: () => import('app/modules/reports/account-2.0/purchase-register/purchase-register.routes') },
+            { path: Routes.account.sale_register_path_2, loadChildren: () => import('app/modules/reports/account-2.0/sale-register/sale-register.routes') },
+
 
             //Inventory
             { path: Routes.inventory.activity_path, loadChildren: () => import('app/modules/Inventory/activity/activity-list/activity-list.routes') },
@@ -198,6 +201,7 @@ export const appRoutes: Route[] = [
             { path: Routes.settings.pspsetting_path, loadChildren: () => import('app/modules/settings/psp-setting/psp.routes') },
             { path: Routes.settings.caching_parameters_path, loadChildren: () => import('app/modules/masters/caching-parameters/caching-parameters-list/caching-parameters-list.routes') },
             { path: Routes.settings.cashback_parameters_path, loadChildren: () => import('app/modules/settings/cashback-parameter/cashback-parameter.route') },
+            { path: Routes.settings.psp_setup_path, loadChildren: () => import('app/modules/settings/psp-setup/psp.setup.routes') },
 
         ]
     },

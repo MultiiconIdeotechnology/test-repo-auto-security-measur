@@ -86,6 +86,7 @@ export class InboxComponent extends BaseListingComponent {
     private settingsUpdatedSubscription: Subscription;
     statusList = ['New', 'Live', 'Dead'];
     typeList = ['B2B Partner', 'Build My Brand', 'WL', 'Boost My Brand', 'Corporate'];
+    feedbackList = ['Positive', 'Negative', 'No Answer'];
 
     cols = [];
     dataList = [];

@@ -249,6 +249,9 @@ export const Routes = {
         payment_link_path: 'account/payment_link',
         payment_link_route: 'account/payment_link',
 
+        proforma_invoice_path: 'account/proforma_invoice',
+        proforma_invoice_route: 'account/proforma_invoice',
+
         receipt_path: 'account/receipt',
         receipt_route: 'account/receipt',
 
@@ -287,6 +290,9 @@ export const Routes = {
         
         purchase_register_path_2: 'account/purchase_register_2',
         purchase_register_route_2: 'account/purchase_register_2',
+
+        sale_register_path_2: 'account/sale_register_2',
+        sale_register_route_2: 'account/sale_register_2',
     },
 
     leads:{
@@ -493,5 +499,10 @@ export const Routes = {
 
         cashback_parameters_path: 'settings/cashback_parameters',
         cashback_parameters_route: '/settings/cashback_parameters',
+
+        psp_setup_path: 'settings/psp-setup',
+        psp_setup_route: '/settings/psp-setup',
+        psp_setup_entry_path: 'settings/psp-setup/entry',
+        psp_setup_entry_route: '/settings/psp-setup/entry',
     }
 }

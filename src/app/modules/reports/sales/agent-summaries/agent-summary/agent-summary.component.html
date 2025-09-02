@@ -64,7 +64,7 @@
             [lazy]="true" (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="scrollHeight"
             [showCurrentPageReport]="true" [showPageLinks]="false" [showJumpToPageDropdown]="false"
             currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
-            [globalFilterFields]="['agent_code', 'agent_name', 'rm']" styleClass="p-datatable-gridlines p-datatable-sm">
+            [globalFilterFields]="['agent_code', 'agent_name', 'rm', 'previous_relation_manager']" styleClass="p-datatable-gridlines p-datatable-sm">
 
             <ng-template pTemplate="header">
                 <tr>
@@ -88,9 +88,9 @@
                     <th pSortableColumn="agent_name" pResizableColumn>
                         Agency Name <p-sortIcon field="agent_name" />
                     </th>
-                    <th pSortableColumn="rm" pResizableColumn>
+                    <th pSortableColumn="rm" pResizableColumn> 
                         RM <p-sortIcon field="rm" />
-                    </th>
+                    </th>                    
                     <th pSortableColumn="status" pResizableColumn>
                         Status <p-sortIcon field="status" />
                     </th>
@@ -118,6 +118,9 @@
                     </th>
                     <th pSortableColumn="statuschange_date" pResizableColumn>
                         Last Status Change Date <p-sortIcon field="statuschange_date" />
+                    </th>
+                     <th pSortableColumn="previous_relation_manager" pResizableColumn> 
+                        Previous RM <p-sortIcon field="previous_relation_manager" />
                     </th>
 
                     <ng-container *ngFor="let item of dataList[0]?.itemCodes">
@@ -171,7 +174,7 @@
                                 </p-dropdown>
                             </ng-template>
                         </p-columnFilter>
-                    </th>
+                    </th>                   
                     <th alignFrozen="left">
                         <p-columnFilter field="status" matchMode="equals" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
@@ -277,6 +280,20 @@
                             </ng-template>
                         </p-columnFilter>
                     </th>
+                    <th>
+                        <p-columnFilter class="searchableDropdown" field="previous_relation_manager" matchMode="equals" [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-dropdown class="filter-dropdown" [options]="employeeList" optionLabel="employee_name"
+                                    [(ngModel)]="prevSelectedRM" [filter]="true" filterBy="employee_name"
+                                    (onChange)="filter($event.value)" [showClear]="true" appendTo="body"
+                                    placeholder="Select Previous RM">
+                                    <ng-template let-employee pTemplate="item">
+                                        <div>{{employee.employee_name}}</div>
+                                    </ng-template>
+                                </p-dropdown>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th>
                 </tr>
             </ng-template>
 
@@ -332,12 +349,14 @@
                     <td>
                         {{(element.statuschange_date | date: 'dd-MM-yyyy') || "-"}}
                     </td>
+                    <td>{{element.previous_relation_manager || "-"}}</td>
+
                 </tr>
             </ng-template>
 
             <ng-template pTemplate="emptymessage">
                 <tr class="h-14">
-                    <td colspan="14" class="text-center font-semibold text-lg">
+                    <td colspan="15" class="text-center font-semibold text-lg">
                         {{getNodataText()}}
                     </td>
                 </tr>

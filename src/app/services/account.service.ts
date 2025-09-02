@@ -102,16 +102,37 @@ export class AccountService {
   }
 
   // account 2.0
+  // purchase register
   getBontonPurchaseRegister(model: any) {
     return this.http.post<any>(environment.apiUrl + "AccountReport/getPurchaseRegisterReport", model);
   }
 
-  manageServiceFee(model) {
+  manageServiceFee(model): Observable<any> {
     return this.http.post<any>(environment.apiUrl + "AirBooking/manageServiceFee", model);
   }
 
   getPurchaseRegisterDMCCReport(model: any) {
     return this.http.post<any>(environment.apiUrl + "AccountReport/getPurchaseRegisterDMCCReport", model);
+  }
+
+  GetProformaInvoiceList(model: any): Observable<any> {
+    return this.http.post<any>(environment.apiUrl + "ProformaInvoice/GetProformaInvoiceList", model);
+  }
+
+  create(model: any): Observable<any> {
+    return this.http.post<any>(environment.apiUrl + "ProformaInvoice/create", model);
+  }
+
+  PrintProformaInvoice(invoiceId: any): Observable<any> {
+    return this.http.post<any>(this.baseUrl + 'ProformaInvoice/PrintProformaInvoice', { invoiceId: invoiceId });
+  }
+  // sale register
+  getBontonSaleRegister(model: any) {
+    return this.http.post<any>(environment.apiUrl + "AccountReport/getSaleRegisterReport", model);
+  }
+
+  getSaleRegisterDMCCReport(model: any) {
+    return this.http.post<any>(environment.apiUrl + "AccountReport/getSaleRegisterDMCCReport", model);
   }
 
 }
