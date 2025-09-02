@@ -298,8 +298,7 @@ export class AgentSummaryComponent extends BaseListingComponent implements OnDes
                 [
                     { header: 'Agent Code', property: 'agent_code' },
                     { header: 'Agency Name', property: 'agent_name' },
-                    { header: 'RM', property: 'rm' },
-                    { header: 'Previous RM', property: 'previous_relation_manager' },
+                    { header: 'RM', property: 'rm' },                  
                     { header: 'Status', property: 'status' },
                     { header: 'Volumn', property: 'volume' },
                     { header: 'Tec Product', property: 'tec_product' },
@@ -309,7 +308,8 @@ export class AgentSummaryComponent extends BaseListingComponent implements OnDes
                     { header: 'Create Date', property: 'create_date' },
                     { header: 'Last Login Date', property: 'last_login_time' },
                     { header: 'Last Transaction Date', property: 'last_trancation_date' },
-                    { header: 'Last Status Change Date', property: 'statuschange_date' }
+                    { header: 'Last Status Change Date', property: 'statuschange_date' },
+                    { header: 'Previous RM', property: 'previous_relation_manager' },
                 ],
                 data.data, "Partner Register", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 15 } }]);
         });

@@ -90,10 +90,7 @@
                     </th>
                     <th pSortableColumn="rm" pResizableColumn> 
                         RM <p-sortIcon field="rm" />
-                    </th>
-                      <th pSortableColumn="previous_relation_manager" pResizableColumn> 
-                        Previous RM <p-sortIcon field="previous_relation_manager" />
-                    </th>
+                    </th>                    
                     <th pSortableColumn="status" pResizableColumn>
                         Status <p-sortIcon field="status" />
                     </th>
@@ -121,6 +118,9 @@
                     </th>
                     <th pSortableColumn="statuschange_date" pResizableColumn>
                         Last Status Change Date <p-sortIcon field="statuschange_date" />
+                    </th>
+                     <th pSortableColumn="previous_relation_manager" pResizableColumn> 
+                        Previous RM <p-sortIcon field="previous_relation_manager" />
                     </th>
 
                     <ng-container *ngFor="let item of dataList[0]?.itemCodes">
@@ -174,21 +174,7 @@
                                 </p-dropdown>
                             </ng-template>
                         </p-columnFilter>
-                    </th>
-                     <th>
-                        <p-columnFilter class="searchableDropdown" field="previous_relation_manager" matchMode="equals" [showMenu]="false">
-                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-dropdown class="filter-dropdown" [options]="employeeList" optionLabel="employee_name"
-                                    [(ngModel)]="prevSelectedRM" [filter]="true" filterBy="employee_name"
-                                    (onChange)="filter($event.value)" [showClear]="true" appendTo="body"
-                                    placeholder="Select Previous RM">
-                                    <ng-template let-employee pTemplate="item">
-                                        <div>{{employee.employee_name}}</div>
-                                    </ng-template>
-                                </p-dropdown>
-                            </ng-template>
-                        </p-columnFilter>
-                    </th>
+                    </th>                   
                     <th alignFrozen="left">
                         <p-columnFilter field="status" matchMode="equals" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
@@ -294,6 +280,20 @@
                             </ng-template>
                         </p-columnFilter>
                     </th>
+                    <th>
+                        <p-columnFilter class="searchableDropdown" field="previous_relation_manager" matchMode="equals" [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-dropdown class="filter-dropdown" [options]="employeeList" optionLabel="employee_name"
+                                    [(ngModel)]="prevSelectedRM" [filter]="true" filterBy="employee_name"
+                                    (onChange)="filter($event.value)" [showClear]="true" appendTo="body"
+                                    placeholder="Select Previous RM">
+                                    <ng-template let-employee pTemplate="item">
+                                        <div>{{employee.employee_name}}</div>
+                                    </ng-template>
+                                </p-dropdown>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th>
                 </tr>
             </ng-template>
 
@@ -316,7 +316,6 @@
 
 
                     <td>{{element.rm || "-"}}</td>
-                    <td>{{element.previous_relation_manager || "-"}}</td>
                     <td>
                         <span class="text-center justify-left"
                             [ngClass]="element.status == 'Active' ? 'text-green-600' : element.status == 'New' ? 'text-blue-600' :'text-red-600'">
@@ -350,6 +349,8 @@
                     <td>
                         {{(element.statuschange_date | date: 'dd-MM-yyyy') || "-"}}
                     </td>
+                    <td>{{element.previous_relation_manager || "-"}}</td>
+
                 </tr>
             </ng-template>
 
