@@ -522,6 +522,8 @@ export const techDashPermissions = {
     wlSettingPermissions: { module_name: module_name.techDashboard, group_name: group_name.listingPage, operation_type: 'WL Setting', category_name: category_name.operation },
     linkPermissions: { module_name: module_name.techDashboard, group_name: group_name.listingPage, operation_type: 'Link', category_name: category_name.operation },
     updateExpiryDatePermissions: { module_name: module_name.techDashboard, group_name: group_name.listingPage, operation_type: 'Update Expiry Date', category_name: category_name.operation },
+    viewOnlyAssignedPermissions: { module_name: module_name.techDashboard, group_name: group_name.listingPage, operation_type: 'View Only Assigned', category_name: category_name.view }
+    
 }
 
 export const agentPermissions = {

@@ -39,6 +39,7 @@ import { SidebarCustomModalService } from 'app/services/sidebar-custom-modal.ser
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { Excel } from 'app/utils/export/excel';
 import { DateTime } from 'luxon';
+import { UserService } from 'app/core/user/user.service';
 
 @Component({
     selector: 'app-crm-tech-dashboard-domain',
@@ -71,7 +72,7 @@ export class TechDashboardDomainComponent extends BaseListingComponent {
 
     Mainmodule: any;
     module_name = module_name.techDashboard;
-    filter_table_name = filter_module_name.tech_dashboard_pending;
+    filter_table_name = filter_module_name.tech_dashboard_domain;
     private settingsUpdatedSubscription: Subscription;
     cols = [];
     dataList = [];
@@ -90,6 +91,7 @@ export class TechDashboardDomainComponent extends BaseListingComponent {
     selectedAgent: any;
     agentList: any[] = [];
     filter: any = {}
+    user: any = {};
     isPointingList: any[] = [
         { label: 'Yes', value: true },
         { label: 'No', value: false }
@@ -101,13 +103,20 @@ export class TechDashboardDomainComponent extends BaseListingComponent {
         private crmService: CrmService,
         private sidebarDialogService: SidebarCustomModalService,
         public _filterService: CommonFilterService,
-        public globalSearchService: GlobalSearchService
+        public globalSearchService: GlobalSearchService,
+        private userService: UserService,
     ) {
         super(module_name.techDashboard);
         this.key = this.module_name;
         this.sortColumn = 'ssl_expire_date_time';
         this.Mainmodule = this;
         this._filterService.applyDefaultFilter(this.filter_table_name);
+
+        this.userService.user$
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((user: any) => {
+                this.user = user;
+            });
     }
 
     ngOnInit(): void {
@@ -153,6 +162,10 @@ export class TechDashboardDomainComponent extends BaseListingComponent {
         this.isLoading = true;
         const filterReq = this.getNewFilterReq(event);
         filterReq['Filter'] = this.searchInputControlDomain.value;
+
+        if (Security.hasPermission(techDashPermissions.viewOnlyAssignedPermissions)) {
+            filterReq["relationmanagerId"] = this.user.id
+        }
 
         this.crmService.getTechDomainProductList(filterReq).subscribe({
             next: (data) => {
@@ -239,6 +252,10 @@ export class TechDashboardDomainComponent extends BaseListingComponent {
         filterReq["Filter"] = this.searchInputControlDomain.value;
         filterReq['Skip'] = 0;
         filterReq['Take'] = this.totalRecords;
+
+        if (Security.hasPermission(techDashPermissions.viewOnlyAssignedPermissions)) {
+            filterReq["relationmanagerId"] = this.user.id
+        }
 
         this.crmService.getTechDomainProductList(filterReq).subscribe(data => {
             for (var dt of data.data) {
