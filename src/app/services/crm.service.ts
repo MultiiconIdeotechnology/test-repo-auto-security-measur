@@ -209,7 +209,7 @@ export class CrmService {
     }
 
     createLinkUrl(model: any): Observable<any> {
-        return this.http.post<any>(this.baseUrl + 'Dashboard/TecDashboard/createLinkurl', model);
+        return this.http.post<any>(this.baseUrl + 'ProductPurchaseService/createLinkurl', model);
     }
 
     // getWLSettingList(agentId: any): Observable<any> {
