@@ -74,7 +74,6 @@ export class SelectedSslInfoComponent implements OnInit {
 
   generateSsl(selection: any) {
     this.isLoading = true;
-    console.log("this.selection>>>", selection);
     this.crmService.generateSsl(selection).subscribe({
       next: (resp: any) => {
         this.alertService.showToast('success', 'SSL generated successfully');

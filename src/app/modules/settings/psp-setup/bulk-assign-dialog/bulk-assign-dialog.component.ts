@@ -232,7 +232,6 @@ export class BulkAssignDialogComponent implements OnInit {
         }
       },
       error: (err: any) => {
-        console.log("err", err);
         this.toasterService.showToast('error', err)
       },
     });
