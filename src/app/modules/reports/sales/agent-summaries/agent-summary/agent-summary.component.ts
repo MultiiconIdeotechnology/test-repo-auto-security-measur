@@ -71,6 +71,8 @@ export class AgentSummaryComponent extends BaseListingComponent implements OnDes
     employeeList: any[] = [];
     selectedAgent: any;
     selectedRM: any;
+    prevSelectedRM: any;
+
     user: any = {};
     selectedToolTip: string = "";
     isFilterShow: boolean = false;
@@ -115,7 +117,7 @@ export class AgentSummaryComponent extends BaseListingComponent implements OnDes
                 }
             }
             this.selectedRM = resp['table_config']['rm']?.value;
-
+            this.prevSelectedRM = resp['table_config']['previous_relation_manager']?.value;
             if (resp['table_config']['last_call_date']?.value) {
                 resp['table_config']['last_call_date'].value = new Date(resp['table_config']['last_call_date'].value);
             }
@@ -160,6 +162,7 @@ export class AgentSummaryComponent extends BaseListingComponent implements OnDes
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
             this.selectedAgent = filterData['table_config']['agent_name']?.value;
             this.selectedRM = filterData['table_config']['rm']?.value;
+            this.prevSelectedRM = filterData['table_config']['previous_relation_manager']?.value;
             if (this.selectedAgent && this.selectedAgent.id) {
                 const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
                 if (!match) {
@@ -296,6 +299,7 @@ export class AgentSummaryComponent extends BaseListingComponent implements OnDes
                     { header: 'Agent Code', property: 'agent_code' },
                     { header: 'Agency Name', property: 'agent_name' },
                     { header: 'RM', property: 'rm' },
+                    { header: 'Previous RM', property: 'previous_relation_manager' },
                     { header: 'Status', property: 'status' },
                     { header: 'Volumn', property: 'volume' },
                     { header: 'Tec Product', property: 'tec_product' },
