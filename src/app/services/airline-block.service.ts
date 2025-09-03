@@ -55,8 +55,8 @@ export class AirlineBlockService {
         return this.http.post<any[]>(this.baseUrl + 'AirBlock/setLeadStatus', model);
     }
 
-    downloadQuotationV2(id: string): Observable<any> {
-        return this.http.post<any>(this.baseUrl + "AirBlock/downloadAirblockQuotationV2", { id: id });
+    downloadQuotationV2(model): Observable<any> {
+        return this.http.post<any>(this.baseUrl + "AirBlock/downloadAirblockQuotationV2", model);
     }
 
     setAuditUnaudit(id: any) {
