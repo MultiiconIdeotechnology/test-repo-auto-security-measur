@@ -161,20 +161,40 @@ export class CabBookingDetailsComponent {
     })
   }
 
-   getCopy(copyOf): void {
-    this.cabService.downloadCabQuotationV2(this.bookingDetail.id).subscribe({
-      next: (res) => {
-        this.bookingDetail.copy = res.copy;
-        this.bookingDetail.customer_copy = res.customer_copy;
-        if (copyOf === 'agent') {
-          CommonUtils.downloadPdf(this.bookingDetail.copy, this.bookingDetail?.reference_no + '.pdf');
-        }
-        else {
-          CommonUtils.downloadPdf(this.bookingDetail.customer_copy, this.bookingDetail?.reference_no +  '.pdf');
-        }
-      }, error: (err) => {
+  getCopy(copyOf): void {
+
+    this.conformationService.open({
+      title: 'Print Quotation',
+      message: `Do you want to print without price information?`,
+      actions: {
+        confirm: {
+          label: 'Yes',
+        },
+        cancel:
+        {
+          label: 'No',
+        },
       },
     })
+      .afterClosed().subscribe((res) => {
+        const model =
+        {
+          id: this.bookingDetail.id,
+          is_with_price: res === 'confirmed' ? false : true
+        }
+        this.cabService.downloadCabQuotationV2(model).subscribe({
+          next: (res) => {
+            this.bookingDetail.copy = res.copy;
+            this.bookingDetail.customer_copy = res.customer_copy;
+            if (copyOf === 'agent') {
+              CommonUtils.downloadPdf(this.bookingDetail.copy, this.bookingDetail?.reference_no + '.pdf');
+            }
+            else {
+              CommonUtils.downloadPdf(this.bookingDetail.customer_copy, this.bookingDetail?.reference_no + '.pdf');
+            }
+          }, error: (err) => {
+          },
+        })
+      })
   }
-
 }
