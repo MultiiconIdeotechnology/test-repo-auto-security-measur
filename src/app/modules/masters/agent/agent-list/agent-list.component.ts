@@ -45,6 +45,7 @@ import { Subscription } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { SetDisplayCurrencyComponent } from '../set-display-currency/set-display-currency.component';
 import { cloneDeep } from 'lodash';
+import { BulkAssignDialogComponent } from 'app/modules/settings/psp-setup/bulk-assign-dialog/bulk-assign-dialog.component';
 
 @Component({
     selector: 'app-agent-list',
@@ -959,6 +960,18 @@ export class AgentListComponent extends BaseListingComponent {
                     this.refreshItems();
                 }
             });
+    }
+
+    assignPspProfile(record: any) {
+        this.matDialog.open(BulkAssignDialogComponent,
+            {
+                data: { record: record, key: 'customer-agent', title: 'Profile Assign' },
+                disableClose: true,
+                panelClass: ['zero-dialog'],
+                maxWidth: '600px',
+                minWidth: '470px'
+            }
+        )
     }
 
     exportExcel(): void {

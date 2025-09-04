@@ -120,6 +120,10 @@ export class SalesReturnComponent extends BaseListingComponent implements OnDest
     sortColumn: any = 'complete_date_time';
     selectedAgent: any;
     selectedSupplier: any;
+    mopList : any[] = [
+        { label: 'Wallet', value: 'Wallet' },
+        { label: 'Online', value: 'Online' }
+    ];
 
     types = Types;
     cols: Column[] = [];
@@ -400,6 +404,7 @@ export class SalesReturnComponent extends BaseListingComponent implements OnDest
         Excel.export(
             'Sales Return',
             [
+                { header: 'AgentId', property: 'agentid' },
                 { header: 'Agent', property: 'agent' },
                 { header: 'Bill To', property: 'bill_to' },
                 { header: 'Supplier', property: 'supplier' },
@@ -423,6 +428,7 @@ export class SalesReturnComponent extends BaseListingComponent implements OnDest
                 { header: 'Net Commission', property: 'net_commission' },
                 { header: 'Cashback', property: 'cashback' },
                 { header: 'Cashback TDS', property: 'cashback_tds' },
+                { header: 'MOP', property: 'mop' },
             ],
             this.tempData, "Sales Return", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 40 } }]);
         // });

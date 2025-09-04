@@ -85,7 +85,7 @@ export class TechDashboardBlockedComponent extends BaseListingComponent {
     @ViewChild(MatSort) public _sortArchive: MatSort;
     @ViewChild('op') overlayPanel!: OverlayPanel;
 
-    module_name = module_name.lead;
+    module_name = module_name.techDashboard;
     filter_table_name = filter_module_name.tech_dashboard_blocked;
     private settingsUpdatedSubscription: Subscription;
     total = 0;

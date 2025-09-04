@@ -1066,6 +1066,11 @@ div:where(.swal2-container) button:where(.swal2-close) {
 
 }
 
+.md-dialog {
+    max-width: 1260px !important;
+    min-width: 600px !important; 
+}
+
 .sm-dialog {
     max-width: 1260px !important;
     min-width: 350px !important;

@@ -38,6 +38,7 @@ import { GlobalSearchService } from 'app/services/global-search.service';
 import { DomainSslVerificationComponent } from '../domain-ssl-verification/domain-ssl-verification.component';
 import { cloneDeep } from 'lodash';
 import { OverlayPanel } from 'primeng/overlaypanel';
+import { Excel } from 'app/utils/export/excel';
 
 @Component({
     selector: 'app-crm-tech-dashboard-completed',
@@ -437,6 +438,34 @@ export class TechDashboardCompletedComponent extends BaseListingComponent {
                     });
                 }
             });
+    }
+
+    exportExcel(event?: any): void {
+        if (!Security.hasExportDataPermission(this.module_name)) {
+            return this.alertService.showToast('error', messages.permissionDenied);
+        }
+        const filterReq = this.getNewFilterReq(event);
+        filterReq['Filter'] = this.searchInputControlCompleted.value;
+        filterReq['Take'] = this.totalRecords;
+
+        this.crmService.getTechCompletedProductList(filterReq).subscribe(data => {
+            for (var dt of data.data) {
+                dt.activation_date = dt.activation_date ? DateTime.fromISO(dt.activation_date).toFormat('dd-MM-yyyy') : ''
+                dt.expiry_date = dt.expiry_date ? DateTime.fromISO(dt.expiry_date).toFormat('dd-MM-yyyy') : ''
+            }
+            Excel.export(
+                'Completed',
+                [
+                    { header: 'Item Code', property: 'item_code' },
+                    { header: 'Item.', property: 'item_name' },
+                    { header: 'Product', property: 'product_name' },
+                    { header: 'Agent Code', property: 'agentCode' },
+                    { header: 'Agency Name', property: 'agency_name' },
+                    { header: 'Activation Date', property: 'activation_date' },
+                    { header: 'Expiry Date', property: 'expiry_date' },
+                ],
+                data.data, "Completed", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 5 } }]);
+        });
     }
 
     ngOnDestroy(): void {

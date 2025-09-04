@@ -62,7 +62,7 @@ export class CabService {
     return this.http.post<any>(environment.apiUrl + "cableads/getCabBookingDetail", { id: id });
   }
 
-  downloadCabQuotationV2(id: string): Observable<any> {
-        return this.http.post<any>(environment.apiUrl + "cableads/downloadCabQuotationV2", { id: id });
+  downloadCabQuotationV2(model): Observable<any> {
+        return this.http.post<any>(environment.apiUrl + "cableads/downloadCabQuotationV2", model);
     }
 }

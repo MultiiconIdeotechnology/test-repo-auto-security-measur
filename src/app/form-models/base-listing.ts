@@ -295,9 +295,9 @@ export abstract class BaseListingComponent implements OnInit {
     //#region New Entry
 
     public create(model?: any): void {
-        if (!Security.hasNewEntryPermission(this.module)) {
-            return this.alertService.showToast('error', messages.permissionDenied);
-        }
+        // if (!Security.hasNewEntryPermission(this.module)) {
+        //     return this.alertService.showToast('error', messages.permissionDenied);
+        // }
 
         this.createInternal(model);
     }
@@ -310,9 +310,9 @@ export abstract class BaseListingComponent implements OnInit {
     //#region Edit Entry
 
     public edit(model?: any): void {
-        if (!Security.hasEditEntryPermission(this.module)) {
-            return this.alertService.showToast('error', messages.permissionDenied);
-        }
+        // if (!Security.hasEditEntryPermission(this.module)) {
+        //     return this.alertService.showToast('error', messages.permissionDenied);
+        // }
 
         this.editInternal(model);
     }
@@ -325,9 +325,9 @@ export abstract class BaseListingComponent implements OnInit {
     //#region View Detail Entry
 
     public view(model?: any): void {
-        if (!Security.hasViewDetailPermission(this.module)) {
-            return this.alertService.showToast('error', messages.permissionDenied);
-        }
+        // if (!Security.hasViewDetailPermission(this.module)) {
+        //     return this.alertService.showToast('error', messages.permissionDenied);
+        // }
 
         this.viewInternal(model);
     }
@@ -340,9 +340,9 @@ export abstract class BaseListingComponent implements OnInit {
     //#region Delete Entry
 
     public delete(model?: any, index?:number): void {
-        if (!Security.hasDeleteEntryPermission(this.module)) {
-            return this.alertService.showToast('error', messages.permissionDenied);
-        }
+        // if (!Security.hasDeleteEntryPermission(this.module)) {
+        //     return this.alertService.showToast('error', messages.permissionDenied);
+        // }
 
         this.deleteInternal(model, index);
     }

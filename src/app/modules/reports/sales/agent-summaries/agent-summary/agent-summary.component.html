@@ -224,6 +224,20 @@
                     </th>
                     <th class="w-full" *ngIf="(selectedColumns[selectedColumns?.length-1]?.field =='tech_gp')">
                     </th>
+                    <th>
+                        <p-columnFilter class="searchableDropdown" field="previous_relation_manager" matchMode="equals" [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-dropdown class="filter-dropdown" [options]="employeeList" optionLabel="employee_name"
+                                    [(ngModel)]="prevSelectedRM" [filter]="true" filterBy="employee_name"
+                                    (onChange)="filter($event.value)" [showClear]="true" appendTo="body"
+                                    placeholder="Select Previous RM">
+                                    <ng-template let-employee pTemplate="item">
+                                        <div>{{employee.employee_name}}</div>
+                                    </ng-template>
+                                </p-dropdown>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th>
                 </tr>
             </ng-template>
 

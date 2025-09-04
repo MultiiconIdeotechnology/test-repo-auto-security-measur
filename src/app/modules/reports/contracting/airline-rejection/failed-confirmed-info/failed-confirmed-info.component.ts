@@ -56,10 +56,28 @@ import { DateTime } from 'luxon';
 })
 export class FailedConfirmedInfoComponent extends BaseListingComponent implements OnDestroy {
 
-  dataList = [];
+  dataList = []; 
   record: any = {};
   title: any;
-
+  isFilterShow: boolean = false;
+  statusList = [
+        { label: 'Pending', value: 'Pending' },
+        { label: 'Rejected', value: 'Rejected' },
+        { label: 'Waiting for Payment', value: 'Waiting for Payment' },
+        { label: 'Confirmed', value: 'Confirmed' },
+        { label: 'Offline Pending', value: 'Offline Pending' },
+        { label: 'Confirmation Pending', value: 'Confirmation Pending' },
+        { label: 'Payment Failed', value: 'Payment Failed' },
+        { label: 'Booking Failed', value: 'Booking Failed' },
+        { label: 'Cancelled', value: 'Cancelled' },
+        { label: 'Partially Cancelled', value: 'Partially Cancelled' },
+        { label: 'Hold', value: 'Hold' },
+        { label: 'Payment Completed', value: 'Payment Completed' },
+        { label: 'Partial Payment Completed', value: 'Partial Payment Completed' },
+        { label: 'Assign To Refund', value: 'Assign To Refund' },
+        { label: 'Hold Failed', value: 'Hold Failed' },
+  ];
+  
   constructor(
     public matDialogRef: MatDialogRef<FailedConfirmedInfoComponent>,
     private confirmService: FuseConfirmationService,
@@ -98,7 +116,7 @@ export class FailedConfirmedInfoComponent extends BaseListingComponent implement
     request['To_Date'] = this.record.To_Date;
     request['carrier'] = this.record.carrier;
     request['filterArea'] = this.record.filterArea;
-
+  
     this.airlineSummaryService.airlineRejectionBookingDetailsAnalysis(request).subscribe({
       next: (data) => {
         this.dataList = data.data;
