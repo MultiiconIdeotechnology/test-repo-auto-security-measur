@@ -228,7 +228,6 @@ export class ReceiptsInfoItemComponent {
         this.entityService.onrefreshReceiptCalll().pipe(takeUntil(this._unsubscribeAll)).subscribe({
             next: (item) => {
                 if (item) {
-                    console.log("recepet refresh");
                     if(this.recordId){
                         this.refreshItemsNew();
                     }

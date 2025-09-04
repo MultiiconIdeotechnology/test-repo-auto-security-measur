@@ -102,8 +102,6 @@ export class InstallmentRightComponent implements OnInit, OnDestroy {
     ) {
         this.entityService.onInstallmentCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
             next: (item) => {
-                console.log("item instam", item);
-                
                 this.settingsDrawer.toggle();
                 this.record = item ?? {}
                 if (item?.edit) {

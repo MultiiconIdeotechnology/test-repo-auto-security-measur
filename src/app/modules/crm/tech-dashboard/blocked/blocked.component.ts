@@ -343,7 +343,6 @@ export class TechDashboardBlockedComponent extends BaseListingComponent {
     }
 
     unBlocked(record, index): void {
-        console.log("record", record);
         
         // if (!Security.hasPermission(agentsPermissions.removeAllSubagentPermissions)) {
         //     return this.alertService.showToast('error', messages.permissionDenied);

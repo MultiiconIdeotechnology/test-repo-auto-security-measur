@@ -101,7 +101,7 @@ export class StatusChangeLogsComponent {
         align: 'left',
         indicator: false,
         tooltip: false,
-        toColor: true
+        toColor: false
       },
       {
         key: 'remark',

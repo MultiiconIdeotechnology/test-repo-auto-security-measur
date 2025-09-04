@@ -55,7 +55,6 @@ export class MasterAgentComponent {
     @Inject(MAT_DIALOG_DATA) public data: any = {},
   ) {
     this.record = data;
-    console.log("open popup", this.record);
 
   }
 

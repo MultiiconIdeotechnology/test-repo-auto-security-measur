@@ -116,6 +116,8 @@ export class AgentProductInfoComponent {
     service_for_id: any;
     getWLSettingList = [];
     currencySymbol: any;
+    mainData: any;
+    Id: any;
 
     constructor(
         // private matDialog: MatDialog,
@@ -131,12 +133,18 @@ export class AgentProductInfoComponent {
         private router: Router,
         private alertService: ToasterService
     ) {
-        
+
+        this.mainData = data
+        console.log(" 139 info main this.record", data);
+
+
+
         // super(module_name.crmagent)
         this.key = this.module_name;
         // this.Mainmodule = this,
         this.record = data?.data ?? {}
-        console.log(" 139 info main this.record", this.record);
+
+
 
         this.currencySymbol = this.record?.currencySymbol?.trim();
         this.agencyName = data?.agencyName ?? "";
@@ -209,9 +217,14 @@ export class AgentProductInfoComponent {
     refreshItemsNew() {
         this.isLoading = true;
 
-        const Id = this.record.id
+        if (this.mainData?.receipt_register || this.mainData?.account_receipt || this.mainData?.sales_product) {
+            this.Id = this.record.product_id
+        }else{
+            this.Id = this.record.id
+        }
 
-        this.crmService.getDataProduct(Id).subscribe({
+
+        this.crmService.getDataProduct(this.Id).subscribe({
             next: (res) => {
                 this.isLoading = false;
                 this.dataList = res;

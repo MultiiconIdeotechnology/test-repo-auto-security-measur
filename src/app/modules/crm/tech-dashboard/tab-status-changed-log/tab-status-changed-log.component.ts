@@ -154,7 +154,6 @@ export class tabStatusChangedLogComponent {
         this.Mainmodule = this;
         if (data)
             this.record = data;
-        console.log("this.record", this.record);
         
     }
 

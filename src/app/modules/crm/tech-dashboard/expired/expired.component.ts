@@ -115,7 +115,7 @@ export class TechDashboardExpiredComponent extends BaseListingComponent {
     ) {
         super(module_name.techDashboard)
         this.key = this.module_name;
-        this.sortColumn = 'expiry_date';
+        this.sortColumn = 'expiryDate';
         this.sortDirection = 'desc';
         this.Mainmodule = this;
         this._filterService.applyDefaultFilter(this.filter_table_name);
@@ -139,8 +139,8 @@ export class TechDashboardExpiredComponent extends BaseListingComponent {
             if (resp['table_config']['activation_date'].value) {
                 resp['table_config']['activation_date'].value = new Date(resp['table_config']['activation_date'].value);
             }
-            if (resp['table_config']['expiry_date'].value) {
-                resp['table_config']['expiry_date'].value = new Date(resp['table_config']['expiry_date'].value);
+            if (resp['table_config']['expiryDate'].value) {
+                resp['table_config']['expiryDate'].value = new Date(resp['table_config']['expiryDate'].value);
             }
             this.primengTable['filters'] = resp['table_config'];
             this.isFilterShowExpired = true;
@@ -168,8 +168,8 @@ export class TechDashboardExpiredComponent extends BaseListingComponent {
             if (filterData['table_config']['activation_date'].value) {
                 filterData['table_config']['activation_date'].value = new Date(filterData['table_config']['activation_date'].value);
             }
-            if (filterData['table_config']['expiry_date'].value) {
-                filterData['table_config']['expiry_date'].value = new Date(filterData['table_config']['expiry_date'].value);
+            if (filterData['table_config']['expiryDate'].value) {
+                filterData['table_config']['expiryDate'].value = new Date(filterData['table_config']['expiryDate'].value);
             }
             this.primengTable['filters'] = filterData['table_config'];
             // this.primengTable['_sortField'] = filterData['sortColumn'];

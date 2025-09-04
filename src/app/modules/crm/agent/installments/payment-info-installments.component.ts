@@ -199,7 +199,6 @@ export class InstallmentsInfoItemComponent {
         this.entityService.onrefreshInstallmentCalll().pipe(takeUntil(this._unsubscribeAll)).subscribe({
             next: (item) => {
                 if(item){
-                    console.log("202 installment");
                     if(this.recordId){
                         this.refreshItemsNew();
                     }
@@ -224,7 +223,6 @@ export class InstallmentsInfoItemComponent {
         // // filterReq['agent_id'] = this.agentId ? this.agentId : ""
         // filterReq['Id'] = this.productId ? this.productId : ""
         const Id = this.recordId
-        console.log("this.recordId", this.recordId);
         
         this.crmService.getDataProduct(Id).subscribe({
             next: (res) => {

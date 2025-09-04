@@ -77,8 +77,8 @@ export class ProductLogsComponent {
   @Input() logsDetail: any[] = [];
   columns = [
     {
-      key: 'subModule',
-      name: 'Sub Module',
+      key: 'moduleName',
+      name: 'Module Name',
       is_date: false,
       date_formate: '',
       is_sortable: false,

@@ -155,8 +155,6 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
             next: (item) => {
                 this.settingsDrawer?.toggle()
                 if (item) {
-                    console.log("item", item);
-                    
                     if (item?.addFlag) {
                         this.addAgentId = item?.data.agentid;
                         this.addFlag = item?.addFlag;

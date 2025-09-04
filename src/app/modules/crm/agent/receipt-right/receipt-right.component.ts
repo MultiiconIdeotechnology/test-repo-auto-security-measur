@@ -145,8 +145,6 @@ export class ReceiptRightComponent implements OnInit, OnDestroy {
                 this.settingsDrawer.toggle()
                 this.record = item ?? {}
                 this.productId = this.record?.id
-                console.log("145 this.record", this.record);
-                
 
                 this.formGroup.patchValue({
                     amount: "",
@@ -336,8 +334,6 @@ export class ReceiptRightComponent implements OnInit, OnDestroy {
         }
 
         if (this.record?.receiptId) {
-            console.log("this.record?.id", this.record?.id);
-            
             const newJson = {
                 id: this.record?.receiptId ? this.record?.receiptId : "",
                 receiptToId: this.record?.agentId ? this.record?.agentId : "",

@@ -326,7 +326,6 @@ export class ProductComponent {
     }
 
     shiftProduct(record) {
-        console.log(record);
         this.matDialog.open(MasterAgentComponent, {
             data: record,
             disableClose: true
