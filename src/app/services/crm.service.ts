@@ -63,7 +63,7 @@ export class CrmService {
     getPotentialLeadAgentList(model: any): Observable<any> {
         return this.http.post<any>(this.baseUrl + 'CRM/agent/agentPotentialsDashboard', model);
     }
-    
+
 
     getProductPurchaseMasterList(model: any): Observable<any> {
         return this.http.post<any>(this.baseUrl + 'ProductPurchaseMaster/getProductPurchaseMasterList', model);
@@ -151,6 +151,14 @@ export class CrmService {
 
     getTechBlockedProductList(model: any): Observable<any> {
         return this.http.post<any>(this.baseUrl + 'Dashboard/TecDashboard/gettecdashboardBlockedList', model);
+    }
+
+    getTechDomainProductList(model: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'Dashboard/TecDashboard/domainList', model);
+    }
+
+    generateSsl(model: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'Dashboard/TecDashboard/checkAndGenerateSSL', model);
     }
 
     startIntegration(model: any): Observable<any> {

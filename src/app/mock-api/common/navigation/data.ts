@@ -840,14 +840,14 @@ export const defaultNavigation: FuseNavigationItem[] = [
                       icon: '',
                       link: Routes.reports.campaign_register_path_route
                   },
-                    {
-                        id: 'reports.campaignsummary',
-                        title: 'Campaign Summary',
-                        type: 'basic',
-                        pid: 'CAMPAIGN-REPORTS_CAMPAIGNSUMMARY_VIEW',
-                        icon: '',
-                        link: Routes.reports.campaign_summary_path_route
-                    },
+                    // {
+                    //     id: 'reports.campaignsummary',
+                    //     title: 'Campaign Summary',
+                    //     type: 'basic',
+                    //     pid: 'CAMPAIGN-REPORTS_CAMPAIGNSUMMARY_VIEW',
+                    //     icon: '',
+                    //     link: Routes.reports.campaign_summary_path_route
+                    // },
                      {
                         id: 'reports.campaignsummaryreport',
                         title: 'Campaign Summary Report',
@@ -974,14 +974,14 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 icon: 'mat_outline:flight',
                 link: Routes.inventory.airline_block_path
             },
-            // {
-            //     id: 'inventory.cab',
-            //     title: 'Cab',
-            //     type: 'basic',
-            //     pid: 'INVENTORY_CAB_VIEW',
-            //     icon: 'heroicons_outline:newspaper',
-            //     link: Routes.inventory.cab_route
-            // },
+            {
+                id: 'inventory.cab',
+                title: 'Cab',
+                type: 'basic',
+                pid: 'INVENTORY_CAB_VIEW',
+                icon: 'heroicons_outline:newspaper',
+                link: Routes.inventory.cab_route
+            },
             // {
             //     id: 'inventory.cab',
             //     title: 'Cab',
@@ -1140,6 +1140,14 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 pid: 'SETTINGS_CASHBACKPARAMETERS_VIEW',
                 icon: 'heroicons_outline:wallet',
                 link: Routes.settings.cashback_parameters_route
+            },
+            {
+                id: 'settings.pspsetup',
+                title: 'PSP Setup',
+                type: 'basic',
+                pid: 'SETTINGS_PSPSETUP_VIEW',
+                icon: 'heroicons_outline:server',
+                link: Routes.settings.psp_setup_route
             }
         ]
     }

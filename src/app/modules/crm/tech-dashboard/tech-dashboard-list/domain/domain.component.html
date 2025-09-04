@@ -1,0 +1,160 @@
+<div class="table-container paginator-bottom">
+    <p-table #datatable [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1" [resizableColumns]="true"
+        columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}" [loading]="isLoading" [paginator]="true"
+        [rows]="appConfig.pageSize" [totalRecords]="totalRecords" [rowsPerPageOptions]="appConfig.pageSizeOptions"
+        [lazy]="true" (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="scrollHeightWTab"
+        [showCurrentPageReport]="true" [showPageLinks]="false" [showJumpToPageDropdown]="false"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" [globalFilterFields]=""
+        styleClass="p-datatable-gridlines p-datatable-sm">
+
+        <ng-template pTemplate="header">
+            <tr>
+                <th class="w-5 text-center left-[-1px] dark:bg-gray-800 bg-gray-50" pFrozenColumn>#</th>
+                <th class="text-center dark:bg-gray-800 bg-gray-50" pFrozenColumn>Select Domain</th>
+                <th pSortableColumn="agentCode" pResizableColumn pResizableColumn alignFrozen="left" pFrozenColumn
+                    class="dark:bg-[#1e293b] min-w-[160px]" [frozen]="frozenObj?.agentCode"
+                    [ngClass]="{'left-0': !frozenObj?.agentCode}">
+                    Agent Code <p-sortIcon field="agentCode" />
+                    <span class="float-right" (click)="isFrozenColumn('agentCode');$event.stopPropagation()">
+                        <i *ngIf="!frozenObj?.agentCode" class="pi pi-lock-open icon-size-3"></i>
+                        <i *ngIf="frozenObj?.agentCode" class="pi pi-lock icon-size-3"></i>
+                    </span>
+                </th>
+                <th pSortableColumn="domain_name" pResizableColumn>
+                    Domain Name <p-sortIcon field="domain_name" />
+                </th>
+                <th pSortableColumn="ip_address" pResizableColumn [ngClass]="{'min-w-[180px]': isFilterShowDomain}">
+                    IP Address <p-sortIcon field="ip_address" />
+                </th>
+                <th pSortableColumn="ssl_expire_date_time" pResizableColumn
+                    [ngClass]="{'min-w-[250px]': isFilterShowDomain}">
+                    SSL Expiry Date <p-sortIcon field="ssl_expire_date_time" />
+                </th>
+                <th class="w-full" pSortableColumn="is_domain_pointed" pResizableColumn>
+                    Is Pointing <p-sortIcon field="is_domain_pointed" />
+                </th>
+
+            </tr>
+
+            <tr *ngIf="isFilterShowDomain">
+                <th class="left-[-1px] dark:bg-gray-800 bg-gray-50" pFrozenColumn></th>
+                <!-- <th class="left-[-1px] dark:bg-gray-800 bg-gray-50" pFrozenColumn></th> -->
+                <th class="text-center dark:bg-gray-800 bg-gray-50" pFrozenColumn>
+                    <mat-checkbox (change)="toggleAllSelection($event)" [checked]="isAllSelected()"
+                        [indeterminate]="isIndeterminate()">
+                    </mat-checkbox>
+                </th>
+
+
+
+
+                <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.agentCode" class="min-w-[110px]">
+                    <p-columnFilter field="agentCode" type="numeric" placeholder="Search by Agent Id"
+                        ariaLabel="Filter Agent Id"></p-columnFilter>
+                </th>
+                <th>
+                    <p-columnFilter field="domain_name" type="text" placeholder="Search by Domain Name"
+                        ariaLabel="Filter Domain Name"></p-columnFilter>
+                </th>
+                <th>
+                    <p-columnFilter field="ip_address" type="text" placeholder="Search by IP address"
+                        ariaLabel="Filter IP address"></p-columnFilter>
+                </th>
+
+                <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.ssl_expire_date_time">
+                    <p-columnFilter *ngIf="(_filterService.selectionDateDropdown$ | async) != 'custom_date_range'"
+                        field="ssl_expire_date_time" matchMode="custom" [showMenu]="false">
+                        <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                            <p-dropdown #dateRangeDropdown class="filter-dropdown" [ngModel]="value"
+                                [options]="_filterService.dateRangeList" optionLabel="label" placeholder="Select Option"
+                                appendTo="body">
+                                <ng-template let-option pTemplate="item">
+                                    <div
+                                        (click)="_filterService.onOptionClick(option, primengTable, 'ssl_expire_date_time')">
+                                        <div>{{option.label}}</div>
+                                    </div>
+                                </ng-template>
+                            </p-dropdown>
+                        </ng-template>
+                    </p-columnFilter>
+
+                    <ng-container *ngIf="(_filterService.selectionDateDropdown$ | async) == 'custom_date_range'">
+                        <div class="relative inline-block">
+                            <p-columnFilter field="ssl_expire_date_time" matchMode="custom" [showMenu]="false">
+                                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                    <p-calendar selectionMode="range" [ngModel]="value"
+                                        (ngModelChange)="onDateRangeChange($event, filter)" [readonlyInput]="true"
+                                        dateFormat="dd-mm-yy" appendTo="body" placeholder="📅 Search by Date Range">
+                                    </p-calendar>
+                                </ng-template>
+                            </p-columnFilter>
+                            <mat-icon class="icon-size-4 cursor-pointer absolute"
+                                style="top:50%; transform: translatey(-50%); right: 25px;"
+                                (click)="_filterService.onOptionClick('', '', '')">cancel</mat-icon>
+                        </div>
+                    </ng-container>
+                </th>
+
+                <th>
+                    <p-columnFilter field="is_domain_pointed" matchMode="equals" [showMenu]="false">
+                        <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                            <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="isPointingList"
+                                (onChange)="filter($event.value)" placeholder="Select Option" [showClear]="true"
+                                appendTo="body">
+                                <ng-template let-option pTemplate="item">
+                                    <p>{{option.label}}</p>
+                                </ng-template>
+                            </p-dropdown>
+                        </ng-template>
+                    </p-columnFilter>
+                </th>
+            </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-element let-i="rowIndex">
+            <tr>
+                <td class="bg-gray-50 dark:bg-gray-900 left-[-1px]" alignFrozen="left" pFrozenColumn>
+                    <span [matMenuTriggerFor]="optionMenu" class="flex align-middle cursor-pointer">
+                        <mat-icon> more_vert </mat-icon>
+                    </span>
+
+                    <mat-menu #optionMenu>
+                        <button mat-menu-item (click)="info(element)">
+                            <mat-icon class="mat-18">info</mat-icon>
+                            <span style="font-weight: 600">Info</span>
+                        </button>
+                    </mat-menu>
+                </td>
+                <!-- <td alignFrozen="left" pFrozenColumn class="text-center dark:bg-gray-900 bg-gray-50">
+                    <mat-checkbox (change)="toggleSelection(element)"
+                        [checked]="selection.some(u => u.id === element.id)">
+                    </mat-checkbox>
+                </td> -->
+                <!-- <td alignFrozen="left" pFrozenColumn class="text-center dark:bg-gray-900 bg-gray-50">
+                    <mat-checkbox (change)="toggleSelection(element)"
+                        [checked]="selection.some(u => u.id === element.id)">
+                    </mat-checkbox>
+                </td> -->
+                <td alignFrozen="left" pFrozenColumn class="text-center dark:bg-gray-900 bg-gray-50">
+                    <mat-checkbox (change)="toggleSelection(element)" [checked]="isSelected(element)">
+                    </mat-checkbox>
+                </td>
+
+                <td>{{ element.agentCode || '-' }}</td>
+                <td>{{ element.domain_name || '-' }}</td>
+                <td>{{ element.ip_address || '-' }}</td>
+                <td>{{ element.ssl_expire_date_time ? (element.ssl_expire_date_time | date: 'dd-MM-yyyy'):'-' }}
+                </td>
+                <td>{{ element.is_domain_pointed ? 'Yes' : 'No' }}</td>
+            </tr>
+        </ng-template>
+
+        <ng-template pTemplate="emptymessage">
+            <tr class="h-14">
+                <td colspan="9" class="text-center font-semibold text-lg">
+                    {{getNodataText()}}
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>

@@ -243,7 +243,7 @@ export class ReceiptRightComponent implements OnInit, OnDestroy {
     onProofAttachmentFile(event: any) {
         const file = (event.target as HTMLInputElement).files[0];
 
-        const extantion: string[] = ["pdf", "jpg", "jpeg", "png"];
+        const extantion: string[] = ["pdf", "jpg", "jpeg", "png", "webp"];
         var validator: DocValidationDTO = CommonUtils.isDocValid(file, extantion, 2024, null);
         if (!validator.valid) {
             this.alertService.showToast('error', validator.alertMessage, 'top-right', true);
@@ -274,7 +274,7 @@ export class ReceiptRightComponent implements OnInit, OnDestroy {
 
     onPaymentAttachmentFile(event: any) {
         const file = (event.target as HTMLInputElement).files[0];
-        const extantion: string[] = ["pdf", "jpg", "jpeg", "png"];
+        const extantion: string[] = ["pdf", "jpg", "jpeg", "png", "webp"];
         var validator: DocValidationDTO = CommonUtils.isDocValid(file, extantion, 2024, null);
         if (!validator.valid) {
             this.alertService.showToast('error', validator.alertMessage, 'top-right', true);
