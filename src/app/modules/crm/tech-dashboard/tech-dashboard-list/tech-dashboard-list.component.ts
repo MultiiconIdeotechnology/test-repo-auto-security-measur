@@ -121,43 +121,43 @@ export class CRMTechDashboardListComponent implements OnDestroy {
         this.tabNameStr = tabName;
         this.tabName = tabName;
 
-        // switch (this.tabNameStr) {
-        //     case 'Pending':
-        //         this.tab = 'pending';
-        //         this.pending?.refreshItems();
-        //         break;
+        switch (this.tabNameStr) {
+            case 'Pending':
+                this.tab = 'pending';
+                this.pending?.refreshItems();
+                break;
 
-        //     case 'Completed':
-        //         this.tab = 'completed';
-        //         // if (this.isSecond) {
-        //         this.completed?.refreshItems();
-        //         this.isSecond = false;
-        //         // }
-        //         break;
+            case 'Completed':
+                this.tab = 'completed';
+                // if (this.isSecond) {
+                this.completed?.refreshItems();
+                this.isSecond = false;
+                // }
+                break;
 
-        //     case 'Blocked':
-        //         this.tab = 'blocked';
-        //         // if (this.isThird) {
-        //         this.blocked?.refreshItems();
-        //         this.isThird = false;
-        //         // }
-        //         break;
+            case 'Blocked':
+                this.tab = 'blocked';
+                // if (this.isThird) {
+                this.blocked?.refreshItems();
+                this.isThird = false;
+                // }
+                break;
 
-        //     case 'Expired':
-        //         this.tab = 'expired';
-        //         // if (this.isFourth) {
-        //         this.expired?.refreshItems();
-        //         this.isFourth = false;
-        //         // }
-        //         break;
+            case 'Expired':
+                this.tab = 'expired';
+                // if (this.isFourth) {
+                this.expired?.refreshItems();
+                this.isFourth = false;
+                // }
+                break;
 
-        //     case 'Domain':
-        //         this.tab = 'domain';
-        //         // if (this.isFourth) {
-        //         this.domain?.refreshItems();
-        //         // }
-        //         break;
-        // }
+            case 'Domain':
+                this.tab = 'domain';
+                // if (this.isFourth) {
+                this.domain?.refreshItems();
+                // }
+                break;
+        }
     }
 
     openTabFiterDrawer() {

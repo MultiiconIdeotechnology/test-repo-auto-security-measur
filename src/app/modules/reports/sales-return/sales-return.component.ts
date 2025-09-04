@@ -175,7 +175,8 @@ export class SalesReturnComponent extends BaseListingComponent implements OnDest
             { field: 'tds_2', header: 'TDS 2', type: Types.number, fixVal: 2, class: 'text-right' },
             { field: 'net_commission', header: 'Net Commission', type: Types.number, fixVal: 2, class: 'text-right' },
             { field: 'cashback', header: 'Cashback', type: Types.number, fixVal: 2, class: 'text-right' },
-            { field: 'cashback_tds', header: 'Cashback TDS', type: Types.number, fixVal: 2, class: 'text-right' }
+            { field: 'cashback_tds', header: 'Cashback TDS', type: Types.number, fixVal: 2, class: 'text-right' },
+            { field: 'mop', header: 'MOP', type: Types.text },
         ];
         this.cols.unshift(...this.selectedColumns);
         this.exportCol = cloneDeep(this.cols);

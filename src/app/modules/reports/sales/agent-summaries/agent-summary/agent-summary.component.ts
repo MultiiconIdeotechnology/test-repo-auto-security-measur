@@ -117,7 +117,8 @@ export class AgentSummaryComponent extends BaseListingComponent implements OnDes
             { field: 'create_date', header: 'Create Date', type: Types.dateTime, dateFormat: 'dd-MM-yyyy' },
             { field: 'last_login_time', header: 'Last Login Date', type: Types.date, dateFormat: 'dd-MM-yyyy' },
             { field: 'last_trancation_date', header: 'Last Transaction Date', type: Types.date, dateFormat: 'dd-MM-yyyy' },
-            { field: 'statuschange_date', header: 'Last Status Change Date', type: Types.date, dateFormat: 'dd-MM-yyyy' }
+            { field: 'statuschange_date', header: 'Last Status Change Date', type: Types.date, dateFormat: 'dd-MM-yyyy' }, 
+            { field: 'previous_relation_manager', header: 'Previous RM', type: Types.select },
         ];
         this.cols.unshift(...this.selectedColumns);
         this.exportCol = cloneDeep(this.cols);
