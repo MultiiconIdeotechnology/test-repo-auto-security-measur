@@ -163,7 +163,7 @@ export class AirlineBlockListComponent extends BaseListingComponent {
       Infant: 0,
     };
 
-    Linq.recirect('/airline-block/airline-block-inventory/view-details', queryParams);
+    Linq.recirect('/inventory/airline-block/view-details', queryParams);
   }
 
   deleteInternal(record, index): void {
