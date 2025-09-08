@@ -369,12 +369,25 @@ export class BookingDetailsComponent {
       })
     });
   }
-
+  
+  //Your Invoice
   invoice(record): void {
     const recordData = record == 'DMCC' ? this.mainData[0].invoice_id : this.mainData[0].invoice_id_inr
     this.flighttabService.Invoice(recordData).subscribe({
       next: (res) => {
         CommonUtils.downloadPdf(res.data, record == 'DMCC' ? this.mainData[0].invoice_no : this.mainData[0].invoice_no_inr + '.pdf');
+      }, error: (err) => {
+        this.toastr.showToast('error', err)
+      }
+    })
+  }
+
+  //Agent Invoice
+    agentInvoice(record): void {
+    const recordData = record == 'DMCC' ? this.mainData[0].agent_invoice_id : this.mainData[0].invoice_id_inr
+    this.flighttabService.Invoice(recordData).subscribe({
+      next: (res) => {
+        CommonUtils.downloadPdf(res.data, record == 'DMCC' ? this.mainData[0].agent_invoice_no : this.mainData[0].invoice_no_inr + '.pdf');
       }, error: (err) => {
         this.toastr.showToast('error', err)
       }

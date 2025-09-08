@@ -32,12 +32,22 @@
                                  <button *ngIf="!bookingDetail?.invoice_id" mat-raised-button color="primary"
                                     (click)="managePrice()">Manage Price</button>
 
+                                <!--Your Invoice-->
                                 <div *ngIf="bookingDetail.invoice_id"
                                     class="px-2 py-1 border rounded-lg flex items-center primary-text  cursor-pointer"
                                     (click)="printInvoice()">
                                     <mat-icon
                                         class="material-symbols-outlined secondary-text pr-1 text-xl">print</mat-icon>
-                                    <span class="text-md leading-none  text-default font-normal">Print Invoice</span>
+                                    <span class="text-md leading-none  text-default font-normal">Your Invoice</span>
+                                </div>
+
+                                <!--Agent Invoice -->
+                                <div *ngIf="bookingDetail?.agent_invoice_id"
+                                    class="px-2 py-1 border rounded-lg flex items-center primary-text  cursor-pointer"
+                                    (click)="AgentPrintInvoice()">
+                                    <mat-icon
+                                        class="material-symbols-outlined secondary-text pr-1 text-xl">print</mat-icon>
+                                    <span class="text-md leading-none  text-default font-normal">Invoice</span>
                                 </div>
 
                                 <!-- <div *ngIf="generatanble() && !bookingDetail.invoice_id" class="px-2 py-1 border rounded-lg flex items-center primary-text cursor-pointer" (click)="generateInvoice()">

@@ -146,6 +146,7 @@ export class HotelBookingDetailsComponent {
     this.alertService.showToast('success', 'Copied');
   }
 
+  //Your Invoice
   invoice(record): void {
     if (!Security.hasPermission(bookingsHotelPermissions.invoicePermissions)) {
       return this.alertService.showToast('error', messages.permissionDenied);
@@ -155,6 +156,22 @@ export class HotelBookingDetailsComponent {
     this.flighttabService.Invoice(recordData).subscribe({
       next: (res) => {
         CommonUtils.downloadPdf(res.data, record == 'DMCC' ? this.bookingDetail.invoice_no : this.bookingDetail.invoice_no_inr + '.pdf');
+      }, error: (err) => {
+        this.alertService.showToast('error', err)
+      }
+    })
+  }
+
+  //Agent Invoice
+  agentInvoice(record): void {
+    if (!Security.hasPermission(bookingsHotelPermissions.invoicePermissions)) {
+      return this.alertService.showToast('error', messages.permissionDenied);
+    }
+    const recordData = record == 'DMCC' ? this.bookingDetail.agent_invoice_id : this.bookingDetail.invoice_id_inr
+
+    this.flighttabService.Invoice(recordData).subscribe({
+      next: (res) => {
+        CommonUtils.downloadPdf(res.data, record == 'DMCC' ? this.bookingDetail.agent_invoice_no : this.bookingDetail.invoice_no_inr + '.pdf');
       }, error: (err) => {
         this.alertService.showToast('error', err)
       }
