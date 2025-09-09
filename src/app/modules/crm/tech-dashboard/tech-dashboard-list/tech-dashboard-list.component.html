@@ -269,12 +269,6 @@
             </ng-container>
         </mat-tab>
 
-        <mat-tab label="SSL" [aria-label]="'SSL'" *ngIf="getTabsPermission('ssl')">
-            <ng-container *ngIf="tabNameStr == 'SSL'">
-                <app-ssl #ssl [(isFilterShowSsl)]="isFilterShowSsl"></app-ssl>
-            </ng-container>
-        </mat-tab>
-
         <mat-tab label="Domain" [aria-label]="'Domain'" *ngIf="getTabsPermission('domain')">
             <ng-container *ngIf="tabNameStr == 'Domain'">
                 <app-crm-tech-dashboard-domain #domain
