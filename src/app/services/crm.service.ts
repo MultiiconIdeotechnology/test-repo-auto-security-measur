@@ -171,6 +171,14 @@ export class CrmService {
         return this.http.post<any>(this.baseUrl + 'ProductPurchaseService/getBlockedProductList', model);
     }
 
+    getTechDomainProductList(model: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'Dashboard/TecDashboard/domainList', model);
+    }
+
+    generateSsl(model: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'Dashboard/TecDashboard/checkAndGenerateSSL', model);
+    }
+
     startIntegration(model: any): Observable<any> {
         return this.http.post<any>(this.baseUrl + 'ProductPurchaseService/startIntegration', model);
     }

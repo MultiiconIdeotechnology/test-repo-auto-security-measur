@@ -250,12 +250,12 @@
                     <div *ngFor="let pd of pdv.value">
                         <div *ngIf="pd.is_header" class="w-full text-lg font-medium px-4 py-3 bg-primary border-b border-gray-border">{{pd.key}}</div>
                         <div *ngIf="!pd.is_header">
-                            <div [ngClass]="{'text-white': pd.is_bold, 'text-white': pd.is_main, 'text-white': (!pd.is_bold && !pd.is_main)}" class="flex justify-between w-full px-4 py-2" *ngIf="pd.key != '---' && pd.key != 'Total Amount'">
+                            <div [ngClass]="{'dark:text-white': pd.is_bold, 'dark:text-white': pd.is_main, 'dark:text-white': (!pd.is_bold && !pd.is_main)}" class="flex justify-between w-full px-4 py-2" *ngIf="pd.key != '---' && pd.key != 'Total Amount'">
                                 <span [ngClass]="(pd.is_bold || pd.is_main)? 'font-semibold':''" class="flex items-center">{{pd.key}}</span>
                                 <span [ngClass]="(pd.is_bold || pd.is_main)? 'font-semibold':''" class="relative top-[2px]">{{pd.value}}</span>
                             </div>
                             <span *ngIf="pd.key === '---'"  class="py-1 mx-4 block border-b border-dashed border-gray-border"></span>
-                            <div *ngIf="pd.key === 'Total Amount'" class="px-4 text-white py-4 mt-1 border-t border-gray-border flex justify-between  font-semibold text-xl">
+                            <div *ngIf="pd.key === 'Total Amount'" class="px-4 dark:text-white py-4 mt-1 border-t border-gray-border flex justify-between  font-semibold text-xl">
                                 <span>{{pd.key}}</span>
                                 <span>{{pd.value}}</span>
                             </div>

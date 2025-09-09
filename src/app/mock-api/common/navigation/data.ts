@@ -315,7 +315,14 @@ export const defaultNavigation: FuseNavigationItem[] = [
                         type: 'basic',
                         pid: 'BOOKINGS-FLIGHT_GROUPINQUIRY_VIEW',
                         link: Routes.booking.group_inquiry_path
-                    }
+                    },
+                    {
+                        id: 'booking.airline-block',
+                        title: 'Airline BLock',
+                        type: 'basic',
+                        pid: 'BOOKINGS-FLIGHT_AIRLINEBLOCK_VIEW',
+                        link: Routes.booking.airline_block_lead_path
+                    },
                 ]
             },
             {
@@ -958,6 +965,14 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 pid: 'INVENTORY_HOLIDAYPRODUCT2.0_VIEW',
                 icon: 'mat_outline:holiday_village',
                 link: Routes.inventory.holiday_v2_route
+            },
+            {
+                id: 'inventory.air_block',
+                title: 'Airline Block',
+                type: 'basic',
+                pid: 'INVENTORY_AIRLINEBLOCK_VIEW',
+                icon: 'mat_outline:flight',
+                link: Routes.inventory.airline_block_path
             },
             {
                 id: 'inventory.cab',

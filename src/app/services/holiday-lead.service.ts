@@ -28,8 +28,8 @@ export class HolidayLeadService {
     return this.http.post<any>(environment.apiUrl + "holidayBookingLeads/getHolidayBookingDetail", {id:id});
   }
 
-  downloadQuotationV2(id: string): Observable<any> {
-    return this.http.post<any>(environment.apiUrl + "holidayBookingLeads/downloadQuotationV2", {id:id});
+  downloadQuotationV2(model): Observable<any> {
+    return this.http.post<any>(environment.apiUrl + "holidayBookingLeads/downloadQuotationV2", model);
   }
 
   getSupplierCombo(filter: string, type?: string): Observable<any[]> {

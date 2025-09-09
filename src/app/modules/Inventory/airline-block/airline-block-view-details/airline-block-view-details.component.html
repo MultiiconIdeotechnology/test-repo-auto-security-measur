@@ -1,0 +1,146 @@
+
+<div class="mx-auto container" *ngIf="!loading">
+    <div class="w-full mt-4 z-49">
+        <div class="dark:bg-[#064e48] bg-[#5eb5ad] rounded-md flex justify-between px-4 py-5 white-text items-center">
+            <div class="lg:font-semibold lg:text-2xl text-base font-medium cursor-pointer" [routerLink]="redirectURL">Review your AIrLine Block</div>
+            <div>
+                <div class="md:text-base text-sm font-medium flex">
+                    <div class="items-center gap-2  flex">
+                        <span>{{airlineBlockDeatils?.origin}}</span>
+                        <mat-icon *ngIf="airlineBlockDeatils?.destination" class="text-black dark:text-white icon-size-4"
+                            svgIcon="heroicons_outline:arrow-right"></mat-icon>
+                        <span>{{airlineBlockDeatils?.destination}}</span>
+                    </div>
+                    <span class="border-r border-gray-border mx-2"></span>
+                    {{airlineBlockDeatils?.flight_type}}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="pt-10 w-full">
+        <div class=" lg:flex lg:flex-row lg:gap-5 gap-2 flex-col justify-center">
+        
+            <div class="flex flex-col lg:w-[69%] w-full">
+                <div class="rounded-lg shadow-md bg-white dark:bg-gray-800 mb-5 relative p-4 ">
+                      <div class="mb-4" *ngIf="segmentList.length > 0">
+                            <ng-container *ngFor="let segment of segmentList; let i = index">
+                                <div class="relative">
+                                    <div class="rounded-xl relative"
+                                        [ngClass]="segment.cancelled === 2? 'border bonton-red-border bg-[rgba(255,0,0,0.05)]':'border border-gray-border'">
+                                        <div
+                                            class="relative flex px-5 pb-5 pt-5 border-b border-dashed border-gray-border">
+                                            <div class="flex items-center min-w-48 border-r border-gray-border">
+                                                <img loading="lazy" class="w-12 h-12 object-contain mr-3"
+                                                    [src]="segment.airline_logo" alt="Logo">
+
+                                                <div class="pr-3">
+                                                    <div class="light-text text-md font-medium">{{segment.airline_name}}
+                                                    </div>
+                                                    <div class="light-text text-sm font-medium">{{segment.flight_no}}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="pl-6 flex">
+                                                <div class="flex items-center">
+                                                    <span class="font-semibold text-lg flex items-end">
+                                                        <span>{{segment.origin}}</span>
+                                                        <mat-icon
+                                                            class="text-black dark:text-white mx-3 text-2xl">arrow_forward</mat-icon>
+                                                        <span>{{segment.destination}}</span>
+                                                    </span>
+                                                    <span class="text-gray pl-5">
+                                                        {{segment.departure_date_time | date: 'EEE, dd-MM-yyyy'}}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="pt-6 px-7 pb-5 flex items-center">
+                                            <div class="flex items-center w-full">
+                                                <div class="flex flex-col min-w-[180px]">
+                                                    <span class="text-xl font-semibold">{{segment.departure_date_time |
+                                                        date: 'h:mma'}}</span>
+                                                    <span class="text-md font-medium">
+                                                        {{segment.departure_date_time | date: 'EEE, dd-MM-yyyy'}}
+                                                    </span>
+                                                    <span class="text-gray text-sm">{{segment.departure_terminal}}
+                                                        {{segment.departure_terminal? '-':''}}
+                                                        {{segment.originAirportname}}
+                                                        {{segment.origincityname}}{{segment.origincountryname? ',':''}}
+                                                        {{segment.origincountryname}}
+                                                    </span>
+                                                </div>
+                                                <div class="flex mx-7 items-center z-[1] min-w-[40%] relative">
+                                                    <span
+                                                        class="block w-2 h-2 primary-bg rounded-full border border-white outline-1 outline primary-outline ng-star-inserted"></span>
+                                                    <span
+                                                        class="border-dashed border-b border-gray-border min-w-[95%] relative flex justify-center items-center">
+                                                        <mat-icon
+                                                            class="absolute top-[-11px] rotate-90 text-[#f49a19] z-10">flight</mat-icon>
+                                                    </span>
+                                                    <span
+                                                        class="block w-2 h-2 primary-bg rounded-full border border-white outline-1 outline primary-outline ng-star-inserted"></span>
+                                                    <div
+                                                        class="absolute w-full flex flex-col items-center h-[70px] justify-around text-xs">
+                                                        <span
+                                                            class="text-gray font-medium">{{segment.segment_duration}}</span>
+                                                        <span
+                                                            class="text-gray font-medium">{{airlineBlockDeatils.flight_type}}</span>
+                                                    </div>
+                                                </div>
+                                                <div class="flex flex-col min-w-[180px]">
+                                                    <span class="text-xl font-semibold">{{segment.arrival_date_time |
+                                                        date: 'h:mma'}}</span>
+                                                    <span class="text-md font-medium">
+                                                        {{segment.arrival_date_time | date: 'EEE, dd-MM-yyyy'}}</span>
+                                                    <span class="text-gray text-sm">{{segment.arrival_terminal}}
+                                                        {{segment.arrival_terminal? '-':''}}
+                                                        {{segment.destinationAirpostname}}
+                                                        {{segment.destinationcityname}}{{segment.destinationcountryname?
+                                                        ',':''}}
+                                                        {{segment.destinationcountryname}}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="absolute bottom-[-10px] left-0 w-full text-center z-10"
+                                        *ngIf="i !== (segmentList.length - 1) && segmentList[i+1].layour_time">
+                                        <span class="bg-[#e1effe] rounded-3xl px-10 text-gray dark:text-black text-sm">
+                                            {{isSamePlanes(segment, segmentList[i+1])
+                                            ? 'No plane change require'
+                                            : 'Change of planes'}}・{{segmentList[i+1].layour_time}} Layover in
+                                            {{segment.destinationcityname}}</span>
+                                    </div>
+                                </div>
+                            </ng-container>
+                        </div>
+                </div>
+                
+            </div>
+            <div class="lg:w-[29%] w-full ml-0">
+                <div class="info relative flex flex-col mb-5 bg-white dark:bg-gray-800 rounded-md round-shadow">
+                    <span class="text-xl font-semibold px-4 py-3 border-b border-gray-border dark:border-gray-300">Price Information</span>
+                    <div class="px-4 py-3 border-b border-dashed border-gray-border dark:border-gray-300">
+                            <div class="flex justify-between mb-2">
+                                <span class="flex items-center text-gray">Base fare</span>
+                                <span class="text-black font-medium relative top-[2px] dark:text-white">{{airlineBlockDeatils?.currency}}
+                                    {{airlineBlockDeatils?.base_fare}}</span>
+                            </div>
+                        <div class="flex justify-between">
+                            <span class="flex items-center text-gray">Taxes and Fees</span>
+                            <span class="text-black font-medium relative top-[2px] dark:text-white">{{airlineBlockDeatils?.currency}}
+                                {{airlineBlockDeatils?.tax}}</span>
+                        </div>
+                    </div>
+                    <div class="p-2">
+                        <div class="px-4 py-3 flex bg-[#EFF6FF] dark:bg-gray-900 rounded justify-between primary-text font-semibold text-xl">
+                            <span>Total Fare</span>
+                            <span>{{airlineBlockDeatils?.currency}} {{airlineBlockDeatils?.total_fare}}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

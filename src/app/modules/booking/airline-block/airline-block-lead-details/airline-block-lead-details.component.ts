@@ -1,34 +1,28 @@
 import { Component } from '@angular/core';
 import { AsyncPipe, CommonModule, DatePipe, NgClass, NgFor, NgIf } from '@angular/common';
-import { ClipboardModule } from '@angular/cdk/clipboard';
+import { MatDialog } from '@angular/material/dialog';
+import { Router, ActivatedRoute, RouterModule } from '@angular/router';
+import { FuseConfirmationService } from '@fuse/services/confirmation';
+import { ToasterService } from 'app/services/toaster.service';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatDialog } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { MatMenuModule } from '@angular/material/menu';
 import { MatSelectModule } from '@angular/material/select';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { RouterModule, Router, ActivatedRoute } from '@angular/router';
-import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { Routes } from 'app/common/const';
-import { CompactLayoutComponent } from 'app/layout/layouts/vertical/compact/compact.component';
-import { CabService } from 'app/services/cab.service';
-import { ToasterService } from 'app/services/toaster.service';
 import { Linq } from 'app/utils/linq';
-import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
-import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
-import { RejectReasonComponent } from 'app/modules/masters/agent/reject-reason/reject-reason.component';
-import { CancellationPolicyComponent } from '../../bus/cancellation-policy/cancellation-policy.component';
+import { AirlineBlockService } from 'app/services/airline-block.service';
 import { CommonUtils } from 'app/utils/commonutils';
-import { bookingsCabPermissions, messages, Security } from 'app/security';
+import { CompactLayoutComponent } from 'app/layout/layouts/vertical/compact/compact.component';
+import { bookingAirlineBlockPermissions, messages, Security } from 'app/security';
+import { RejectReasonComponent } from 'app/modules/masters/agent/reject-reason/reject-reason.component';
 
 @Component({
-  selector: 'app-cab-booking-details',
+  selector: 'app-airline-block-lead-details',
   standalone: true,
   imports: [
     CommonModule,
@@ -45,69 +39,73 @@ import { bookingsCabPermissions, messages, Security } from 'app/security';
     MatSelectModule,
     MatDatepickerModule,
     MatTooltipModule,
-    MatMenuModule,
-    MatSlideToggleModule,
-    NgxMatTimepickerModule,
-    NgxMatSelectSearchModule,
     NgClass,
-    ClipboardModule,
-    MatIconModule,
     MatDividerModule,
   ],
-  templateUrl: './cab-booking-details.component.html',
-  styleUrls: ['./cab-booking-details.component.scss']
+  templateUrl: './airline-block-lead-details.component.html',
+  styleUrls: ['./airline-block-lead-details.component.scss']
 })
-export class CabBookingDetailsComponent {
+export class AirlineBlockLeadDetailsComponent {
 
-  jsonParam: any;
   bookingDetail: any;
   priceDetail: any[] = [];
-
+  segmentList: any[] = [];
+  clipboard: any;
 
   constructor(
     private router: Router,
     public route: ActivatedRoute,
-    private cabService: CabService,
+    private airlineBlockService: AirlineBlockService,
     private alertService: ToasterService,
-    private classy: CompactLayoutComponent,
     private matDialog: MatDialog,
     private conformationService: FuseConfirmationService,
+    private classy: CompactLayoutComponent,
   ) { }
 
-  cabRoute = Routes.booking.cab_route;
+  airlineBlockRoute = Routes.booking.airline_block_lead_route;
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
-      this.cabService.getCabBookingDetail(id).subscribe({
+      this.airlineBlockService.getAirlineBlockLeadDetail(id).subscribe({
         next: (res: any) => {
           this.bookingDetail = res;
+          this.bookingDetail.depTime = this.parseCustomDateTime(this.bookingDetail.depTime);
+          this.bookingDetail.arrTime = this.parseCustomDateTime(this.bookingDetail.arrTime);
           this.priceDetail = res.priceDetail;
+          this.segmentList = this.bookingDetail?.segment?.map((segment: any) => ({
+            ...segment,
+            departure_date_time: this.parseCustomDateTime(segment.departure_date_time),
+            arrival_date_time: this.parseCustomDateTime(segment.arrival_date_time),
+          })) ?? [];
           this.priceDetail = Linq.groupBy(this.priceDetail, x => x.box)
         }, error: (err) => {
           this.alertService.showToast('error', err);
         }
       });
+      this.classy.toggleNavigation('mainNavigation');
     });
-    this.classy.toggleNavigation('mainNavigation');
+  }
+
+  private parseCustomDateTime(dateTimeStr: string): Date {
+    const [datePart, timePart] = dateTimeStr.split(' ');
+    const [day, month, year] = datePart.split('-');
+    return new Date(`${year}-${month}-${day}T${timePart}:00`);
+  }
+
+  isSamePlanes(plan1, plan2): boolean {
+    return `${plan1.airline_name}${plan1.flight_no}` === `${plan2?.airline_name}${plan2?.flight_no}`
   }
 
   close() {
-    this.router.navigate([this.cabRoute])
-  }
-
-  viewPolicy() {
-    this.matDialog.open(CancellationPolicyComponent, {
-      data: { data: this.bookingDetail.cancellatioon_policy, send: 'Cab' },
-      disableClose: true
-    })
+    this.router.navigate([this.airlineBlockRoute])
   }
 
   status(record: any, code: any): void {
-    if (!Security.hasPermission(bookingsCabPermissions.statusPermissions)) {
+   if (!Security.hasPermission(bookingAirlineBlockPermissions.statusPermissions)) {
       return this.alertService.showToast('error', messages.permissionDenied);
     }
-    const label: string = code == 1 ? 'Cab Completed' : 'Cab Cancelled';
+    const label: string = code == 1 ? 'Airline Block Lead Completed' : 'Airline Block Lead Cancelled';
     this.conformationService.open({
       title: label,
       message: 'Are you sure to ' + label.toLowerCase() + ' ?'
@@ -118,11 +116,11 @@ export class CabBookingDetailsComponent {
           Fdata['id'] = record.id,
             Fdata['status_code'] = code,
             Fdata['note'] = '',
-            this.cabService.setLeadStatus(Fdata).subscribe({
+            this.airlineBlockService.setLeadStatus(Fdata).subscribe({
               next: (res) => {
                 if (res) {
-                  this.alertService.showToast('success', code == 1 ? 'Cab Completed' : 'Cab Cancelled', "top-right", true);
-                  this.bookingDetail.lead_status = 'Completed'
+                  this.alertService.showToast('success', code == 1 ? 'Airline Block Lead Completed' : 'Airline Block Lead Cancelled', "top-right", true);
+                  this.bookingDetail.status = 'Completed'
                 }
               }, error: (err) => this.alertService.showToast('error', err, "top-right", true)
             });
@@ -132,7 +130,7 @@ export class CabBookingDetailsComponent {
   }
 
   Rejected(record: any, code: any): void {
-    if (!Security.hasPermission(bookingsCabPermissions.rejectedPermissions)) {
+    if (!Security.hasPermission(bookingAirlineBlockPermissions.rejectedPermissions)) {
       return this.alertService.showToast('error', messages.permissionDenied);
     }
     this.matDialog.open(RejectReasonComponent, {
@@ -146,11 +144,11 @@ export class CabBookingDetailsComponent {
           Fdata['id'] = record.id,
             Fdata['status_code'] = code,
             Fdata['note'] = res,
-            this.cabService.setLeadStatus(Fdata).subscribe({
+            this.airlineBlockService.setLeadStatus(Fdata).subscribe({
               next: (response) => {
                 if (response) {
-                  this.alertService.showToast('success', "Cab Rejected", "top-right", true);
-                  this.bookingDetail.lead_status = 'Rejected'
+                  this.alertService.showToast('success', "Airline Block Rejected", "top-right", true);
+                  this.bookingDetail.status = 'Rejected'
                   this.bookingDetail.reject_reason = res
                 }
               },
@@ -161,9 +159,13 @@ export class CabBookingDetailsComponent {
     })
   }
 
-  getCopy(copyOf): void {
+  copyBookingRef() {
+    this.clipboard.copy(this.bookingDetail.booking_ref_no);
+    this.alertService.showToast('success', 'Booking Refrence No. Copied');
+  }
 
-    this.conformationService.open({
+  getCopy(copyOf): void {
+     this.conformationService.open({
       title: 'Print Quotation',
       message: `Do you want to print without price information?`,
       actions: {
@@ -182,19 +184,19 @@ export class CabBookingDetailsComponent {
           id: this.bookingDetail.id,
           is_with_price: res === 'confirmed' ? false : true
         }
-        this.cabService.downloadCabQuotationV2(model).subscribe({
+        this.airlineBlockService.downloadQuotationV2(model).subscribe({
           next: (res) => {
             this.bookingDetail.copy = res.copy;
             this.bookingDetail.customer_copy = res.customer_copy;
             if (copyOf === 'agent') {
-              CommonUtils.downloadPdf(this.bookingDetail.copy, this.bookingDetail?.reference_no + '.pdf');
+              CommonUtils.downloadPdf(this.bookingDetail.copy, this.bookingDetail?.reference_no + 'air_block.pdf');
             }
             else {
-              CommonUtils.downloadPdf(this.bookingDetail.customer_copy, this.bookingDetail?.reference_no + '.pdf');
+              CommonUtils.downloadPdf(this.bookingDetail.customer_copy, this.bookingDetail?.reference_no + 'air_block.pdf');
             }
           }, error: (err) => {
           },
         })
       })
-  }
+    }
 }

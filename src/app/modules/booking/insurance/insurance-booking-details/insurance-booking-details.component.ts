@@ -208,11 +208,24 @@ export class InsuranceBookingDetailsComponent {
     });
   }
 
+  //Your Invoice
   invoice(record): void {
     const recordData = record == 'print' ? this.mainData.invoice_id : record
     this.insuranceService.printInvoice(recordData).subscribe({
       next: (res) => {
         CommonUtils.downloadPdf(res.data, this.mainData.invoice_no + '.pdf');
+      }, error: (err) => {
+        this.toastr.showToast('error', err)
+      }
+    })
+  }
+
+  //Agent Invoice
+   agentInvoice(record): void {
+    const recordData = record == 'print' ? this.mainData.agent_invoice_id : record
+    this.insuranceService.printInvoice(recordData).subscribe({
+      next: (res) => {
+        CommonUtils.downloadPdf(res.data, this.mainData.agent_invoice_no + '.pdf');
       }, error: (err) => {
         this.toastr.showToast('error', err)
       }

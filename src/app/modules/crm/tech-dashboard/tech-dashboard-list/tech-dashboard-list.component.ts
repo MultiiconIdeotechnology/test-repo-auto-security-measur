@@ -21,12 +21,13 @@ import { TechDashboardPendingComponent } from '../pending/pending.component';
 import { TechDashboardCompletedComponent } from '../completed/completed.component';
 import { TechDashboardExpiredComponent } from '../expired/expired.component';
 import { TechDashboardBlockedComponent } from '../blocked/blocked.component';
-import { AgentService } from 'app/services/agent.service';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
-import { ItemService } from 'app/services/item.service';
 import { GlobalSearchService } from 'app/services/global-search.service';
 import { CancelledComponent } from '../cancelled/cancelled.component';
 import { SslComponent } from '../ssl/ssl.component';
+import { TechDashboardDomainComponent } from './domain/domain.component';
+import { DomainInfoComponent } from './domain/domain-info/domain-info.component';
+import { SelectedSslInfoComponent } from './domain/selected-ssl-info/selected-ssl-info.component';
 
 @Component({
     selector: 'app-crm-tech-dashboard-list',
@@ -57,6 +58,9 @@ import { SslComponent } from '../ssl/ssl.component';
         TechDashboardBlockedComponent,
         CancelledComponent,
         SslComponent,
+        TechDashboardDomainComponent,
+        DomainInfoComponent,
+        SelectedSslInfoComponent
     ],
 })
 export class CRMTechDashboardListComponent implements OnDestroy {
@@ -65,10 +69,8 @@ export class CRMTechDashboardListComponent implements OnDestroy {
     @ViewChild('blocked') blocked: TechDashboardBlockedComponent;
     @ViewChild('expired') expired: TechDashboardExpiredComponent;
     @ViewChild('cancelled') cancelled: CancelledComponent;
-    @ViewChild('ssl') ssl: SslComponent;
-
+    @ViewChild('domain') domain: TechDashboardDomainComponent;
     module_name = module_name.techDashboard;
-    filter_table_name = filter_module_name;
     public apiCalls: any = {};
     tabName: any
     tabNameStr: any = 'Pending'
@@ -86,6 +88,8 @@ export class CRMTechDashboardListComponent implements OnDestroy {
     searchInputControlExpired = new FormControl('');
     searchInputControlBlocked = new FormControl('');
     searchInputControlCancelled = new FormControl('');
+    searchInputControlDomain = new FormControl('');
+
     itemList = [];
     dataListArchive = [];
     total = 0;
@@ -111,8 +115,8 @@ export class CRMTechDashboardListComponent implements OnDestroy {
         if (tab == 'cancelled') {
             return Security.hasPermission(techDashPermissions.cancelledTabPermissions)
         }
-        if (tab == 'ssl') {
-            return Security.hasPermission(techDashPermissions.sslTabPermissions)
+        if (tab == 'domain') {
+            return Security.hasPermission(techDashPermissions.domainTabPermissions)
         }
     }
 
@@ -164,15 +168,38 @@ export class CRMTechDashboardListComponent implements OnDestroy {
                 // }
                 break;
 
-            case 'SSL':
-                this.tab = 'ssl';
+            case 'Domain':
+                this.tab = 'domain';
                 // if (this.isFourth) {
-                this.ssl?.refreshItems();
-                this.isSix = false;
+                this.domain?.refreshItems();
+                 this.isSix = false;
                 // }
                 break;
+
+            // case 'SSL':
+            //     this.tab = 'ssl';
+            //     // if (this.isFourth) {
+            //     this.ssl?.refreshItems();
+            //     this.isSix = false;
+            //     // }
+            //     break;
         }
-    }
+        //     case 'Expired':
+        //         this.tab = 'expired';
+        //         // if (this.isFourth) {
+        //         this.expired?.refreshItems();
+        //         this.isFourth = false;
+        //         // }
+        //         break;
+
+            // case 'Domain':
+            //     this.tab = 'domain';
+            //     // if (this.isFourth) {
+            //     this.domain?.refreshItems();
+            //     // }
+            //     break;
+        }
+    
 
     openTabFiterDrawer() {
         if (this.tabNameStr == 'Pending') {
@@ -183,10 +210,10 @@ export class CRMTechDashboardListComponent implements OnDestroy {
             this._filterService.openDrawer(this.filter_table_name.tech_dashboard_blocked, this.blocked.primengTable);
         } else if (this.tabNameStr == 'Cancelled') {
             this._filterService.openDrawer(this.filter_table_name.tech_dashboard_cancelled, this.cancelled.primengTable);
-        } else if (this.tabNameStr == 'SSL') {
-            this._filterService.openDrawer(this.filter_table_name.tech_dashboard_ssl, this.ssl.primengTable);
-        } else {
+        }  else if (this.tabNameStr == 'expired') {
             this._filterService.openDrawer(this.filter_table_name.tech_dashboard_expired, this.expired.primengTable);
+        } else if (this.tabNameStr == 'Domain') {
+            this._filterService.openDrawer(this.filter_table_name.tech_dashboard_domain, this.domain.primengTable);
         }
     }
 
@@ -207,8 +234,8 @@ export class CRMTechDashboardListComponent implements OnDestroy {
             case 'Cancelled':
                 this.cancelled?.refreshItems();
                 break;
-            case 'SSL':
-                this.ssl?.refreshItems();
+            case 'Domain':
+                this.domain?.refreshItems();
                 break;
         }
     }
@@ -222,8 +249,8 @@ export class CRMTechDashboardListComponent implements OnDestroy {
             this.blocked.exportExcel();
         else if (this.tab == 'cancelled')
             this.cancelled.exportExcel()
-        else if (this.tab == 'ssl')
-            this.ssl.exportExcel()
+        else if(this.tab == 'domain')
+            this.domain.exportExcel();
         else
             this.expired.exportExcel();
     }
@@ -252,10 +279,14 @@ export class CRMTechDashboardListComponent implements OnDestroy {
         this.cancelled.searchInputControlCancelled.patchValue(event);
         this.cancelled?.refreshItems();
     }
-    
-    sslRefresh(event: any) {
-        this.ssl.searchInputControlSSL.patchValue(event);
-        this.ssl?.refreshItems();
+   
+    domainRefresh(event:any) {
+        this.domain.searchInputControlDomain.patchValue(event); 
+        this.domain?.refreshItems();
+    }
+
+    generateSSL(){
+        this.domain?.openSelectedDomain();
     }
 
     ngOnDestroy(): void {

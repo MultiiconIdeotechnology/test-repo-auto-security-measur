@@ -112,12 +112,14 @@
                                     <span class="text-md leading-none ml-2">Voucher</span>
                                 </div>
 
-                                <div *ngIf="mainDataAll?.is_invoice_button_show" [matMenuTriggerFor]="optionMenu" 
+                                <!--Your Inovice-->
+                                <div *ngIf="mainDataAll?.is_invoice_button_show && mainDataAll?.invoice_id" [matMenuTriggerFor]="optionMenu" 
                                     class="px-2 py-1 mx-2 border border-gray-border rounded-lg flex items-center secondary-text cursor-pointer"
                                     >
                                     <mat-icon class="material-symbols-outlined secondary-text text-xl">print</mat-icon>
-                                    <span  class="text-md leading-none ml-2">Invoice</span>
+                                    <span  class="text-md leading-none ml-2">Your Invoice</span>
                                 </div>
+
                                 <mat-menu #optionMenu>
                                     <button mat-menu-item (click)="invoice('INR')">
                                         <!-- <mat-icon class="mat-18">info</mat-icon> -->
@@ -128,6 +130,25 @@
                                         <span style="font-weight: 600">Invoice 2</span>
                                     </button>
                                 </mat-menu>
+
+                                <!-- Agent Invoice-->
+                                 <div *ngIf="mainDataAll?.is_invoice_button_show && mainDataAll?.agent_invoice_id" [matMenuTriggerFor]="optionMenu1" 
+                                    class="px-2 py-1 mx-2 border border-gray-border rounded-lg flex items-center secondary-text cursor-pointer"
+                                    >
+                                    <mat-icon class="material-symbols-outlined secondary-text text-xl">print</mat-icon>
+                                    <span  class="text-md leading-none ml-2">Invoice</span>
+                                </div>
+                                <mat-menu #optionMenu1>
+                                    <button mat-menu-item (click)="agentInvoice('INR')">
+                                        <!-- <mat-icon class="mat-18">info</mat-icon> -->
+                                        <span style="font-weight: 600">Invoice 1</span>
+                                    </button>
+                                    <button mat-menu-item (click)="agentInvoice('DMCC')">
+                                        <!-- <mat-icon class="mat-18">info</mat-icon> -->
+                                        <span style="font-weight: 600">Invoice 2</span>
+                                    </button>
+                                </mat-menu>
+
                                 <!-- *ngIf="Status === 'Confirmed'" -->
                                 <div class="flex space-x-3 mr-2">
                                     <div (click)="amendment()"
