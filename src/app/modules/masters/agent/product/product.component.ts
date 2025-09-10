@@ -273,6 +273,10 @@ export class ProductComponent {
         //     return this.alertService.showToast('error', messages.permissionDenied);
         // }
 
+         if (!Security.hasPermission(agentPermissions.blockUnblockPermissions)) {
+            return this.alertService.showToast('error', messages.permissionDenied);
+        }
+
         if (record.isBlocked) {
             const label: string = 'Unblock Product'
             this.conformationService.open({
@@ -326,6 +330,10 @@ export class ProductComponent {
     }
 
     shiftProduct(record) {
+        if (!Security.hasPermission(agentPermissions.shiftProductPermissions)) {
+            return this.alertService.showToast('error', messages.permissionDenied);
+        }
+        
         this.matDialog.open(MasterAgentComponent, {
             data: record,
             disableClose: true

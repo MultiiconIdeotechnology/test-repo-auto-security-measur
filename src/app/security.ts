@@ -153,6 +153,7 @@ export const category_name = {
     export: 'Export',
     import: 'Import',
     block_unblock: 'Block/Unblock',
+    shift_product: 'Shift Product',
     enable_disable: 'Enable/Disable',
     copy: 'Copy',
     is_most: 'IsMost',
@@ -548,6 +549,9 @@ export const agentPermissions = {
     expiryProductPermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Expiry Product', category_name: category_name.operation },
     salesReturnProductPermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Sales Return', category_name: category_name.operation },
     deleteProductPermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Delete', category_name: category_name.operation },
+    blockUnblockPermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Block Unblock', category_name: category_name.block_unblock },
+    shiftProductPermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Shift Product', category_name: category_name.shift_product },
+    
     // techServicePermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Tech Service', category_name: category_name.operation },
     // techCallHistoryPermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Timeline Call History', category_name: category_name.operation }
     viewOnlyAssignedPermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'View Only Assigned', category_name: category_name.view }
