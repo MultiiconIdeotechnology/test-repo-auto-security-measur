@@ -69,7 +69,7 @@ export class ProductLogComponent {
 
     @Input() fieldList: any[] = [];   // input from parent
 
-  displayedColumns: string[] = ['activity', 'activityType', 'activityDateTime', 'subModule', 'ipAddress'];
+  displayedColumns: string[] = ['activityDateTime','activity', 'activityType'];
   dataSource = new MatTableDataSource<any>();
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;

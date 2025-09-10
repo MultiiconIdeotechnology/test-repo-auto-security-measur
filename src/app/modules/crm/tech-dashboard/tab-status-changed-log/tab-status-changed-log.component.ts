@@ -149,7 +149,7 @@ export class tabStatusChangedLogComponent {
     ) {
         this.cols = this.columns.map(x => x.key);
         this.key = this.module_name;
-        this.sortColumn = 'date';
+        this.sortColumn = 'entry_date_time';
         this.sortDirection = 'desc';
         this.Mainmodule = this;
         if (data)
