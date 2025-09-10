@@ -80,7 +80,7 @@ export class HotelBookingDetailsComponent {
   paymentBy: any;
   mainDataAll: any;
   roomsList: any;
-  jsonParam:any
+  jsonParam: any
 
 
 
@@ -167,26 +167,25 @@ export class HotelBookingDetailsComponent {
     if (!Security.hasPermission(bookingsHotelPermissions.invoicePermissions)) {
       return this.alertService.showToast('error', messages.permissionDenied);
     }
-    const recordData = record == 'DMCC' ? this.bookingDetail.agent_invoice_id : this.bookingDetail.invoice_id_inr
-
+    const recordData = record == 'print' ? this.bookingDetail.agent_invoice_id : record
     this.flighttabService.Invoice(recordData).subscribe({
       next: (res) => {
-        CommonUtils.downloadPdf(res.data, record == 'DMCC' ? this.bookingDetail.agent_invoice_no : this.bookingDetail.invoice_no_inr + '.pdf');
+        CommonUtils.downloadPdf(res.data, this.bookingDetail.agent_invoice_no + '.pdf');
       }, error: (err) => {
         this.alertService.showToast('error', err)
       }
     })
   }
 
-     fileLogs() {
-        this.matDialog.open(FileLogsComponent, {
-          data: {id:this.bookingDetail.id, send: 'Hotel'},
-          disableClose: true
-        }).afterClosed().subscribe(res => {
-          // if(res)
-          // this.refreshItems();
-        })
-      }
+  fileLogs() {
+    this.matDialog.open(FileLogsComponent, {
+      data: { id: this.bookingDetail.id, send: 'Hotel' },
+      disableClose: true
+    }).afterClosed().subscribe(res => {
+      // if(res)
+      // this.refreshItems();
+    })
+  }
 
   print(val): void {
 
@@ -232,8 +231,8 @@ export class HotelBookingDetailsComponent {
 
   agentInfo(data): void {
     if (data.master_agent_id) {
-    //   this.router.navigate([Routes.customers.agent_entry_route + '/' + data.master_agent_id + '/readonly'])
-        Linq.recirect([Routes.customers.agent_entry_route + '/' + data.master_agent_id + '/readonly'])
+      //   this.router.navigate([Routes.customers.agent_entry_route + '/' + data.master_agent_id + '/readonly'])
+      Linq.recirect([Routes.customers.agent_entry_route + '/' + data.master_agent_id + '/readonly'])
     }
     else {
       this.B2BPartnerInfo();
@@ -244,76 +243,76 @@ export class HotelBookingDetailsComponent {
     }
   }
 
-  B2BPartnerInfo(){
+  B2BPartnerInfo() {
     this.matDialog.open(SubAgentInfoComponent, {
-          data: { data: this.mainDataAll, readonly: true, id: this.mainDataAll.agent_id },
-          disableClose: true
-        })
-  }
-
-  checkStatus(){
-    this.route.paramMap.subscribe(params => {
-      const id = params.get('id');
-    const label: string = 'Check Status';
-    this.conformationService
-      .open({
-        title: label,
-        message: 'Are you sure want to ' + label.toLowerCase() + ' ?',
-      })
-      .afterClosed()
-      .subscribe((res) => {
-        if (res === 'confirmed') {
-          const json = {
-            id: id,
-            service: 'Hotel'
-          }
-          this.flighttabService.checkPaymentStatus(json).subscribe({
-            next: (res:any) => {
-              this.alertService.showToast('success', res.status, 'top-right', true);
-            },
-            error: (err) => {
-              this.alertService.showToast('error', err, 'top-right', true);
-
-            },
-          });
-        }
-      });
+      data: { data: this.mainDataAll, readonly: true, id: this.mainDataAll.agent_id },
+      disableClose: true
     })
   }
 
-  refund(){
+  checkStatus() {
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
-    const label: string = 'Refund';
-    this.conformationService
-      .open({
-        title: label,
-        message: 'Are you sure want to ' + label.toLowerCase() + ' ?',
-      })
-      .afterClosed()
-      .subscribe((res) => {
-        if (res === 'confirmed') {
-          const json = {
-            id: id,
-            service: 'Hotel'
-          }
-          this.flighttabService.generateRevertPayment(json).subscribe({
-            next: (res:any) => {
-              this.alertService.showToast('success', 'Refund is initiated!', 'top-right', true);
-            },
-            error: (err) => {
-              this.alertService.showToast('error', err, 'top-right', true);
+      const label: string = 'Check Status';
+      this.conformationService
+        .open({
+          title: label,
+          message: 'Are you sure want to ' + label.toLowerCase() + ' ?',
+        })
+        .afterClosed()
+        .subscribe((res) => {
+          if (res === 'confirmed') {
+            const json = {
+              id: id,
+              service: 'Hotel'
+            }
+            this.flighttabService.checkPaymentStatus(json).subscribe({
+              next: (res: any) => {
+                this.alertService.showToast('success', res.status, 'top-right', true);
+              },
+              error: (err) => {
+                this.alertService.showToast('error', err, 'top-right', true);
 
-            },
-          });
-        }
-      });
+              },
+            });
+          }
+        });
+    })
+  }
+
+  refund() {
+    this.route.paramMap.subscribe(params => {
+      const id = params.get('id');
+      const label: string = 'Refund';
+      this.conformationService
+        .open({
+          title: label,
+          message: 'Are you sure want to ' + label.toLowerCase() + ' ?',
+        })
+        .afterClosed()
+        .subscribe((res) => {
+          if (res === 'confirmed') {
+            const json = {
+              id: id,
+              service: 'Hotel'
+            }
+            this.flighttabService.generateRevertPayment(json).subscribe({
+              next: (res: any) => {
+                this.alertService.showToast('success', 'Refund is initiated!', 'top-right', true);
+              },
+              error: (err) => {
+                this.alertService.showToast('error', err, 'top-right', true);
+
+              },
+            });
+          }
+        });
     })
   }
 
   logs(): void {
     this.matDialog.open(LogsComponent, {
-      data: {data: this.mainDataAll.id, service:'Hotel'},
+      data: { data: this.mainDataAll.id, service: 'Hotel' },
       disableClose: true
     }).afterClosed().subscribe(res => {
       // if(res)
