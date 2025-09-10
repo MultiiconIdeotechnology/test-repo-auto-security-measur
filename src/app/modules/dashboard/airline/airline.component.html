@@ -1,4 +1,4 @@
-<div class="mx-auto pt-10 max-w-[1200px] min-w-[1200px]">
+<div class="mx-auto pt-7 max-w-[1200px] min-w-[1200px]">
   <!-- Loader -->
   <div class="absolute inset-x-0 top-0 z-99999" *ngIf="isLoadingProcessing">
     <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
@@ -511,7 +511,7 @@
     <div class="flex flex-col space-y-6  min-w-[900px]">
 
       <!------One Way Fare Date Calendar-------->
-      <div *ngIf=" flights.length > 0">
+      <div *ngIf=" supplierList?.length > 0">
         <div class="flex flex-col rounded-lg mb-0 relative bg-card "
           style="box-shadow: 0px 2px 8px 0px rgba(0, 0, 0, 0.04);"
           [ngClass]="supplierList.length > 7 ? 'px-10 py-[10px]': 'py-[10px]'">

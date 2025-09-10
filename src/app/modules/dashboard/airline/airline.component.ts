@@ -794,6 +794,8 @@ export class AirlineComponent implements OnInit {
         });
 
         let flightData = res.flights;
+        console.log("797 flightData", flightData);
+        
         if (!this.groupInquiry) {
           // Refundable & Non-Refundable Merge Filter To salePrice & purchasePrice Update BN-1205
           flightData = res.flights.filter((flight: any) => flight.refundable_Price > 0 || flight.nonrefundable_Price > 0).map((flight: any) => {
@@ -808,6 +810,8 @@ export class AirlineComponent implements OnInit {
 
         this.Allflights = flightData;
         this.flights = flightData;
+        console.log("this.flights", this.flights);
+        
 
         this.returnDate = res.return_date_time;
         this.totalflights.set(res.count);

@@ -7,7 +7,7 @@
         </div>
         <div>
             <div
-                class="flex mobile:flex-col mobile:justify-start justify-between mobile:px-3 px-5 py-2 items-center w-full min-h-[95px]">
+                class="flex mobile:flex-col mobile:justify-start dark:bg-transparent bg-white justify-between mobile:px-3 px-5 py-2 items-center w-full min-h-[95px]">
                 <div class="flex" *ngIf="isShowItinerary">
                     <mat-checkbox [(ngModel)]="flight.shareItinerary"></mat-checkbox>
                 </div>
@@ -117,7 +117,7 @@
                         </button>
                     </ng-container>
                     <button *ngIf="flight.moreFlights.data.length > 0"
-                        class="secondary-bg border-[1px] primary-border rounded-md px-4 py-[7px] h-full justify-center items-center"
+                        class="secondary-bg border-[1px] dark:border-gray-500 border-gray-700 rounded-md px-4 py-[7px] h-full justify-center items-center"
                         (click)="toggleViewFare(flight)">
                         <span *ngIf="!flight.showFare"
                             class="primary-text font-semibold text-sm uppercase tracking-wide">View Fare</span>

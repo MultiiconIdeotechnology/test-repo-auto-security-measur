@@ -17,7 +17,7 @@
                     ''}}</div>
             </div>
             <div *ngFor="let flight of depFlights">
-                <div class="relative border overflow-hidden rounded-lg my-4 mobile:my-2  pt-3 mobile:px-2 mobile:pt-2 cursor-pointer white-bg"
+                <div class="relative border overflow-hidden rounded-lg my-4 mobile:my-2  pt-3 mobile:px-2 mobile:pt-2 cursor-pointer dark:bg-transparent bg-white"
                     [ngClass]="{'shadow-xl primary-border bg-card' : SelectedDepartureFlight?.id === flight.id, 'border-gray-border' : SelectedDepartureFlight?.id !== flight.id}"
                     (click)="SelectedDepartureFlight?.id === flight.id ? toggleFlightDetails(flight) : SelectedDepartureFlight = flight">
                     <div class="px-5">
@@ -157,7 +157,7 @@
                     ''}}</div>
             </div>
             <div *ngFor="let flight of retFlights">
-                <div class="relative border overflow-hidden rounded-lg mobile:my-2 my-4  pt-3 mobile:px-2 mobile:pt-2 cursor-pointer white-bg"
+                <div class="relative border overflow-hidden rounded-lg mobile:my-2 my-4  pt-3 mobile:px-2 mobile:pt-2 cursor-pointer dark:bg-transparent bg-white"
                     [ngClass]="{'shadow-xl primary-border bg-card' : SelectedReturnFlight?.id === flight.id, 'border-gray-border' : SelectedReturnFlight?.id !== flight.id}"
                     (click)="SelectedReturnFlight?.id === flight.id ? toggleFlightDetails(flight) : SelectedReturnFlight = flight">
                     <div class="px-5">
@@ -374,7 +374,7 @@
 
 <ng-template #international>
     <div *ngFor="let flight of flights; let index = index" class="mb-4">
-        <div class="relative rounded-lg border-gray-border border-2  overflow-hidden white-bg">
+        <div class="relative rounded-lg border-gray-border border-2  overflow-hidden dark:bg-transparent bg-white">
             <div *ngIf="user.is_admin" class="triangle text-center opacity-50"
                 [style]="'border-top: 20px solid '+ flight.provider_color +' ;'">
                 <div class="mt-[-21px] ml-[3px] text-[10px] white-text">{{flight.provider_id}}</div>
@@ -489,7 +489,7 @@
                                 <span *ngIf="flight.showFare" class="white-text tracking-wide">Hide Fare</span>
                             </button> -->
                         <button *ngIf="flight.moreFlights.data.length > 0"
-                            class="secondary-bg mobile:min-w-[82px] primary-border border-[1px] mobile:h-[28px] rounded-md px-4 py-[7px] mobile:px-[8px] mobile:py-0 h-full justify-center items-center"
+                            class="secondary-bg mobile:min-w-[82px] dark:border-gray-500 border-gray-700  border-[1px] mobile:h-[28px] rounded-md px-4 py-[7px] mobile:px-[8px] mobile:py-0 h-full justify-center items-center"
                             (click)="toggleViewFare(flight)">
                             <span *ngIf="!flight.showFare"
                                 class="primary-text font-semibold text-sm uppercase tracking-wide">View Fare</span>

@@ -33,13 +33,13 @@
 
         <!-- Fare Filter popup-->
         <ng-container *ngIf="isFilterVisible">
-            <div #filterPopup class="p-3 rounded absolute top-[50px] right-[25px] z-10 "
+            <div #filterPopup class="p-3 rounded absolute top-[50px] right-[25px] z-10 dark:bg-[#364459] bg-[#d7d7d7]"
                 style="box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;">
                 <div class="flex ">
 
                     <!-- Fare Type Filter -->
                     <div class="border-r-[1px] border-[#E8E5E5] pr-[10px]">
-                        <div class="font-semibold text-sm text-[#090808] pb-2">Fare Type</div>
+                        <div class="font-semibold text-base dark:text-white text-[#090808] pb-2">Fare Type</div>
                         <div class="max-h-[200px] overflow-auto">
                             <div class="flex" *ngFor="let type of uniqueFareTypes; let i = index">
                                 <mat-checkbox class="ckbox_far_or" [(ngModel)]="type.is_selected" (change)="onFareTypeChange(i)">{{ type.name }}</mat-checkbox>
@@ -49,7 +49,7 @@
 
                     <!-- Refundable Filter -->
                     <div class="border-r-[1px] border-[#E8E5E5] px-[10px]">
-                        <div class="font-semibold text-sm text-[#090808] pb-2">Refundable status</div>
+                        <div class="font-semibold text-base dark:text-white text-[#090808] pb-2">Refundable status</div>
                         <mat-radio-group class="grid" [(ngModel)]="selectedRefundable">
                             <mat-radio-button class="pb-2" value="all">All</mat-radio-button>
                             <mat-radio-button class="pb-2" value="true">Refundable</mat-radio-button>
@@ -59,7 +59,7 @@
 
                     <!-- Hold Filter -->
                     <div class="pl-[10px]" >
-                        <div class="font-semibold text-sm text-[#090808] pb-2">Hold status</div>
+                        <div class="font-semibold text-base dark:text-white text-[#090808] pb-2">Hold status</div>
                         <div>
                             <mat-checkbox class="ckbox_far_or" type="checkbox" [(ngModel)]="holdOnly" >Is available</mat-checkbox> 
                         </div>
@@ -177,7 +177,7 @@
                                 </div>
                             </div>
 
-                            <div class="font-Inter text-sm flex items-center py-[4px] px-[8px] rounded dark:bg-[#364459] " *ngIf="fare?.airlineRemark">
+                            <div class="font-Inter text-sm flex items-center py-[4px] px-[8px] rounded dark:bg-[#364459] bg-[#d7d7d7]" *ngIf="fare?.airlineRemark">
                                 ● <span class="pl-1 " [ngClass]="isMobileView ? '' : 'truncate'"
                                     [innerHTML]="sanitizer.bypassSecurityTrustHtml(fare.airlineRemark)"></span>
                                 <mat-icon *ngIf="!isMobileView" svgIcon="heroicons_outline:exclamation-circle"
@@ -210,13 +210,13 @@
 
             <!-- Navigation arrows -->
             <div mat-ripple
-                class="flex flex-row justify-center items-center absolute h-10 w-10 white-bg rounded-full top-[190px] -ml-[16px] shadow-xl gray-border border cursor-pointer"
+                class="flex flex-row justify-center items-center absolute h-10 w-10 dark:bg-[#1e293b] bg-white rounded-full top-[190px] -ml-[16px] shadow-xl gray-border border cursor-pointer"
                 (click)="slickModal.slickPrev()" *ngIf="showLeftArrow">
                 <mat-icon class="relative left-1 primary-text">arrow_back_ios</mat-icon>
             </div>
 
             <div mat-ripple
-                class="flex flex-row justify-center items-center absolute h-10 w-10 white-bg rounded-full right-0 top-[190px] -mr-[16px] shadow-xl gray-border border cursor-pointer"
+                class="flex flex-row justify-center items-center absolute h-10 w-10 dark:bg-[#1e293b] bg-white rounded-full right-0 top-[190px] -mr-[16px] shadow-xl gray-border border cursor-pointer"
                 (click)="slickModal.slickNext()" *ngIf="showRightArrow">
                 <mat-icon class="primary-text">arrow_forward_ios</mat-icon>
             </div>
