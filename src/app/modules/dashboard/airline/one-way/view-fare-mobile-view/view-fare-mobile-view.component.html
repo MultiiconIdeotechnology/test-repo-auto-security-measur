@@ -1,6 +1,6 @@
-<div class="flex flex-col max-w-256 mobile:max-w-full mobile:min-w-full max-h-[90vh]">
+<div class="flex flex-col max-w-256 mobile:max-w-full -m-6 mobile:min-w-full max-h-[90vh]">
     <div
-        class="flex flex-0 items-center justify-between mobile:sticky mobile:top-0 pl-7 pr-4 h-15 bg-white shadow-lg z-10">
+        class="flex flex-0 items-center justify-between mobile:sticky mobile:top-0 pl-7 pr-4 h-15  shadow-lg z-10">
         <div class="text-xl mobile:text-md font-bold py-1">
             <span class="text-orange-600">{{data?.moreFlights?.data?.length || 0}} FARE OPTIONS</span> available for
             your trip.
@@ -12,7 +12,7 @@
 
     <div class="px-6 pb-4 overflow-auto relative">
         <div class="flex justify-between items-center">
-            <p class="text-[14px] text-neutral-600 mobile:text-md font-semibold py-5 px-2">
+            <p class="text-[14px] text-gray-400 mobile:text-md font-semibold py-5 px-2">
                 {{data?.originCity}} 🡪 {{data?.destinationCity}} ·
                 {{data?.displaySegments[0]?.depTime | date: 'EEE, dd-MM-yyyy'}} · Departure at
                 {{data?.displaySegments[0]?.depTime | date: 'HH:mm'}} - Arrival at
@@ -33,7 +33,7 @@
 
         <!-- Fare Filter popup-->
         <ng-container *ngIf="isFilterVisible">
-            <div #filterPopup class="p-3 rounded absolute top-[50px] right-[25px] z-10 bg-white"
+            <div #filterPopup class="p-3 rounded absolute top-[50px] right-[25px] z-10 "
                 style="box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;">
                 <div class="flex ">
 
@@ -58,7 +58,7 @@
                     </div>
 
                     <!-- Hold Filter -->
-                    <div class="pl-[10px]" *ngIf="bontonPanel.isB2B()">
+                    <div class="pl-[10px]" >
                         <div class="font-semibold text-sm text-[#090808] pb-2">Hold status</div>
                         <div>
                             <mat-checkbox class="ckbox_far_or" type="checkbox" [(ngModel)]="holdOnly" >Is available</mat-checkbox> 
@@ -77,15 +77,15 @@
             <ngx-slick-carousel class="carousel flex items-stretch" #slickModal="slick-carousel" [config]="slideConfig"
                 (afterChange)="onSlideChange($event)" [attr.data-carousel-key]="carouselKey">
                 <div ngxSlickItem *ngFor="let fare of moreFlightAll"
-                    class="fare-card border border-stone-300 rounded-[4px] bg-white min-w-[260px] mobile:min-w-min mb-4 mx-2">
-                    <div class="flex justify-between px-4 pb-2 pt-3 border-b border-stone-300 min-h-[86px]">
+                    class="fare-card border dark:border-gray-500 border-stone-300 rounded-[4px]  min-w-[260px] mobile:min-w-min mb-4 mx-2">
+                    <div class="flex justify-between px-4 pb-2 pt-3 border-b dark:border-gray-500 border-stone-300 min-h-[86px]">
                         <div [ngClass]="fare?.cashback_amount > 0 ? '' : 'pt-2'">
                             <div class="text-orange-600 text-lg font-semibold">{{fare?.currency}} {{fare?.salePrice}}
                             </div>
 
                             <!----CaseBack---->
                             <div class="flex gap-1"
-                                *ngIf="fare?.cashback_amount > 0 && fare?.currency == 'INR' && bontonPanel.isB2B()">
+                                *ngIf="fare?.cashback_amount > 0 && fare?.currency == 'INR'">
                                 <span class="text-gradient text-sm"> {{fare?.currency}} {{fare?.cashback_amount}}
                                     Cashback</span>
                                 <!-- <img class="w-4" src="assets/icons/cashback.svg"> -->
@@ -177,7 +177,7 @@
                                 </div>
                             </div>
 
-                            <div class="font-Inter text-sm airline-remark" *ngIf="fare?.airlineRemark">
+                            <div class="font-Inter text-sm flex items-center py-[4px] px-[8px] rounded dark:bg-[#364459] " *ngIf="fare?.airlineRemark">
                                 ● <span class="pl-1 " [ngClass]="isMobileView ? '' : 'truncate'"
                                     [innerHTML]="sanitizer.bypassSecurityTrustHtml(fare.airlineRemark)"></span>
                                 <mat-icon *ngIf="!isMobileView" svgIcon="heroicons_outline:exclamation-circle"
@@ -188,17 +188,17 @@
                         </div>
 
                         <ng-container *ngIf="!authService.isAutoLogin">
-                            <div class="mt-5 flex justify-center" [ngClass]="{'justify-between': bontonPanel.isB2B()}">
-                                <ng-container *ngIf="bontonPanel.isB2B()">
+                            <div class="mt-5 flex justify-center" >
+                                <!-- <ng-container *ngIf="bontonPanel.isB2B()">
                                     <button [disabled]="!fare?.isHold" [ngClass]="{'primary-border': fare?.isHold}"
                                         (click)="booking(fare)"
                                         class="w-1/2 mr-4 border-[1px] rounded-md px-4 py-[7px] h-full justify-center items-center">
                                         <span class="font-semibold text-sm uppercase tracking-wide"
                                             [ngClass]="{'primary-text': fare?.isHold}">Hold</span>
                                     </button>
-                                </ng-container>
+                                </ng-container> -->
 
-                                <button class="w-1/2 blue-button fuse-mat-button-large" mat-flat-button
+                                <button class="dark:bg-primary bg-gray-200  px-[10px] rounded-lg w-[100px]" mat-flat-button
                                     (click)="booking(fare)">
                                     <span class="white-text tracking-wide">Book</span>
                                 </button>
