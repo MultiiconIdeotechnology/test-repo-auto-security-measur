@@ -67,7 +67,7 @@ export class VerifyDomainComponent {
 
   onDomainVerify() {
     this.isLoading = true;
-    this.domainVarifyService.pingAndBind(this.wlId, this.data?.subid).subscribe({
+    this.domainVarifyService.pingAndBind(this.wlId, this.data?.productPurchaseId).subscribe({
       next: (res) => {
         if (res) {
           if (res && res?.['pointed_domains']) {
