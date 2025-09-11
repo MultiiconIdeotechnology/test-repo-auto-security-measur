@@ -56,7 +56,10 @@ export class ConsoleAccountFormComponent {
       product_id : [""]
     });
 
-    if(this.data?.item_name?.toLowerCase().includes('ios')){
+    console.log("59999 data", this.data);
+    
+
+    if(this.data?.itemName?.toLowerCase().includes('ios')){
       this.formGroup.get('password').setValidators([Validators.required]);
       this.formGroup.get('password')?.patchValue(this.wlSettingData?.play_console_password)
     } else {
@@ -75,7 +78,7 @@ export class ConsoleAccountFormComponent {
   }
 
   openVideoLink(){
-    const itemName = this.data?.item_name?.toLowerCase();
+    const itemName = this.data?.itemName?.toLowerCase();
     if (itemName?.includes('android')) {
       window.open(this.adroidLinkVideoLink, '_blank'); 
     } else if (itemName?.includes('ios')){
@@ -84,7 +87,7 @@ export class ConsoleAccountFormComponent {
   }
 
   openMoreDetails(){
-    const itemName = this.data?.item_name?.toLowerCase();
+    const itemName = this.data?.itemName?.toLowerCase();
   
     if (itemName?.includes('android')) {
       window.open(this.androidLink, '_blank'); 

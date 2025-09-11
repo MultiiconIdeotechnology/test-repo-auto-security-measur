@@ -24,6 +24,7 @@ import { AppConfig } from 'app/config/app-config';
 import { tabStatusChangedLogComponent } from '../tab-status-changed-log/tab-status-changed-log.component';
 import { MatDividerModule } from '@angular/material/divider';
 import { ProductLogComponent } from '../product-log/product-log.component';
+import { PaymentInfoWLSetttingLinkComponent } from '../../agent/wl-settings-link/payment-info-wl-settings-link.component';
 
 @Component({
     selector: 'app-info-tabs',
@@ -55,7 +56,8 @@ import { ProductLogComponent } from '../product-log/product-log.component';
         MatCheckboxModule,
         tabStatusChangedLogComponent,
         MatDividerModule,
-        ProductLogComponent
+        ProductLogComponent,
+        PaymentInfoWLSetttingLinkComponent
     ],
 })
 export class TechInfoTabsComponent {
@@ -73,6 +75,8 @@ export class TechInfoTabsComponent {
     @ViewChild('tabStatus') tabStatus: tabStatusChangedLogComponent;
     cols = [];
     total = 0;
+    getWLSettingList = [];
+
 
     columns = [
         {
@@ -131,6 +135,7 @@ export class TechInfoTabsComponent {
             this.crmService.getData(this.record.id).subscribe({
                 next: (res) => {
                     this.fieldList = res
+                    this.wlSetting(this.fieldList?.agentId);
                 },
                 error: (err) => {
                     this.alertService.showToast(
@@ -177,6 +182,19 @@ export class TechInfoTabsComponent {
         }
     }
 
+    public wlSetting(record): void {
+        this.crmService.getWLSettingList(record).subscribe({
+            next: (data) => {
+                this.isLoading = false;
+                this.getWLSettingList = data[0];
+            },
+            error: (err) => {
+                this.alertService.showToast('error', err, 'top-right', true);
+                this.isLoading = false;
+            },
+        });
+    }
+
     public tabChanged(event: any): void {
         const tabName = event?.tab?.ariaLabel;
         this.tabNameStr = tabName;
@@ -194,6 +212,10 @@ export class TechInfoTabsComponent {
 
             case 'Product Logs':
                 this.tab = 'Product Logs';
+                break;
+
+            case 'WL-Setting Links':
+                this.tab = 'WL-Setting Links';
                 break;
         }
     }

@@ -303,7 +303,7 @@ export class TechDashboardExpiredComponent extends BaseListingComponent {
                 inputBox: 'Date',
                 dateCustomShow: true,
                 customShow: false,
-                datepickerParameter: record?.activation_date
+                datepickerParameter: record?.expiryDate
             })
             .afterClosed()
             .subscribe((res) => {
