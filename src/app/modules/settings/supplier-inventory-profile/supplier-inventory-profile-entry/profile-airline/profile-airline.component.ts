@@ -250,6 +250,7 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
   }
 
   onEdit(row: any, index: number): void {
+    if (row.id == this.airlineForm.get('id').value) return
     this.editIndex = index;
     this.currentEditId = row.id;
 
@@ -259,7 +260,6 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
     } else {
       airlineSelection = row.airline || [];
     }
-
     let airPortCodeSelection: any[] = [];
     if (row.airport_codes?.includes('All')) {
       airPortCodeSelection = ["All"];
@@ -293,22 +293,22 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
         route_type: row.route_type,
         route_type_visible: row.route_type_visible,
         trip_type_visible: row.trip_type_visible,
-        airline_id: row.airline,
+        airline_id: airlineSelection,
         airlineFilter: '',
         fare_class: fareClassSelection,
         fare_type: row.fare_type,
         fare_type_class_visible_type: row.fare_type_class_visible_type,
-        airport_code_id: row.airport_codes,
+        airport_code_id: airPortCodeSelection,
         airport_code_filter: '',
         airport_codes_visible_type: row.airport_codes_visible_type,
         stops: row.stops || [],
-        fare_type_class: row.fare_type_class || [],
+        fare_type_class: fareTypeClassSelection,
         supplier_fare_type_filter: '',
         is_enable: row.is_enable
       });
 
 
-      this.cd.detectChanges();
+      //this.cd.detectChanges();
     }, 0);
 
     this.suplier_id = row.supplier_id;
@@ -413,11 +413,12 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
 
     if (event.source._selected) {
       // Select All + all airlines
-      if (control.value.some(x => x != 'All'))
+      if (control?.value?.some(x => x != 'All'))
         control?.patchValue(['All'], { emitEvent: false });
     } else {
       // Clear selection
-      control?.patchValue([], { emitEvent: false });
+      // if (control.value.some(x => x != 'All'))
+      //   control?.patchValue([], { emitEvent: false });
     }
 
     this.isUpdatingAirlineSelection = false;
@@ -430,20 +431,25 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
     const control = this.airlineForm.get('airline_id');
     let selected = control?.value || [];
 
-    // Case 1: "All" selected but not all airlines → remove "All"
-    if (selected.includes('All') && (selected.length - 1) !== this.AirlineList.length) {
+    if (event.source._selected && selected.includes('All')) { 
       selected = selected.filter(v => v !== 'All');
       control?.patchValue(selected, { emitEvent: false });
     }
 
-    // Case 2: all airlines selected but "All" missing → add "All"
-    if (!selected.includes('All') && selected.length === this.AirlineList.length) {
-      control?.patchValue(['All', ...selected], { emitEvent: false });
-    }
+    // Case 1: "All" selected but not all airlines → remove "All"
+    // if (selected.includes('All') && (selected.length - 1) !== this.AirlineList.length) {
+    //   selected = selected.filter(v => v !== 'All');
+    //   control?.patchValue(selected, { emitEvent: false });
+    // }
 
-    if (!selected.includes('All') && selected.length === this.AirlineList.length) {
-      control?.patchValue(['All', ...selected], { emitEvent: false });
-    }
+    // Case 2: all airlines selected but "All" missing → add "All"
+    // if (!selected.includes('All') && selected.length === this.AirlineList.length) {
+    //   control?.patchValue(['All', ...selected], { emitEvent: false });
+    // }
+
+    // if (!selected.includes('All') && selected.length === this.AirlineList.length) {
+    //   control?.patchValue(['All', ...selected], { emitEvent: false });
+    // }
 
     this.isUpdatingAirlineSelection = false;
   }
@@ -463,11 +469,12 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
 
     if (event.source._selected) {
       // Select All + all airlines
-      if (control.value.some(x => x != 'All'))
+      if (control?.value?.some(x => x != 'All'))
         control?.patchValue(['All'], { emitEvent: false });
     } else {
       // Clear selection
-      control?.patchValue([], { emitEvent: false });
+      // if (control.value.some(x => x != 'All'))
+      //   control?.patchValue([], { emitEvent: false });
     }
 
     this.isUpdatingAirportCodes = false;
@@ -480,20 +487,25 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
     const control = this.airlineForm.get('airport_code_id');
     let selected = control?.value || [];
 
-    // Case 1: "All" selected but not all airlines → remove "All"
-    if (selected.includes('All') && (selected.length - 1) !== this.airPortcodeList.length) {
+    if (event.source._selected && selected.includes('All')) {
       selected = selected.filter(v => v !== 'All');
       control?.patchValue(selected, { emitEvent: false });
     }
 
-    // Case 2: all airlines selected but "All" missing → add "All"
-    if (!selected.includes('All') && selected.length === this.airPortcodeList.length) {
-      control?.patchValue(['All', ...selected], { emitEvent: false });
-    }
+    // // Case 1: "All" selected but not all airlines → remove "All"
+    // if (selected.includes('All') && (selected.length - 1) !== this.airPortcodeList.length) {
+    //   selected = selected.filter(v => v !== 'All');
+    //   control?.patchValue(selected, { emitEvent: false });
+    // }
 
-    if (!selected.includes('All') && selected.length === this.airPortcodeList.length) {
-      control?.patchValue(['All', ...selected], { emitEvent: false });
-    }
+    // // Case 2: all airlines selected but "All" missing → add "All"
+    // if (!selected.includes('All') && selected.length === this.airPortcodeList.length) {
+    //   control?.patchValue(['All', ...selected], { emitEvent: false });
+    // }
+
+    // if (!selected.includes('All') && selected.length === this.airPortcodeList.length) {
+    //   control?.patchValue(['All', ...selected], { emitEvent: false });
+    // }
 
     this.isUpdatingAirportCodes = false;
   }
@@ -504,7 +516,7 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
   //Fare Type class
   private isUpdatingFareTypeClass = false;
   clickAllFareTypeClass(event: any): void {
-     if (this.isUpdatingFareTypeClass) return;
+    if (this.isUpdatingFareTypeClass) return;
     this.isUpdatingFareTypeClass = true;
 
     const control = this.airlineForm.get('fare_type_class');
@@ -512,45 +524,51 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
 
     if (event.source._selected) {
       // Select All + all airlines
-      if (control.value.some(x => x != 'All'))
+      if (control?.value?.some(x => x != 'All'))
         control?.patchValue(['All'], { emitEvent: false });
     } else {
       // Clear selection
-      control?.patchValue([], { emitEvent: false });
+      // if (control.value.some(x => x != 'All'))
+      //   control?.patchValue([], { emitEvent: false });
     }
 
     this.isUpdatingFareTypeClass = false;
   }
 
   clickOtherFareTypeClass(event: any): void {
-   if (this.isUpdatingFareTypeClass) return;
+    if (this.isUpdatingFareTypeClass) return;
     this.isUpdatingFareTypeClass = true;
 
     const control = this.airlineForm.get('fare_type_class');
     let selected = control?.value || [];
 
-    // Case 1: "All" selected but not all airlines → remove "All"
-    if (selected.includes('All') && (selected.length - 1) !== this.supplierFareTypeList.length) {
+
+    if (event.source._selected && selected.includes('All')) {
       selected = selected.filter(v => v !== 'All');
       control?.patchValue(selected, { emitEvent: false });
     }
+    // // Case 1: "All" selected but not all airlines → remove "All"
+    // if (selected.includes('All') && (selected.length - 1) !== this.supplierFareTypeList.length) {
+    //   selected = selected.filter(v => v !== 'All');
+    //   control?.patchValue(selected, { emitEvent: false });
+    // }
 
-    // Case 2: all airlines selected but "All" missing → add "All"
-    if (!selected.includes('All') && selected.length === this.supplierFareTypeList.length) {
-      control?.patchValue(['All', ...selected], { emitEvent: false });
-    }
+    // // Case 2: all airlines selected but "All" missing → add "All"
+    // if (!selected.includes('All') && selected.length === this.supplierFareTypeList.length) {
+    //   control?.patchValue(['All', ...selected], { emitEvent: false });
+    // }
 
-    if (!selected.includes('All') && selected.length === this.supplierFareTypeList.length) {
-      control?.patchValue(['All', ...selected], { emitEvent: false });
-    }
+    // if (!selected.includes('All') && selected.length === this.supplierFareTypeList.length) {
+    //   control?.patchValue(['All', ...selected], { emitEvent: false });
+    // }
 
     this.isUpdatingFareTypeClass = false;
   }
 
-//Fare class
-private updatingFareClass = false;
-onSelectAllFareClass(event: any): void {
-   if (this.updatingFareClass) return;
+  //Fare class
+  private updatingFareClass = false;
+  onSelectAllFareClass(event: any): void {
+    if (this.updatingFareClass) return;
     this.updatingFareClass = true;
 
     const control = this.airlineForm.get('fare_class');
@@ -558,40 +576,46 @@ onSelectAllFareClass(event: any): void {
 
     if (event.source._selected) {
       // Select All + all airlines
-      if (control.value.some(x => x != 'All'))
+      if (control?.value?.some(x => x != 'All'))
         control?.patchValue(['All'], { emitEvent: false });
     } else {
       // Clear selection
-      control?.patchValue([], { emitEvent: false });
+      // if (control.value.some(x => x != 'All'))
+      //   control?.patchValue([], { emitEvent: false });
     }
 
     this.updatingFareClass = false;
-}
+  }
 
-onFareClassChange(event: any): void {
-  if (this.updatingFareClass) return;
+  onFareClassChange(event: any): void {
+    if (this.updatingFareClass) return;
     this.updatingFareClass = true;
 
     const control = this.airlineForm.get('fare_class');
     let selected = control?.value || [];
 
-    // Case 1: "All" selected but not all airlines → remove "All"
-    if (selected.includes('All') && (selected.length - 1) !== this.fareClassList.length) {
+    if (event.source._selected && selected.includes('All')) {
       selected = selected.filter(v => v !== 'All');
       control?.patchValue(selected, { emitEvent: false });
     }
 
-    // Case 2: all airlines selected but "All" missing → add "All"
-    if (!selected.includes('All') && selected.length === this.fareClassList.length) {
-      control?.patchValue(['All', ...selected], { emitEvent: false });
-    }
+    // Case 1: "All" selected but not all airlines → remove "All"
+    // if (selected.includes('All') && (selected.length - 1) !== this.fareClassList.length) {
+    //   selected = selected.filter(v => v !== 'All');
+    //   control?.patchValue(selected, { emitEvent: false });
+    // }
 
-    if (!selected.includes('All') && selected.length === this.fareClassList.length) {
-      control?.patchValue(['All', ...selected], { emitEvent: false });
-    }
+    // // Case 2: all airlines selected but "All" missing → add "All"
+    // if (!selected.includes('All') && selected.length === this.fareClassList.length) {
+    //   control?.patchValue(['All', ...selected], { emitEvent: false });
+    // }
+
+    // if (!selected.includes('All') && selected.length === this.fareClassList.length) {
+    //   control?.patchValue(['All', ...selected], { emitEvent: false });
+    // }
 
     this.updatingFareClass = false;
-}
+  }
 
 
   onSelectAllStops(event: any): void {
@@ -655,7 +679,7 @@ onFareClassChange(event: any): void {
     if (airPortCode.includes('All')) {
       airPortCode = ['All'];
     }
-    
+
     let fareTypeClass = formValue.fare_type_class || [];
     if (fareTypeClass.includes('All')) {
       fareTypeClass = ['All'];
