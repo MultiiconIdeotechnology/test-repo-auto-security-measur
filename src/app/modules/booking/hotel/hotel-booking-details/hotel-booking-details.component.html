@@ -25,7 +25,7 @@
                     <div class="flex flex-col w-2/3">
                         <div class="first relative flex flex-col mb-4 bg-card rounded-2xl  p-6  overflow-x-hidden">
                             <div class="flex justify-between">
-                                <div class="flex">
+                                <div class="flex flex-wrap gap-1">
 
                                     <div *ngIf="mainDataAll?.is_print_button_show" (click)="print('agent')"
                                         class="px-2 py-1 border border-gray-border rounded-lg flex items-center secondary-text cursor-pointer">
@@ -54,22 +54,12 @@
                                     </mat-menu>
 
                                     <!--Agent Invoice-->
-                                    <div *ngIf="mainDataAll?.is_invoice_button_show && mainDataAll?.agent_invoice_id" [matMenuTriggerFor]="optionMenu1"
-                                        class="px-2 py-1 mx-2 border border-gray-border rounded-lg flex items-center secondary-text cursor-pointer">
-                                        <mat-icon
-                                            class="material-symbols-outlined secondary-text text-xl">print</mat-icon>
-                                        <span class="text-md leading-none ml-2">Invoice</span>
-                                    </div>
-                                    <mat-menu #optionMenu1>
-                                        <button mat-menu-item (click)="agentInvoice('INR')">
-                                            <!-- <mat-icon class="mat-18">info</mat-icon> -->
-                                            <span style="font-weight: 600">Invoice 1</span>
-                                        </button>
-                                        <button mat-menu-item (click)="agentInvoice('DMCC')">
-                                            <!-- <mat-icon class="mat-18">info</mat-icon> -->
-                                            <span style="font-weight: 600">Invoice 2</span>
-                                        </button>
-                                    </mat-menu>
+                                     <div *ngIf="mainDataAll?.is_invoice_button_show && mainDataAll?.agent_invoice_id"
+                                    class="px-2 py-1 mx-2 border border-gray-border rounded-lg flex items-center secondary-text cursor-pointer"
+                                    (click)="agentInvoice('print')">
+                                    <mat-icon class="material-symbols-outlined secondary-text text-xl">print</mat-icon>
+                                    <span class="text-md leading-none ml-2">Invoice</span>
+                                </div>
 
                                     <div class="flex space-x-3" *ngIf="Status === 'Confirmed'">
                                         <div (click)="amendment()"

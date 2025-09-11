@@ -83,7 +83,7 @@
                                     <span class="text-md font-semibold ml-2 leading-none">Your Ticket is Rejected
                                     </span>
                                 </div>
-                                 <div *ngIf="Status === 'Hold Failed'"
+                                <div *ngIf="Status === 'Hold Failed'"
                                     class="pl-2 pr-3 py-1 rounded-lg bg-[rgba(255,0,0,0.1)] flex items-center border bonton-red-border">
                                     <mat-icon class="text-2xl bonton-red-text">warning</mat-icon>
                                     <span class="text-md font-semibold ml-2 leading-none">Hold Failed</span>
@@ -101,7 +101,7 @@
                                         {{Status}}</span>
                                 </div> -->
                             </div>
-                            <div class="flex">
+                            <div class="flex flex-wrap gap-1">
 
                                 <div *ngIf="mainDataAll?.is_print_button_show"
                                     class="px-2 py-1 border border-gray-border rounded-lg flex items-center secondary-text cursor-pointer"
@@ -113,13 +113,12 @@
                                 </div>
 
                                 <!--Your Inovice-->
-                                <div *ngIf="mainDataAll?.is_invoice_button_show && mainDataAll?.invoice_id" [matMenuTriggerFor]="optionMenu" 
-                                    class="px-2 py-1 mx-2 border border-gray-border rounded-lg flex items-center secondary-text cursor-pointer"
-                                    >
+                                <div *ngIf="mainDataAll?.is_invoice_button_show && mainDataAll?.invoice_id"
+                                    [matMenuTriggerFor]="optionMenu"
+                                    class="px-2 py-1 mx-2 border border-gray-border rounded-lg flex items-center secondary-text cursor-pointer">
                                     <mat-icon class="material-symbols-outlined secondary-text text-xl">print</mat-icon>
-                                    <span  class="text-md leading-none ml-2">Your Invoice</span>
+                                    <span class="text-md leading-none ml-2">Your Invoice</span>
                                 </div>
-
                                 <mat-menu #optionMenu>
                                     <button mat-menu-item (click)="invoice('INR')">
                                         <!-- <mat-icon class="mat-18">info</mat-icon> -->
@@ -132,22 +131,12 @@
                                 </mat-menu>
 
                                 <!-- Agent Invoice-->
-                                 <div *ngIf="mainDataAll?.is_invoice_button_show && mainDataAll?.agent_invoice_id" [matMenuTriggerFor]="optionMenu1" 
+                                <div *ngIf="mainDataAll?.is_invoice_button_show && mainDataAll?.agent_invoice_id"
                                     class="px-2 py-1 mx-2 border border-gray-border rounded-lg flex items-center secondary-text cursor-pointer"
-                                    >
+                                    (click)="agentInvoice('print')">
                                     <mat-icon class="material-symbols-outlined secondary-text text-xl">print</mat-icon>
-                                    <span  class="text-md leading-none ml-2">Invoice</span>
+                                    <span class="text-md leading-none ml-2">Invoice</span>
                                 </div>
-                                <mat-menu #optionMenu1>
-                                    <button mat-menu-item (click)="agentInvoice('INR')">
-                                        <!-- <mat-icon class="mat-18">info</mat-icon> -->
-                                        <span style="font-weight: 600">Invoice 1</span>
-                                    </button>
-                                    <button mat-menu-item (click)="agentInvoice('DMCC')">
-                                        <!-- <mat-icon class="mat-18">info</mat-icon> -->
-                                        <span style="font-weight: 600">Invoice 2</span>
-                                    </button>
-                                </mat-menu>
 
                                 <!-- *ngIf="Status === 'Confirmed'" -->
                                 <div class="flex space-x-3 mr-2">
@@ -175,7 +164,7 @@
                                     </div>
                                     <span class="text-md leading-none ml-2">File Logs</span>
                                 </div>
-                                
+
                                 <div class="px-2 py-1 border border-gray-border rounded-lg flex items-center secondary-text cursor-pointer"
                                     (click)="fareRules()" *ngIf="mainDataAll && mainDataAll?.is_farerule_show">
                                     <div>
@@ -746,14 +735,16 @@
                         <div class="w-[200px] px-4 truncate">{{ data.ticket_number || ' - '}}</div>
                         <div class="w-[200px] px-4 truncate">
                             <ng-container *ngIf="data.checkin_baggage; else noBaggage">
-                                <mat-icon class="material-symbols-outlined text-default text-xl relative top-1">luggage</mat-icon>
+                                <mat-icon
+                                    class="material-symbols-outlined text-default text-xl relative top-1">luggage</mat-icon>
                                 {{data.checkin_baggage}}
                             </ng-container>
                             <ng-template #noBaggage>-</ng-template>
                         </div>
                         <div class="w-[190px] px-4 truncate">
                             <ng-container *ngIf="data.cabin_baggage; else noCabinBaggage">
-                                <mat-icon class="material-symbols-outlined text-default text-xl ml-1 relative top-1">local_mall</mat-icon>
+                                <mat-icon
+                                    class="material-symbols-outlined text-default text-xl ml-1 relative top-1">local_mall</mat-icon>
                                 {{data.cabin_baggage}}
                             </ng-container>
                             <ng-template #noCabinBaggage>-</ng-template>
