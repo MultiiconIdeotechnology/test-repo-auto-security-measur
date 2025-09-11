@@ -260,7 +260,7 @@ export class TechDashboardCompletedComponent extends BaseListingComponent {
             return this.alertService.showToast('error', messages.permissionDenied);
         }
 
-        this.crmService.getWLSettingListTwoParams(record?.code, record?.item_name).subscribe({
+        this.crmService.getWLSettingListTwoParams(record?.agentId, record?.itemName).subscribe({
             next: (data) => {
                 this.isLoading = false;
                 this.getWLSettingList = data[0];
