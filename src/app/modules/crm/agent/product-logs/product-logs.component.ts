@@ -33,7 +33,7 @@ import { Subject } from 'rxjs';
   styles: [
     `
         .tbl-grid {
-            grid-template-columns: 200px 250px 130px 150px 150px;
+            grid-template-columns: 140px 140px 460px 150px;
         }
     `,
   ],
@@ -76,9 +76,22 @@ export class ProductLogsComponent {
   total = 0;
   @Input() logsDetail: any[] = [];
   columns = [
+     {
+      key: 'activityDateTime',
+      name: 'Date Time',
+      is_date: true,
+      date_formate: 'dd-MM-yyyy HH:mm',
+      is_sortable: false,
+      class: '',
+      is_sticky: false,
+      align: 'center',
+      indicator: false,
+      tooltip: false,
+      lastLogin: true
+    },
     {
-      key: 'moduleName',
-      name: 'Module Name',
+      key: 'entryBy',
+      name: 'Action',
       is_date: false,
       date_formate: '',
       is_sortable: false,
@@ -100,7 +113,8 @@ export class ProductLogsComponent {
       align: '',
       indicator: false,
       tooltip: true,
-      toColor: false
+      toColor: false,
+      isCombine: true
     },
     {
       key: 'activityType',
@@ -114,31 +128,19 @@ export class ProductLogsComponent {
       indicator: false,
       tooltip: true,
     },
-    {
-      key: 'activityDateTime',
-      name: 'Activity Date Time',
-      is_date: true,
-      date_formate: 'dd-MM-yyyy',
-      is_sortable: false,
-      class: '',
-      is_sticky: false,
-      align: 'center',
-      indicator: false,
-      tooltip: false,
-      lastLogin: true
-    },
-    {
-      key: 'ipAddress',
-      name: 'IP Address',
-      is_date: false,
-      date_formate: '',
-      is_sortable: false,
-      class: '',
-      is_sticky: false,
-      align: 'center',
-      indicator: false,
-      tooltip: false,
-    },
+   
+    // {
+    //   key: 'ipAddress',
+    //   name: 'IP Address',
+    //   is_date: false,
+    //   date_formate: '',
+    //   is_sortable: false,
+    //   class: '',
+    //   is_sticky: false,
+    //   align: 'center',
+    //   indicator: false,
+    //   tooltip: false,
+    // },
   ]
 
   dataList: any;

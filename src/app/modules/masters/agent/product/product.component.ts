@@ -85,7 +85,7 @@ export class ProductComponent {
         'purchasePrice',
         'dueAmount',
         'startIntegration',
-        'expiryDate',
+        'entryDate',
     ];
 
     constructor(
@@ -173,7 +173,7 @@ export class ProductComponent {
 
     editProduct(record) {
          if (record.status != 'New') {
-            this.alertService.showToast('error', 'Please update the status to New for editing.', 'top-right', true);
+            this.alertService.showToast('error', 'Only new status product has been allow for modify.', 'top-right', true);
             return
         }
         this.entityService.raiseproductPurchaseCall({ editData: record, editFlag: true })
@@ -359,7 +359,7 @@ export class ProductComponent {
         this.conformationService
             .open({
                 title: label,
-                message: 'Are you sure to ' + label.toLowerCase() + ' ' + record.productName + ' ?',
+                message: 'Do you want ' + label.toLowerCase() + ' ' + record.productName + ' ?',
             })
             .afterClosed()
             .subscribe((res) => {

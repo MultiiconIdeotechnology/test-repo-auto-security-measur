@@ -33,7 +33,7 @@ import { Subject } from 'rxjs';
    styles: [
     `
         .tbl-grid {
-            grid-template-columns: 100px 180px 600px;
+            grid-template-columns: 150px 180px 550px;
         }
     `,
   ],
@@ -81,7 +81,7 @@ export class StatusChangeLogsComponent {
         key: 'date',
         name: 'Date',
         is_date: true,
-        date_formate: 'dd-MM-yyyy',
+        date_formate: 'dd-MM-yyyy HH:mm',
         is_sortable: false,
         class: '',
         is_sticky: false,

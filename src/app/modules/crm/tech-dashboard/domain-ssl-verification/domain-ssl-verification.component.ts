@@ -56,9 +56,6 @@ export class DomainSslVerificationComponent {
     this.wlSettingData = data?.wlSettingList;
     this.fromKey = data?.from;
 
-    console.log("59 this.record", this.record);
-    console.log("60 this.wlSettingData", this.wlSettingData);
-    
   }
 
   ngOnInit(): void {

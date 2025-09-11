@@ -56,8 +56,6 @@ export class ConsoleAccountFormComponent {
       product_id : [""]
     });
 
-    console.log("59999 data", this.data);
-    
 
     if(this.data?.itemName?.toLowerCase().includes('ios')){
       this.formGroup.get('password').setValidators([Validators.required]);

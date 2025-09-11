@@ -51,9 +51,6 @@ export class ManageDomainFormComponent {
         api_url: ['', Validators.required],
       });
 
-      console.log("data", this.data);
-      console.log("wlSettingData", this.wlSettingData);
-      
   
       if(this.data?.itemName?.includes('B2C')){
         this.formGroup.get('b2c_portal_url').setValidators([Validators.required]);

@@ -483,7 +483,7 @@ export class PurchaseProductComponent {
         const label: string = 'Delete Purchase product'
         this.confirmationService.open({
             title: label,
-            message: 'Are you sure to ' + label.toLowerCase() + ' ' + record.product_name + ' ?'
+            message: 'Are you sure to ' + label.toLowerCase() + ' ' + record.productName + ' ?'
         }).afterClosed().subscribe(res => {
             if (res === 'confirmed') {
                 // const json = {
@@ -559,7 +559,7 @@ export class PurchaseProductComponent {
         this.confirmationService
             .open({
                 title: label,
-                message: 'Are you sure to ' + label.toLowerCase() + ' ' + record.product_name + ' ?',
+                message: 'Are you sure to ' + label.toLowerCase() + ' ' + record.productName + ' ?',
             })
             .afterClosed()
             .subscribe((res) => {
@@ -593,7 +593,7 @@ export class PurchaseProductComponent {
 
     editProduct(record) {
         if (record.status != 'New') {
-            this.alertService.showToast('error', 'Please update the status to New for editing.', 'top-right', true);
+            this.alertService.showToast('error', 'Only new status product has been allow for modify.', 'top-right', true);
             return
         }
 

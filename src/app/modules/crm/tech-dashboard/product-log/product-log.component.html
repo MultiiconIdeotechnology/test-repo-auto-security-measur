@@ -12,19 +12,19 @@
         <ng-container matColumnDef="entryBy">
             <th class="text-md font-semibold text-secondary sticky top-0 dark:bg-gray-700 bg-white border-b"
                 mat-header-cell *matHeaderCellDef>Action </th>
-            <td mat-cell *matCellDef="let element"> {{ element.entryBy }} </td>
+            <td mat-cell *matCellDef="let element" [matTooltip]="element.entryBy || ' - '"> {{ element.entryBy || '-'}} </td>
         </ng-container>
         
         <ng-container matColumnDef="activity">
             <th class="text-md font-semibold text-secondary sticky top-0 dark:bg-gray-700 bg-white border-b"
                 mat-header-cell *matHeaderCellDef> Activity </th>
-            <td mat-cell *matCellDef="let element"> {{ element.activity }} ({{ element.ipAddress }})</td>
+            <td mat-cell *matCellDef="let element" [matTooltip]="element.activity || ' - '"> {{ element.activity }} ({{ element.ipAddress }})</td>
         </ng-container>
 
         <ng-container matColumnDef="activityType">
             <th class="text-md font-semibold text-secondary sticky top-0 dark:bg-gray-700 bg-white border-b"
                 mat-header-cell *matHeaderCellDef> Activity Type </th>
-            <td mat-cell *matCellDef="let element"> {{ element.activityType }} </td>
+            <td mat-cell *matCellDef="let element" [matTooltip]="element.activityType || ' - '"> {{ element.activityType || '-'}} </td>
         </ng-container>
 
        

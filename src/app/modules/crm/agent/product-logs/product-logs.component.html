@@ -23,10 +23,13 @@
                                 <div [class]="'flex flex-row items-center space-x-2 truncate pl-4 ' + col.class">
                                     <div
                                         [class]="'flex flex-col truncate '+ (col.class == 'header-right-view' || col.class == 'header-center-view'? 'pr-4' : '') ">
-                                        <span class="truncate" *ngIf="!col.toColor && !col.subModule"
+                                        <span class="truncate" *ngIf="!col.toColor && !col.subModule && !col.isCombine"
                                             [matTooltip]="col.tooltip ? List[col.key] : ''">
                                             {{ col.is_date ? (List[col.key] | date: col.date_formate) ||
                                                 " - " : List[col.key] || " - " }}
+                                        </span>
+                                        <span class="truncate" *ngIf="col.isCombine" [matTooltip]="List['activity'] || ' - '">
+                                            {{ List['activity'] || " - " }} ( {{ List['ipAddress'] || " - " }} )
                                         </span>
                                     </div>
                                 </div>
