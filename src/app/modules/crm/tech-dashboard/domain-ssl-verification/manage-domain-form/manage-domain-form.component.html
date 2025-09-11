@@ -1,7 +1,7 @@
 
 <form [formGroup]="formGroup" class="grid grid-cols-12 gap-4 p-5">
     <mat-form-field class="col-span-6"
-    *ngIf="data?.item_name.includes('B2C')">
+    *ngIf="data?.itemName.includes('B2C')">
         <mat-label class="font-medium dark:text-[#ADB3BB] text-gray-500">B2C Portal URL</mat-label>
         <input matInput formControlName="b2c_portal_url">
     </mat-form-field>

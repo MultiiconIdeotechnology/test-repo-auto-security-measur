@@ -55,12 +55,16 @@ export class DomainSslVerificationComponent {
     this.record = data?.record;
     this.wlSettingData = data?.wlSettingList;
     this.fromKey = data?.from;
+
+    console.log("59 this.record", this.record);
+    console.log("60 this.wlSettingData", this.wlSettingData);
+    
   }
 
   ngOnInit(): void {
     // stepper data array assign as per mobile or web
-    if (this.record?.item_name?.toLowerCase().includes('android') ||
-      this.record?.item_name?.toLowerCase().includes('ios')) {
+    if (this.record?.itemName?.toLowerCase().includes('android') ||
+      this.record?.itemName?.toLowerCase().includes('ios')) {
       this.stepperData = [...this.stepperDataAndroidIos];
     } else {
       this.stepperData = [...this.stepperDataWeb];

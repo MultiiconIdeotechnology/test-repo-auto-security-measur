@@ -45,7 +45,7 @@ export class MobileProductActivateDialogComponent {
     })
 
     // setting
-    if (this.record?.item_name.toLowerCase()?.includes('android')) {
+    if (this.record?.itemName.toLowerCase()?.includes('android')) {
       this.formGroup.get('android_app_url').setValidators(Validators.required);
       this.formGroup.get('ios_app_url').clearValidators();
       this.formGroup.get('android_app_url').patchValue(this.getWLSettingList.android_app_url);
@@ -65,7 +65,7 @@ export class MobileProductActivateDialogComponent {
     }
 
     this.isLoading = true;
-    const isRiseProduct = this.record?.item_name?.toLowerCase().includes('rise');
+    const isRiseProduct = this.record?.itemName?.toLowerCase().includes('rise');
 
     if (isRiseProduct || this.getWLSettingList) {
       this.createDomain()

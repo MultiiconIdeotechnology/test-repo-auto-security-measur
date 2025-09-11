@@ -69,7 +69,7 @@ export class ProductLogComponent {
 
     @Input() fieldList: any[] = [];   // input from parent
 
-  displayedColumns: string[] = ['activityDateTime','activity', 'activityType'];
+  displayedColumns: string[] = ['activityDateTime', 'entryBy', 'activity', 'activityType'];
   dataSource = new MatTableDataSource<any>();
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -78,6 +78,7 @@ export class ProductLogComponent {
     if (this.fieldList && this.fieldList.length > 0) {
       this.dataSource.data = this.fieldList.map(item => ({
         activity: item.activity,
+        entryBy: item.entryBy,
         activityType: item.activityType,
         activityDateTime: item.activityDateTime,
         subModule: item.subModule,

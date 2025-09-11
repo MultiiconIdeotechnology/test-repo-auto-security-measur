@@ -35,7 +35,7 @@
             <div class="overflow-hidden border-b pb-4 mb-4">
                 <div class="dark:text-white text-lg font-medium  px-5  ">Product
                     Detail</div>
-                <div class="grid grid-cols-3 gap-3 px-5 pt-3 pb-1">
+                <div class="grid grid-cols-3 gap-3 px-5 pt-3">
                     <div class="grid">
                         <span class=" text-md font-semibold text-secondary">Product Name</span>
                         <span class="text-base">{{fieldList.productName || '--'}}</span>
@@ -107,7 +107,7 @@
                 <div class="dark:text-white text-lg font-medium  px-5  ">Service
                     Detail
                 </div>
-                <div class="grid grid-cols-3 gap-3 px-5 pt-3 pb-1">
+                <div class="grid grid-cols-3 gap-3 px-5 pt-3">
                     <div class="grid">
                         <span class=" text-md font-semibold text-secondary">Service Code</span>
                         <span class="text-base">{{fieldList.serviceCode || '--'}}</span>
@@ -136,6 +136,12 @@
         <mat-tab label="Product Logs" [aria-label]="'Product Logs'">
             <ng-container *ngIf="tab == 'Product Logs'">
                 <app-product-log [fieldList]="fieldList.productLogs"></app-product-log>
+            </ng-container>
+        </mat-tab>
+
+        <mat-tab label="WL-Setting Links" [aria-label]="'WL-Setting Links'">
+            <ng-container *ngIf="tab == 'WL-Setting Links'">
+                <app-payment-info-wl-settings-link #wlSettingLinks [wlSetting]="getWLSettingList"></app-payment-info-wl-settings-link>
             </ng-container>
         </mat-tab>
     </mat-tab-group>

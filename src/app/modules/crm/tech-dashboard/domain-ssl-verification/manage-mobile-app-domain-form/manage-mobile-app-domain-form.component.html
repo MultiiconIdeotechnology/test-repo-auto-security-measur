@@ -1,12 +1,12 @@
 <form [formGroup]="formGroup" class="p-5">
     <div class="grid grid-cols-12 gap-4">
-        <mat-form-field class="col-span-6" *ngIf="data?.item_name?.includes('B2C')">
+        <mat-form-field class="col-span-6" *ngIf="data?.itemName?.includes('B2C')">
             <mat-label class="font-medium dark:text-[#ADB3BB] text-gray-500">B2C Portal URL</mat-label>
             <input matInput formControlName="b2c_portal_url">
             <mat-hint>Ex: bontonholidays.com</mat-hint>
         </mat-form-field>
 
-        <mat-form-field class="col-span-6" *ngIf="data?.item_name?.includes('B2B')">
+        <mat-form-field class="col-span-6" *ngIf="data?.itemName?.includes('B2B')">
             <mat-label class="font-medium dark:text-[#ADB3BB] text-gray-500">Partner Panel URL</mat-label>
             <input matInput formControlName="partner_panel_url">
             <mat-hint>Ex: partner.bontonholidays.com</mat-hint>
@@ -35,15 +35,15 @@
 
         <mat-form-field>
             <mat-label class="font-medium dark:text-[#ADB3BB] text-gray-500 relative">
-                <ng-container *ngIf="data?.item_name?.toLowerCase().includes('android')">Play Store App Name</ng-container>
-                <ng-container *ngIf="data?.item_name?.toLowerCase().includes('ios')">App Store Name</ng-container>
+                <ng-container *ngIf="data?.itemName?.toLowerCase().includes('android')">Play Store App Name</ng-container>
+                <ng-container *ngIf="data?.itemName?.toLowerCase().includes('ios')">App Store Name</ng-container>
                 <i class="material-icons text-[15px] absolute right-[-26px] top-1/2 -translate-y-1/2 cursor-pointer"
-                [matTooltip]="data?.item_name?.toLowerCase().includes('android') ? 'Name displyed in google play store':'Name displyed in apple store'">
+                [matTooltip]="data?.itemName?.toLowerCase().includes('android') ? 'Name displyed in google play store':'Name displyed in apple store'">
                 info_outline
                 </i>
             </mat-label>
             <input matInput formControlName="store_app_name"
-            [placeholder]="data?.item_name?.toLowerCase().includes('android') ? 'Enter Your App Name On Play Store':'Enter Your App Store Name'">
+            [placeholder]="data?.itemName?.toLowerCase().includes('android') ? 'Enter Your App Name On Play Store':'Enter Your App Store Name'">
             <mat-hint>Ex: Bonton Holidays:B2B Travel App</mat-hint>
         </mat-form-field>
 

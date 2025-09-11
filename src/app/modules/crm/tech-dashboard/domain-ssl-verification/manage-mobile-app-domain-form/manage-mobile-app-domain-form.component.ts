@@ -57,11 +57,11 @@ export class ManageMobileAppDomainFormComponent {
       password: ['', Validators.required],
     });
 
-    if (this.data?.item_name.includes('B2C')) {
+    if (this.data?.itemName.includes('B2C')) {
       this.formGroup.get('b2c_portal_url').setValidators([Validators.required]);
       this.formGroup.get('partner_panel_url')?.clearValidators();
       this.formGroup.get('b2c_portal_url').patchValue(this.wlSettingData?.b2c_portal_url);
-    } else if (this.data?.item_name.includes('B2B')) {
+    } else if (this.data?.itemName.includes('B2B')) {
       this.formGroup.get('partner_panel_url').setValidators([Validators.required]);
       this.formGroup.get('b2c_portal_url')?.clearValidators();
       this.formGroup.get('partner_panel_url').patchValue(this.wlSettingData?.partner_panel_url);

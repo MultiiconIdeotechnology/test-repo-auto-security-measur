@@ -12,10 +12,10 @@
     <form [formGroup]="formGroup">
         <mat-form-field class="w-full">
           <mat-label class="font-medium dark:text-[#ADB3BB] text-gray-500 text-sm">
-              {{record?.item_name?.toLowerCase()?.includes('android') ? 'Play': 'App' }}  Store App URL
+              {{record?.itemName?.toLowerCase()?.includes('android') ? 'Play': 'App' }}  Store App URL
           </mat-label>
-          <input *ngIf="record?.item_name?.toLowerCase()?.includes('android')" matInput formControlName="android_app_url">
-          <input *ngIf="record?.item_name?.toLowerCase()?.includes('ios')" matInput formControlName="ios_app_url">
+          <input *ngIf="record?.itemName?.toLowerCase()?.includes('android')" matInput formControlName="android_app_url">
+          <input *ngIf="record?.itemName?.toLowerCase()?.includes('ios')" matInput formControlName="ios_app_url">
         </mat-form-field>
     </form>
 </div>

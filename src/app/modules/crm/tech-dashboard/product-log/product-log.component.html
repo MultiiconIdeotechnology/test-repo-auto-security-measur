@@ -9,6 +9,12 @@
             </td>
         </ng-container>
 
+        <ng-container matColumnDef="entryBy">
+            <th class="text-md font-semibold text-secondary sticky top-0 dark:bg-gray-700 bg-white border-b"
+                mat-header-cell *matHeaderCellDef>Action </th>
+            <td mat-cell *matCellDef="let element"> {{ element.entryBy }} </td>
+        </ng-container>
+        
         <ng-container matColumnDef="activity">
             <th class="text-md font-semibold text-secondary sticky top-0 dark:bg-gray-700 bg-white border-b"
                 mat-header-cell *matHeaderCellDef> Activity </th>
