@@ -551,7 +551,7 @@
         </div>
       </div>
 
-      <div class="z-10 flex justify-end bg-card border border-gray-border rounded-lg w-full">
+      <div class="z-10 flex justify-end bg-card border border-gray-border rounded-lg w-full overflow-hidden">
         <mat-paginator [ngClass]="{'pointer-events-none': isLoading}" [pageSizeOptions]="appConfig.pageSizeOptions"
           [pageSize]="appConfig.pageSize" (page)="DataFilter(true,$event)"
           [showFirstLastButtons]="appConfig.showFirstLastButtons">
