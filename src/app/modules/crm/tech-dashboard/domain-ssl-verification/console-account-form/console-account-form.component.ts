@@ -103,7 +103,7 @@ export class ConsoleAccountFormComponent {
 
     let payloadData = this.formGroup.value;
     payloadData.agent_id = this.data?.agentId;
-    payloadData.product_id = this.data?.product_id;
+    payloadData.product_id = this.data?.productPurchaseId;
     payloadData.wl_id = this.wlSettingData?.wl_id;
     payloadData.is_account_active = this.is_account_active;
 
