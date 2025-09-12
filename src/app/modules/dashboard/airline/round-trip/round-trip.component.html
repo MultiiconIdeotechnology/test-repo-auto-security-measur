@@ -665,7 +665,7 @@
                                 </div>
                                 <div class="absolute bottom-[-10px] left-0 w-full text-center z-10 mobile:truncate"
                                     *ngIf="i !== (flight.flightStopSegments.length - 1) && flight.flightStopSegments[i+1].layover">
-                                    <span class="bg-card rounded-3xl px-10 text-gray text-sm mobile:px-2">
+                                    <span class="dark:bg-card bg-[#e2e8f0] rounded-3xl px-10 text-gray text-sm mobile:px-2">
                                         {{isSamePlanes(segment, flight.flightStopSegments[i+1])
                                         ? 'No plane change require'
                                         : 'Change of planes'}}・{{flight.flightStopSegments[i+1].layover}} Layover in
@@ -756,7 +756,7 @@
                                     </div>
                                     <div class="absolute bottom-[-10px] left-0 w-full text-center z-10 mobile:truncate"
                                         *ngIf="i !== (flight.flightStopSegments.length - 1)">
-                                        <span class="bg-card rounded-3xl px-10 text-gray text-sm mobile:px-2">
+                                        <span class="dark:bg-card bg-[#e2e8f0] rounded-3xl px-10 text-gray text-sm mobile:px-2">
                                             {{isSamePlanes(segment, flight.flightStopSegments[i+1])
                                             ? 'No plane change require'
                                             : 'Change of planes'}}・{{flight.flightStopSegments[i+1].layover}} Layover in
