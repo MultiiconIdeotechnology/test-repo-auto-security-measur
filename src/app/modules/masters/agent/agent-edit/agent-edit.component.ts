@@ -94,6 +94,7 @@ export class AgentEditComponent {
         this.formGroup = this.formBuilder.group({
             id: [''],
             agency_name: [''],
+            agency_alias_name:[''],
             billing_company_id: [''],
             companyfilter: [''],
             agent_id: [''],
@@ -174,6 +175,7 @@ export class AgentEditComponent {
                     this.formGroup.get("pincode").patchValue(res[0]?.pincode);
                     this.formGroup.get("pan_number").patchValue(res[0]?.panNumber);
                     this.formGroup.get("agency_name").patchValue(res[0]?.agencyName);
+                    this.formGroup.get("agency_alias_name").patchValue(res[0]?.agencyAliasName);
                     this.formGroup.get("gst_number").patchValue(res[0]?.gstNumber);
                 }
             });
@@ -196,6 +198,7 @@ export class AgentEditComponent {
             id: this.record?.id,
             billing_company_id: json.billing_company_id ? json.billing_company_id : "",
             agency_name: json.agency_name ? json.agency_name : "",
+            agency_alias_name: json.agency_alias_name ? json.agency_alias_name : "",
             city_id: json.city_id ? json.city_id : "",
             address_line1: json.address_line1 ? json.address_line1 : "",
             address_line2: json.address_line2 ? json.address_line2 : "",

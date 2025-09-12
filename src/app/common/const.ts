@@ -308,6 +308,9 @@ export const Routes = {
 
         purchase_register_path_2: 'account/purchase_register_2',
         purchase_register_route_2: 'account/purchase_register_2',
+
+        sale_register_path_2: 'account/sale_register_2',
+        sale_register_route_2: 'account/sale_register_2',
     },
 
     leads: {
@@ -355,6 +358,9 @@ export const Routes = {
         visa_route: '/booking/visa',
         visa_details_route: '/booking/visa/details',
 
+        airline_block_lead_path: 'booking/airline-block',
+        airline_block_lead_route: '/booking/airline-block',
+
         offline_service_path: 'booking/offline-service',
         offline_service_route: '/booking/offline-service',
         offline_service_details_route: '/booking/offline-service/details',
@@ -391,6 +397,9 @@ export const Routes = {
 
         visa_path: 'inventory/visa',
         visa_route: '/inventory/visa',
+
+        airline_block_path: 'inventory/airline-block',
+        airline_block_route: '/inventory/airline-block',
 
         holiday_v2_path: 'inventory/holidayv2-products',
         holiday_v2_route: '/inventory/holidayv2-products',
@@ -514,5 +523,10 @@ export const Routes = {
 
         cashback_parameters_path: 'settings/cashback_parameters',
         cashback_parameters_route: '/settings/cashback_parameters',
+
+        psp_setup_path: 'settings/psp-setup',
+        psp_setup_route: '/settings/psp-setup',
+        psp_setup_entry_path: 'settings/psp-setup/entry',
+        psp_setup_entry_route: '/settings/psp-setup/entry',
     }
 }

@@ -240,7 +240,7 @@ Ex. If ticket is for BOM-DXB and DXB-BOM, now if amendment raised for DXB-BOM at
     uploadDocument(event: any): void {
         const file = (event.target as HTMLInputElement).files[0];
 
-        const extantion: string[] = ['jpg', 'jpeg', 'png', 'gif', 'svg', 'pdf'];
+        const extantion: string[] = ['jpg', 'jpeg', 'png', 'gif', 'svg', 'pdf', "webp"];
         var validator: DocValidationDTO = CommonUtils.isDocValid(file, extantion, 3036, null);
         if (!validator.valid) {
             this.alertService.showToast('error', validator.alertMessage);

@@ -25,7 +25,7 @@
                     <div class="flex flex-col w-2/3">
                         <div class="first relative flex flex-col mb-4 bg-card rounded-2xl  p-6  overflow-x-hidden">
                             <div class="flex justify-between">
-                                <div class="flex">
+                                <div class="flex flex-wrap gap-1">
 
                                     <div *ngIf="mainDataAll?.is_print_button_show" (click)="print('agent')"
                                         class="px-2 py-1 border border-gray-border rounded-lg flex items-center secondary-text cursor-pointer">
@@ -35,11 +35,12 @@
                                         <span class="text-md leading-none ml-2">Voucher</span>
                                     </div>
 
+                                    <!--Your Invoice -->
                                     <div *ngIf="mainDataAll?.is_invoice_button_show" [matMenuTriggerFor]="optionMenu"
                                         class="px-2 py-1 mx-2 border border-gray-border rounded-lg flex items-center secondary-text cursor-pointer">
                                         <mat-icon
                                             class="material-symbols-outlined secondary-text text-xl">print</mat-icon>
-                                        <span class="text-md leading-none ml-2">Invoice</span>
+                                        <span class="text-md leading-none ml-2">Your Invoice</span>
                                     </div>
                                     <mat-menu #optionMenu>
                                         <button mat-menu-item (click)="invoice('INR')">
@@ -51,6 +52,14 @@
                                             <span style="font-weight: 600">Invoice 2</span>
                                         </button>
                                     </mat-menu>
+
+                                    <!--Agent Invoice-->
+                                     <div *ngIf="mainDataAll?.is_invoice_button_show && mainDataAll?.agent_invoice_id"
+                                    class="px-2 py-1 mx-2 border border-gray-border rounded-lg flex items-center secondary-text cursor-pointer"
+                                    (click)="agentInvoice('print')">
+                                    <mat-icon class="material-symbols-outlined secondary-text text-xl">print</mat-icon>
+                                    <span class="text-md leading-none ml-2">Invoice</span>
+                                </div>
 
                                     <div class="flex space-x-3" *ngIf="Status === 'Confirmed'">
                                         <div (click)="amendment()"

@@ -137,7 +137,7 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
         // @Inject(MAT_DIALOG_DATA) public data: any = {},
         // @Inject(MAT_DIALOG_DATA) public editFlag: any = {}
     ) {
-        this.dateBeforeAllow = this.calculateDateBeforeDays(10);
+        this.dateBeforeAllow = this.calculateDateBeforeDays(0);
         // this.isEditFlag = this.isEditFlag?.editFlag;
         // this.record = data?.data ?? {}
         this.formGroup = this.builder.group({
@@ -160,6 +160,12 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
                         this.addFlag = item?.addFlag;
                     }
 
+                    if(item.editFlag){
+                        this.title = "Edit Product Purchase"
+                    }else{
+                        this.title = "Product Purchase"
+                    }
+
                     // pending installmentsArray
                     this.formGroup.patchValue({
                         product: "",
@@ -175,13 +181,13 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
 
                     this.proofAttachment = false;
                     if (item?.editFlag) {
-                        if (item?.editData?.proof_attachment) {
+                        if (item?.editData?.proofAttachment) {
                             this.proofAttachment = true;
                         }
-                        this.editAgentId = item?.editData?.agentid;
+                        this.editAgentId = item?.editData?.agentId;
                         this.editRecord = item?.editData ?? {}
 
-                        this.editproofAttachmentSelectedFile = this.editRecord?.proof_attachment_file;
+                        this.editproofAttachmentSelectedFile = this.editRecord?.proofAttachment_file;
                     }
 
                     this.record = item ?? {}
@@ -232,21 +238,21 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
         }
     }
 
-    refreshItems(): void {
-        const filterReq = GridUtils.GetFilterReq(
-            this._paginator,
-            this._sort,
-            this.searchInputControl.value
-        );
-        this.crmService.getProductPurchaseMasterList(filterReq).subscribe({
-            next: (data) => {
-                this.dataList = data.data;
-            },
-            error: (err) => {
-                this.alertService.showToast('error', err, 'top-right', true);
-            },
-        });
-    }
+    // refreshItems(): void {
+    //     const filterReq = GridUtils.GetFilterReq(
+    //         this._paginator,
+    //         this._sort,
+    //         this.searchInputControl.value
+    //     );
+    //     this.crmService.getProductPurchaseMasterList(filterReq).subscribe({
+    //         next: (data) => {
+    //             this.dataList = data.data;
+    //         },
+    //         error: (err) => {
+    //             this.alertService.showToast('error', err, 'top-right', true);
+    //         },
+    //     });
+    // }
 
     numberOnly(event): boolean {
         const charCode = (event.which) ? event.which : event.keyCode;
@@ -292,7 +298,7 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
 
     onProofAttachmentFile(event: any) {
         const file = (event.target as HTMLInputElement).files[0];
-        const extantion: string[] = ["pdf", "jpg", "jpeg", "png"];
+        const extantion: string[] = ["pdf", "jpg", "jpeg", "png", "webp"];
         var validator: DocValidationDTO = CommonUtils.isDocValid(file, extantion, 2024, null);
         if (!validator.valid) {
             this.alertService.showToast('error', validator.alertMessage, 'top-right', true);
@@ -351,7 +357,7 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
 
     getProducts() {
         this.productPurchaseMasterId = ""
-        this.crmService.getProductNameList({AgentId :this.agentId}).subscribe({
+        this.crmService.getProductNameListNew({AgentId :this.agentId}).subscribe({
             next: (data) => {
                 this.productList = data;
                 this.filteredProducts = [...this.productList]; // Initialize filtered list
@@ -383,20 +389,20 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
             "",
         );
         // filterReq['agent_id'] = this.record?.editData?.agentid ? this.record?.editData?.agentid : "",
-        filterReq['Id'] = this.record?.editData?.product_id ? this.record?.editData?.id : ""
-        this.crmService.getProductInfoList(filterReq).subscribe({
+        const Id = this.record?.editData?.id 
+        this.crmService.getDataProduct(Id).subscribe({
             next: (res) => {
-                this.productList = res[0];
+                this.productList = res;
                 if (this.record?.editData?.id) {
-                    this.formGroup.patchValue(res?.[0]);
-                    this.formGroup.get("product").patchValue(res?.[0]?.product_name);
-                    this.formGroup.get('price').patchValue(res?.[0]?.purchase_amount);
-                    this.formGroup.get('rm_remark').patchValue(res?.[0]?.rm_remark);
-                    this.formGroup.get('installments').patchValue(res?.[0]?.installmentCount);
-                    this.selectedMaxInstallment = res?.[0]?.max_installment;
-                    this.installmentsArray = res?.[0]?.installment?.map(x => ({ installment_amount: x.installment_amount, installment_date: x.installment_date }));
-                    this.productId = res?.[0]?.productid;
-                    this.productPurchaseMasterId = res?.[0]?.id;
+                    this.formGroup.patchValue(res);
+                    this.formGroup.get("product").patchValue(res?.productName);
+                    this.formGroup.get('price').patchValue(res?.purchasePrice);
+                    this.formGroup.get('rm_remark').patchValue(res?.rmRemark);
+                    this.formGroup.get('installments').patchValue(res?.installmentCount);
+                    this.selectedMaxInstallment = res?.maxInstallment;
+                    this.installmentsArray = res?.installments?.map(x => ({ installment_amount: x.installmentAmount, installment_date: x.installmentDate }));
+                    this.productId = res?.productId;
+                    this.productPurchaseMasterId = res?.id;
                 }
             },
             error: (err) => {
@@ -445,17 +451,17 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
         // }
 
         if (!this.proofAttachjFile) {
-            json.proof_attachment = {
+            json.proofAttachment = {
                 fileName: '',
                 fileType: '',
                 base64: '',
             };
         } else {
-            json.proof_attachment = this.proofAttachjFile
+            json.proofAttachment = this.proofAttachjFile
         }
 
         // if (!this.record) {
-        //     if (json.proof_attachment == null || !json.proof_attachment.fileName) {
+        //     if (json.proofAttachment == null || !json.proofAttachment.fileName) {
         //         this.disableBtn = false;
         //         this.alertService.showToast('error', 'Proof Attachment is required.')
         //         return;
@@ -463,14 +469,14 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
         // }
 
         const newJson = {
-            agent_id: this.addFlag ? this.addAgentId : this.editAgentId,
+            agentId: this.addFlag ? this.addAgentId : this.editAgentId,
             id: this.productPurchaseMasterId ? this.productPurchaseMasterId : "",
-            product_id: this.productId ? this.productId : "",
-            purchase_amount: json?.price,
+            productId: this.productId ? this.productId : "",
+            purchaseAmount: json?.price,
             max_installment: json?.installments,
-            installmentArr: this.installmentsArray,
-            rm_remark: json.rm_remark,
-            proof_attachment: json.proof_attachment
+            installments: this.installmentsArray,
+            rmRemark: json.rm_remark,
+            ProofAttachment: json.proofAttachment
         };
 
         // if (this.formGroup.get("price").value != "" && totalAmount != 0 && this.validateDates() == true) {

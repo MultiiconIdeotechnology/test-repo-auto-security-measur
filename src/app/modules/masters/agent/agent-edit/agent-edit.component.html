@@ -8,7 +8,7 @@
         </button>
     </div>
 
-    <form class="flex flex-col flex-auto px-6 pt-6 overflow-y-auto max-h-120" [formGroup]="formGroup">
+    <form class="flex flex-col flex-auto px-6 pt-6 overflow-y-auto max-h-130" [formGroup]="formGroup">
         <div class="flex flex-row space-x-3">
             <mat-form-field class="flex-grow">
                 <mat-label>Billing Company</mat-label>
@@ -24,25 +24,35 @@
                 </mat-select>
             </mat-form-field>
 
+
+        </div>
+        <div class="flex flex-row space-x-3">    
             <mat-form-field class="flex-grow">
                 <mat-label>Agency Name</mat-label>
                 <input matInput type="text" formControlName="agency_name" />
             </mat-form-field>
+
+            <mat-form-field class="flex-grow">
+                <mat-label>Alias Name</mat-label>
+                <input matInput type="text" formControlName="agency_alias_name" />
+            </mat-form-field>
         </div>
+
         <div class="flex flex-row space-x-3">
             <mat-form-field class="flex-grow w-1/2">
                 <mat-label>Contact Person</mat-label>
                 <input matInput type="text" formControlName="contact_person" />
             </mat-form-field>
+
             <div class="rounded-md w-1/2">
                 <mat-label>Contact Person Number</mat-label>
-                <div class="flex items-center border px-4 mt-[4px] rounded-md mat-form-field-appearance-fill min-h-[43px] dark:border-[#64748B] border-[#CBD5E1]">
+                <div
+                    class="flex items-center border px-4 mt-[4px] rounded-md mat-form-field-appearance-fill min-h-[43px] dark:border-[#64748B] border-[#CBD5E1]">
                     <mat-select required formControlName="mobile_code" #code
                         class="w-[70px] max-w-[70px] md:w-[100px] md:max-w-[100px] overflow-hidden text-md">
                         <mat-option>
                             <ngx-mat-select-search placeholderLabel="Search"
-                                noEntriesFoundLabel="'no matching Country Code found'"
-                                formControlName="mobilefilter"
+                                noEntriesFoundLabel="'no matching Country Code found'" formControlName="mobilefilter"
                                 (input)="filterMobileCode($event.target.value)">
                             </ngx-mat-select-search>
                         </mat-option>

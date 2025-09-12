@@ -143,6 +143,7 @@ export class BasicDetailsComponent {
       this.AgentList = [
         { name: 'Agent Code', value: this.basicDetails.agent_code },
         { name: 'Agency Name', value: this.basicDetails.agency_name },
+        { name: 'Alias Name', value: this.basicDetails.agency_alias_name },
         { name: 'Email', value: this.basicDetails.email_address },
         { name: 'Mobile', value: this.basicDetails.mobile_number },
         { name: 'Contact Person', value: this.basicDetails.contact_person },

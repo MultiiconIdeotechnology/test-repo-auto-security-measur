@@ -50,11 +50,12 @@ export class ManageDomainFormComponent {
         b2c_portal_url:[''],
         api_url: ['', Validators.required],
       });
+
   
-      if(this.data?.item_name?.includes('B2C')){
+      if(this.data?.itemName?.includes('B2C')){
         this.formGroup.get('b2c_portal_url').setValidators([Validators.required]);
         this.formGroup.get('b2c_portal_url').patchValue(this.wlSettingData?.b2c_portal_url);
-      } else if(this.data?.item_name?.includes('B2B')){
+      } else if(this.data?.itemName?.includes('B2B')){
         this.formGroup.get('b2c_portal_url')?.clearValidators();
       }
       
@@ -74,8 +75,8 @@ export class ManageDomainFormComponent {
       }
   
       let payloadData = this.formGroup.value;
-      payloadData.agent_id = this.data?.agentid;
-      payloadData.product_id = this.data?.subid;
+      payloadData.agent_id = this.data?.agentId;
+      payloadData.product_id = this.data?.productPurchaseId;
   
       this.domainVarifyService.createDomain(payloadData).subscribe({
         next: (res) => {

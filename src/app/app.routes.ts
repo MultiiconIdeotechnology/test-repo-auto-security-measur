@@ -137,6 +137,8 @@ export const appRoutes: Route[] = [
             { path: Routes.account.agent_wise_service_wise_path, loadChildren: () => import('app/modules/reports/account/agent-wise-service-wise/agent-wise-service-wise.component.routes') },
             { path: Routes.account.agent_ledger_wallet_missmatch_path, loadChildren: () => import('app/modules/reports/account/agent-ledger-wallet-missmatch/agent-ledger-wallet-missmatch.component.routes') },
             { path: Routes.account.purchase_register_path_2, loadChildren: () => import('app/modules/reports/account-2.0/purchase-register/purchase-register.routes') },
+            { path: Routes.account.sale_register_path_2, loadChildren: () => import('app/modules/reports/account-2.0/sale-register/sale-register.routes') },
+
 
             //Inventory
             { path: Routes.inventory.activity_path, loadChildren: () => import('app/modules/Inventory/activity/activity-list/activity-list.routes') },
@@ -148,6 +150,7 @@ export const appRoutes: Route[] = [
             { path: Routes.inventory.product_flight_path, loadChildren: () => import('app/modules/Inventory/Product-Flight/product-flight.routes') },
             { path: Routes.inventory.visa_path, loadChildren: () => import('app/modules/Inventory/visa/visa-list/visa.routes') },
             { path: Routes.inventory.cab_path, loadChildren: () => import('app/modules/Inventory/cab/cab-inventory.routes') },
+            { path: Routes.inventory.airline_block_path, loadChildren: () => import('app/modules/Inventory/airline-block/airline-block.routes') },
 
             // new holiday
             { path: Routes.inventory.holiday_v2_path, loadChildren: () => import('app/modules/Inventory/holiday-new/holiday-list/holiday-list.routes') },
@@ -191,6 +194,7 @@ export const appRoutes: Route[] = [
             { path: Routes.booking.offline_service_path, loadChildren: () => import('app/modules/booking/offline-service/offline-list/offline.routes') },
             { path: Routes.booking.holiday_lead_path, loadChildren: () => import('app/modules/booking/holiday/holiday-list/holiday-lead.routes') },
             { path: Routes.booking.cab_path, loadChildren: () => import('app/modules/booking/cab/cab-list/cab.routes') },
+            { path: Routes.booking.airline_block_lead_path, loadChildren: () => import('app/modules/booking/airline-block/airline-block-lead.routes') },
 
             // SETTINGS
             { path: Routes.settings.erpsettings_path, loadChildren: () => import('app/modules/settings/erp-settings/erp-settings.routes') },
@@ -202,6 +206,7 @@ export const appRoutes: Route[] = [
             { path: Routes.settings.pspsetting_path, loadChildren: () => import('app/modules/settings/psp-setting/psp.routes') },
             { path: Routes.settings.caching_parameters_path, loadChildren: () => import('app/modules/masters/caching-parameters/caching-parameters-list/caching-parameters-list.routes') },
             { path: Routes.settings.cashback_parameters_path, loadChildren: () => import('app/modules/settings/cashback-parameter/cashback-parameter.route') },
+            { path: Routes.settings.psp_setup_path, loadChildren: () => import('app/modules/settings/psp-setup/psp.setup.routes') },
 
         ]
     },

@@ -1,10 +1,10 @@
-<div class="flex flex-col flex-auto overflow-hidden bg-card shadow rounded-2xl -m-6 min-w-[826px] max-w-[826px] pl-[22px]">
+<div class="flex flex-col flex-auto overflow-hidden bg-card shadow rounded-2xl -m-6 pt-5 min-w-[826px] max-w-[826px] pl-[22px]">
     <div
         class="flex flex-col flex-auto overflow-hidden overflow-x-auto lg:min-h-[346px] lg:max-h-[346px] xl:min-h-[346px] xl:max-h-[346px]">
         <ng-container>
             <div class="grid overflow-y-auto mt-2">
                 <div class="tbl-grid gridwidth z-10 sticky top-0 grid py-2 px-6 md:pr-8 pl-0 shadow text-md font-semibold text-secondary dark:bg-gray-700 bg-white border-b"
-                    matSort matSortDisableClear matSortActive="date" matSortDirection="desc"
+                    matSort matSortDisableClear matSortActive="entry_date_time" matSortDirection="desc"
                     (matSortChange)="refreshItems()">
 
                     <ng-container *ngFor="let col of columns">
@@ -45,7 +45,7 @@
             </div>
         </ng-container>
         <ng-template #noGridItems>
-            <div class="p-8 sm:p-16 border-t text-3xl tracking-tight text-center pt-20">
+            <div class="pt-36 border-t text-xl tracking-tight text-center text-secondary dark:text-gray-400">
                 {{getNodataText()}}
             </div>
         </ng-template>

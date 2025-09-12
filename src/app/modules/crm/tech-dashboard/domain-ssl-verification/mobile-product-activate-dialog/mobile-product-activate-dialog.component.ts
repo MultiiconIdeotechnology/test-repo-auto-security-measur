@@ -45,7 +45,7 @@ export class MobileProductActivateDialogComponent {
     })
 
     // setting
-    if (this.record?.item_name.toLowerCase()?.includes('android')) {
+    if (this.record?.itemName.toLowerCase()?.includes('android')) {
       this.formGroup.get('android_app_url').setValidators(Validators.required);
       this.formGroup.get('ios_app_url').clearValidators();
       this.formGroup.get('android_app_url').patchValue(this.getWLSettingList.android_app_url);
@@ -65,7 +65,7 @@ export class MobileProductActivateDialogComponent {
     }
 
     this.isLoading = true;
-    const isRiseProduct = this.record?.item_name?.toLowerCase().includes('rise');
+    const isRiseProduct = this.record?.itemName?.toLowerCase().includes('rise');
 
     if (isRiseProduct || this.getWLSettingList) {
       this.createDomain()
@@ -81,7 +81,7 @@ export class MobileProductActivateDialogComponent {
   createDomain() {
     let payloadData = this.formGroup.value;
     payloadData.agent_id = this.record?.agentid;
-    payloadData.product_id = this.record?.subid;
+    payloadData.product_id = this.record?.productPurchaseId;
     this.domainVarifyService.createDomain(payloadData).subscribe({
       next: (res) => {
         if (res) {
@@ -97,10 +97,10 @@ export class MobileProductActivateDialogComponent {
   // final step to activate andoroid/ios product
   activateMobileProduct() {
     let payloadObj = {
-      id: this.record?.id,
-      is_activated: true,
-      agent_id: this.record?.agentid,
-      product_id: this.record?.product_id
+      ServiceId: this.record?.id,
+      // is_activated: true,
+      AgentId: this.record?.agentid,
+      // product_id: this.record?.product_id
     }
     this.domainVarifyService.activate(payloadObj).subscribe({
       next: (res) => {

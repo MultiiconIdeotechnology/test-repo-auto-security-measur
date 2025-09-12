@@ -162,7 +162,7 @@ export class CabListComponent extends BaseListingComponent {
   }
 
   confirmdetail(record): void {
-    if (!Security.hasViewDetailPermission(module_name.bookingsCab)) {
+    if (!Security.hasViewDetailPermission(this.module_name)) {
       return this.alertService.showToast('error', messages.permissionDenied);
     }
 
@@ -239,7 +239,10 @@ export class CabListComponent extends BaseListingComponent {
   }
 
   exportExcel(): void {
-
+    if (!Security.hasExportDataPermission(this.module_name)) {
+      return this.alertService.showToast('error', messages.permissionDenied);
+    }
+    
     let newModel = this.getNewFilterReq({})
     newModel['Take'] = this.totalRecords;
 

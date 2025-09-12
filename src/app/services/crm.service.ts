@@ -63,22 +63,26 @@ export class CrmService {
     getPotentialLeadAgentList(model: any): Observable<any> {
         return this.http.post<any>(this.baseUrl + 'CRM/agent/agentPotentialsDashboard', model);
     }
-    
+
 
     getProductPurchaseMasterList(model: any): Observable<any> {
-        return this.http.post<any>(this.baseUrl + 'ProductPurchaseMaster/getProductPurchaseMasterList', model);
+        return this.http.post<any>(this.baseUrl + 'ProductPurchase/list', model);
     }
 
     getProductNameList(model: any): Observable<any> {
         return this.http.post<any>(this.baseUrl + 'ProductPurchaseMaster/GetProductCombo', model);
     }
 
+    getProductNameListNew(model: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'ProductPurchase/getProductCombo', model);
+    }
+
     createPurchaseProduct(model: any): Observable<any> {
-        return this.http.post<any>(this.baseUrl + 'ProductPurchaseMaster/createProduct', model);
+        return this.http.post<any>(this.baseUrl + 'ProductPurchase/create', model);
     }
 
     deletePurchaseProduct(id: string): Observable<any> {
-        return this.http.post<any>(this.baseUrl + 'ProductPurchaseMaster/delete', { id: id });
+        return this.http.post<any>(this.baseUrl + 'ProductPurchase/delete', { id: id });
     }
 
     expiryProduct(model: any): Observable<any> {
@@ -98,16 +102,22 @@ export class CrmService {
     }
 
     updateInstallment(model: any): Observable<any> {
-        return this.http.post<any>(this.baseUrl + 'ProductPurchaseMaster/Updateinstallmentdate', model);
+        return this.http.post<any>(this.baseUrl + 'ProductPurchase/updateInstallmentDate', model);
     }
 
     createSalesreturn(model: any): Observable<any> {
-        return this.http.post<any>(this.baseUrl + 'ProductPurchaseMaster/createSalesreturn', model);
+        return this.http.post<any>(this.baseUrl + 'ProductPurchase/salesReturn', model);
     }
 
     createReceipt(model: any): Observable<any> {
         return this.http.post<any>(this.baseUrl + 'ProductPurchaseMaster/createReceiptMaster', model);
     }
+
+    createReceiptNew(model: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'ProductPurchase/createReceipt', model);
+    }
+
+
 
     getReceipt(model: any): Observable<any> {
         return this.http.post<any>(this.baseUrl + 'ProductPurchaseMaster/getReceiptMasterList', model);
@@ -115,6 +125,10 @@ export class CrmService {
 
     getProductInfoList(model: any): Observable<any> {
         return this.http.post<any>(this.baseUrl + 'ProductPurchaseMaster/getProductInfo', model);
+    }
+
+    getDataProduct(id: string): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'ProductPurchase/getData', { id: id });
     }
 
     getInstallmentList(model: any): Observable<any> {
@@ -133,6 +147,10 @@ export class CrmService {
         return this.http.post<any>(this.baseUrl + "ProductPurchaseMaster/PrintInvoice", { agent_id: agentId });
     }
 
+    shiftProduct(model: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + "ProductPurchase/shiftProduct", model);
+    }
+
     dormant(agentId: string): Observable<any> {
         return this.http.post<any>(this.baseUrl + "CRM/agent/dormantAgent", { Id: agentId });
     }
@@ -141,28 +159,40 @@ export class CrmService {
         return this.http.post<any>(this.baseUrl + 'CRM/agent/reactiveAgent', model);
     }
 
-    getTechProductList(model: any): Observable<any> {
-        return this.http.post<any>(this.baseUrl + 'Dashboard/TecDashboard/gettecdashboardList', model);
+    getPendingProductList(model: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'ProductPurchaseService/getPendingProductList', model);
     }
 
-    getTechCompletedProductList(model: any): Observable<any> {
-        return this.http.post<any>(this.baseUrl + 'Dashboard/TecDashboard/gettecdashboardCompletedList', model);
+    getDeliveredProductList(model: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'ProductPurchaseService/getDeliveredProductList', model);
     }
 
     getTechBlockedProductList(model: any): Observable<any> {
-        return this.http.post<any>(this.baseUrl + 'Dashboard/TecDashboard/gettecdashboardBlockedList', model);
+        return this.http.post<any>(this.baseUrl + 'ProductPurchaseService/getBlockedProductList', model);
+    }
+
+    getTechDomainProductList(model: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'Dashboard/TecDashboard/domainList', model);
+    }
+
+    generateSsl(model: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'Dashboard/TecDashboard/checkAndGenerateSSL', model);
     }
 
     startIntegration(model: any): Observable<any> {
-        return this.http.post<any>(this.baseUrl + 'Dashboard/TecDashboard/startIntegration', model);
+        return this.http.post<any>(this.baseUrl + 'ProductPurchaseService/startIntegration', model);
+    }
+
+    getData(id: string): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'ProductPurchaseService/getData', { id: id });
     }
 
     googleClosedTesting(model: any): Observable<any> {
-        return this.http.post<any>(this.baseUrl + 'Dashboard/TecDashboard/googleClosedTesting', model);
+        return this.http.post<any>(this.baseUrl + 'ProductPurchaseService/googleClosedTesting', model);
     }
 
     blocked(model: any): Observable<any> {
-        return this.http.post<any>(this.baseUrl + 'Dashboard/TecDashboard/BlockProduct', model);
+        return this.http.post<any>(this.baseUrl + 'ProductPurchaseService/blockUnblock', model);
     }
 
     unblocked(model: any): Observable<any> {
@@ -171,15 +201,23 @@ export class CrmService {
 
 
     activate(model: any): Observable<any> {
-        return this.http.post<any>(this.baseUrl + 'Dashboard/TecDashboard/ActivateProduct', model);
+        return this.http.post<any>(this.baseUrl + 'ProductPurchaseService/activeProduct', model);
     }
 
     getTechExpiredProductList(model: any): Observable<any> {
-        return this.http.post<any>(this.baseUrl + 'Dashboard/TecDashboard/gettecdashboardExpiredList', model);
+        return this.http.post<any>(this.baseUrl + 'ProductPurchaseService/getExpiredProductList', model);
+    }
+
+    domainList(model: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'ProductPurchaseService/domainList', model);
+    }
+
+    getCancelledProductList(model: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'ProductPurchaseService/getCancelledProductList', model);
     }
 
     createLinkUrl(model: any): Observable<any> {
-        return this.http.post<any>(this.baseUrl + 'Dashboard/TecDashboard/createLinkurl', model);
+        return this.http.post<any>(this.baseUrl + 'ProductPurchaseService/createLinkurl', model);
     }
 
     // getWLSettingList(agentId: any): Observable<any> {
@@ -199,7 +237,7 @@ export class CrmService {
     }
 
     updateStatus(model: any): Observable<any> {
-        return this.http.post<any>(this.baseUrl + 'Dashboard/TecDashboard/updatestatus', model);
+        return this.http.post<any>(this.baseUrl + 'ProductPurchaseService/updateStatus', model);
     }
 
     // getStatusChangedLog(model: any): Observable<any> {
@@ -231,17 +269,20 @@ export class CrmService {
     }
 
     updateExpiryDate(model: any): Observable<any> {
-        return this.http.post<any>(this.baseUrl + 'Dashboard/TecDashboard/UpdateExpirydate', model);
+        return this.http.post<any>(this.baseUrl + 'ProductPurchaseService/updateExpirydate', model);
     }
 
     cancelPurchaseProduct(model: any): Observable<any> {
-        return this.http.post<any>(this.baseUrl + 'ProductPurchaseMaster/CancelProduct', model);
+        return this.http.post<any>(this.baseUrl + 'ProductPurchase/cancel', model);
     }
 
     salesReturnDownloadInvoice(bookingId: any): Observable<any> {
         return this.http.post<any>(this.baseUrl + 'ProductPurchaseMaster/printInvoice', { invoiceId: bookingId });
     }
 
+    blockUnblock(model: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'ProductPurchase/blockUnblock', model);
+    }
 
     // getBusinessAnalyticsApiData(payload: any): Observable<any> {
     //     const apiData: any = {

@@ -38,7 +38,7 @@
                 <div class="w-2/3 bg-card rounded-2xl p-6 h-fit">
                     <div>
                         <div class="flex justify-between mb-3">
-                            <div class="flex">
+                            <div class="flex flex-wrap gap-1">
 
                                 <div *ngIf="mainDataAll?.is_print_button_show"
                                     class="px-2 py-1 border border-gray-border rounded-lg flex items-center secondary-text cursor-pointer"
@@ -49,9 +49,18 @@
                                     <span class="text-md leading-none ml-2">Voucher</span>
                                 </div>
 
-                                <div *ngIf="mainDataAll?.is_invoice_button_show"
+                                <!--Your Invoice-->
+                                <div *ngIf="mainDataAll?.is_invoice_button_show && mainDataAll?.invoice_id"
                                     class="px-2 py-1 mx-2 border border-gray-border rounded-lg flex items-center secondary-text cursor-pointer"
                                     (click)="invoice('print')">
+                                    <mat-icon class="material-symbols-outlined secondary-text text-xl">print</mat-icon>
+                                    <span class="text-md leading-none ml-2">Your Invoice</span>
+                                </div>
+
+                                 <!--Agent Invoice-->
+                                   <div *ngIf="mainDataAll?.is_invoice_button_show && mainDataAll?.agent_invoice_id"
+                                    class="px-2 py-1 mx-2 border border-gray-border rounded-lg flex items-center secondary-text cursor-pointer"
+                                    (click)="agentInvoice('print')">
                                     <mat-icon class="material-symbols-outlined secondary-text text-xl">print</mat-icon>
                                     <span class="text-md leading-none ml-2">Invoice</span>
                                 </div>

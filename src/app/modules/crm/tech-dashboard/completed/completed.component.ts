@@ -36,6 +36,7 @@ import { Subscription } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { GlobalSearchService } from 'app/services/global-search.service';
 import { DomainSslVerificationComponent } from '../domain-ssl-verification/domain-ssl-verification.component';
+import { Excel } from 'app/utils/export/excel';
 
 @Component({
     selector: 'app-crm-tech-dashboard-completed',
@@ -112,7 +113,7 @@ export class TechDashboardCompletedComponent extends BaseListingComponent {
     ) {
         super(module_name.techDashboard);
         this.key = this.module_name;
-        this.sortColumn = 'activation_date_sub';
+        this.sortColumn = 'activationDate';
         this.sortDirection = 'desc';
         this.Mainmodule = this;
         this._filterService.applyDefaultFilter(this.filter_table_name);
@@ -120,21 +121,21 @@ export class TechDashboardCompletedComponent extends BaseListingComponent {
 
     ngOnInit(): void {
         this.agentList = this._filterService.agentListByValue;
-        
+
         // common filter
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
             // this.sortColumn = resp['sortColumn'];
-                this.selectedAgent = resp['table_config']['agency_name']?.value;
-                if (this.selectedAgent && this.selectedAgent.id) {
-                    const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
-                    if (!match) {
-                        this.agentList.push(this.selectedAgent);
-                    }
+            this.selectedAgent = resp['table_config']['agency_name']?.value;
+            if (this.selectedAgent && this.selectedAgent.id) {
+                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                if (!match) {
+                    this.agentList.push(this.selectedAgent);
                 }
+            }
 
             // this.primengTable['_sortField'] = resp['sortColumn'];
-            if (resp['table_config']['activation_date_sub'].value) {
-                resp['table_config']['activation_date_sub'].value = new Date(resp['table_config']['activation_date_sub'].value);
+            if (resp['table_config']['activationDate'].value) {
+                resp['table_config']['activationDate'].value = new Date(resp['table_config']['activationDate'].value);
             }
             if (resp['table_config']['expiry_date_sub'].value) {
                 resp['table_config']['expiry_date_sub'].value = new Date(resp['table_config']['expiry_date_sub'].value);
@@ -155,15 +156,15 @@ export class TechDashboardCompletedComponent extends BaseListingComponent {
             setTimeout(() => {
                 this.selectedAgent = filterData['table_config']['agency_name']?.value;
                 if (this.selectedAgent && this.selectedAgent.id) {
-    
+
                     const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
                     if (!match) {
                         this.agentList.push(this.selectedAgent);
                     }
                 }
             }, 1000);
-            if (filterData['table_config']['activation_date_sub'].value) {
-                filterData['table_config']['activation_date_sub'].value = new Date(filterData['table_config']['activation_date_sub'].value);
+            if (filterData['table_config']['activationDate'].value) {
+                filterData['table_config']['activationDate'].value = new Date(filterData['table_config']['activationDate'].value);
             }
             if (filterData['table_config']['expiry_date_sub'].value) {
                 filterData['table_config']['expiry_date_sub'].value = new Date(filterData['table_config']['expiry_date_sub'].value);
@@ -207,7 +208,7 @@ export class TechDashboardCompletedComponent extends BaseListingComponent {
         const filterReq = this.getNewFilterReq(event);
         filterReq['Filter'] = this.searchInputControlCompleted.value;
 
-        this.crmService.getTechCompletedProductList(filterReq).subscribe({
+        this.crmService.getDeliveredProductList(filterReq).subscribe({
             next: (data) => {
                 this.isLoading = false;
                 this.dataList = data.data;
@@ -220,9 +221,9 @@ export class TechDashboardCompletedComponent extends BaseListingComponent {
         });
     }
 
-   // Api call to Get Agent data
-   getAgent(value: string) {
-       this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
+    // Api call to Get Agent data
+    getAgent(value: string) {
+        this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
             this.agentList = data;
 
             for (let i in this.agentList) {
@@ -254,33 +255,33 @@ export class TechDashboardCompletedComponent extends BaseListingComponent {
     //     });
     // }
 
-    wlSetting(record:any){
+    wlSetting(record: any) {
         if (!Security.hasPermission(techDashPermissions.wlSettingPermissions)) {
             return this.alertService.showToast('error', messages.permissionDenied);
         }
-    
-            this.crmService.getWLSettingListTwoParams(record?.code, record?.item_name).subscribe({
-                next: (data) => {
-                    this.isLoading = false;
-                    this.getWLSettingList = data[0];
-    
-                    this.matDialog.open(DomainSslVerificationComponent, {
-                        disableClose: true,
-                        data: {record:record, wlSettingList:this.getWLSettingList, from:'completed'},
-                        panelClass: ['custom-dialog-modal-md'],
-                        autoFocus: false,
-                      }).afterClosed().subscribe((res:any) => {
-                        if(res && res == 'completed'){
-                            this.refreshItems();
-                        }
-                    })
-                },
-                error: (err) => {
-                    this.alertService.showToast('error', err, 'top-right', true);
-                    this.isLoading = false;
-                },
-            });
-        }
+
+        this.crmService.getWLSettingListTwoParams(record?.agentId, record?.itemName).subscribe({
+            next: (data) => {
+                this.isLoading = false;
+                this.getWLSettingList = data[0];
+
+                this.matDialog.open(DomainSslVerificationComponent, {
+                    disableClose: true,
+                    data: { record: record, wlSettingList: this.getWLSettingList, from: 'completed' },
+                    panelClass: ['custom-dialog-modal-md'],
+                    autoFocus: false,
+                }).afterClosed().subscribe((res: any) => {
+                    if (res && res == 'completed') {
+                        this.refreshItems();
+                    }
+                })
+            },
+            error: (err) => {
+                this.alertService.showToast('error', err, 'top-right', true);
+                this.isLoading = false;
+            },
+        });
+    }
 
     link(record): void {
         if (!Security.hasPermission(techDashPermissions.linkPermissions)) {
@@ -314,19 +315,19 @@ export class TechDashboardCompletedComponent extends BaseListingComponent {
             .subscribe((res) => {
                 if (res?.action === 'confirmed') {
                     let newJson = {
-                        id: record.id,
-                        is_block: true,
-                        special_status_remark: res?.statusRemark ? res?.statusRemark : ""
+                        ServiceId: record.id,
+                        Isblock: true,
+                        BlockRemarks: res?.statusRemark ? res?.statusRemark : ""
                     }
                     this.crmService.blocked(newJson).subscribe({
                         next: (res) => {
-                            this.alertService.showToast(
-                                'success',
-                                'Blocked Successfully!',
-                                'top-right',
-                                true
-                            );
                             if (res) {
+                                this.alertService.showToast(
+                                    'success',
+                                    'Blocked Successfully!',
+                                    'top-right',
+                                    true
+                                );
                                 this.dataList.splice(index, 1);
                             }
                         },
@@ -363,8 +364,8 @@ export class TechDashboardCompletedComponent extends BaseListingComponent {
             .subscribe((res) => {
                 if (res?.action === 'confirmed') {
                     let newJson = {
-                        id: record?.id ? record?.id : "",
-                        expiry_date: res?.date ? DateTime.fromISO(res?.date).toFormat('yyyy-MM-dd') : ""
+                        Id: record?.id ? record?.id : "",
+                        NewExpiryDate: res?.date ? DateTime.fromISO(res?.date).toFormat('yyyy-MM-dd') : ""
                     }
                     this.crmService.updateExpiryDate(newJson).subscribe({
                         next: (res) => {
@@ -389,6 +390,34 @@ export class TechDashboardCompletedComponent extends BaseListingComponent {
                     });
                 }
             });
+    }
+
+    exportExcel(event?: any): void {
+        if (!Security.hasExportDataPermission(this.module_name)) {
+            return this.alertService.showToast('error', messages.permissionDenied);
+        }
+        const filterReq = this.getNewFilterReq(event);
+        filterReq['Filter'] = this.searchInputControlCompleted.value;
+        filterReq['Take'] = this.totalRecords;
+
+        this.crmService.getDeliveredProductList(filterReq).subscribe(data => {
+            for (var dt of data.data) {
+                dt.activationDate = dt.activationDate ? DateTime.fromISO(dt.activationDate).toFormat('dd-MM-yyyy') : ''
+                dt.expiryDate = dt.expiryDate ? DateTime.fromISO(dt.expiryDate).toFormat('dd-MM-yyyy') : ''
+            }
+            Excel.export(
+                'Delivered',
+                [
+                    { header: 'Item Code', property: 'itemCode' },
+                    { header: 'Item', property: 'itemName' },
+                    { header: 'Product', property: 'productName' },
+                    { header: 'Agent Code', property: 'agentCode' },
+                    { header: 'Agency Name', property: 'agencyName' },
+                    { header: 'Activation Date', property: 'activationDate' },
+                    { header: 'Expiry Date', property: 'expiryDate' },
+                ],
+                data.data, "Delivered", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 5 } }]);
+        });
     }
 
     ngOnDestroy(): void {

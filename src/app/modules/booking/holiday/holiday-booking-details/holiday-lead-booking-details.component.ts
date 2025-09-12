@@ -93,19 +93,53 @@ export class HolidayLeadBookingDetailsComponent {
   }
 
   getCopy(copyOf): void {
-    this.HolidayLeadService.downloadQuotationV2(this.bookingDetail.id).subscribe({
-      next: (res) => {
-        this.bookingDetail.copy = res.copy;
-        this.bookingDetail.customer_copy = res.customer_copy;
-        if (copyOf === 'agent') {
-          CommonUtils.downloadPdf(this.bookingDetail.copy, 'holiday_quotation.pdf');
-        }
-        else {
-          CommonUtils.downloadPdf(this.bookingDetail.customer_copy, 'holiday_quotation.pdf');
-        }
-      }, error: (err) => {
+
+    this.conformationService.open({
+      title: 'Print Quotation',
+      message: `Do you want to print without price information?`,
+      actions: {
+        confirm: {
+          label: 'Yes',
+        },
+        cancel:
+        {
+          label: 'No',
+        },
       },
     })
+      .afterClosed().subscribe((res) => {
+        const model =
+        {
+          id: this.bookingDetail.id,
+          is_with_price: res === 'confirmed' ? false : true
+        }
+        this.HolidayLeadService.downloadQuotationV2(model).subscribe({
+          next: (res) => {
+            this.bookingDetail.copy = res.copy;
+            this.bookingDetail.customer_copy = res.customer_copy;
+            if (copyOf === 'agent') {
+              CommonUtils.downloadPdf(this.bookingDetail.copy, 'holiday_quotation.pdf');
+            }
+            else {
+              CommonUtils.downloadPdf(this.bookingDetail.customer_copy, 'holiday_quotation.pdf');
+            }
+          }, error: (err) => {
+          },
+        })
+      })
+    // this.HolidayLeadService.downloadQuotationV2(this.bookingDetail.id).subscribe({
+    //   next: (res) => {
+    //     this.bookingDetail.copy = res.copy;
+    //     this.bookingDetail.customer_copy = res.customer_copy;
+    //     if (copyOf === 'agent') {
+    //       CommonUtils.downloadPdf(this.bookingDetail.copy, 'holiday_quotation.pdf');
+    //     }
+    //     else {
+    //       CommonUtils.downloadPdf(this.bookingDetail.customer_copy, 'holiday_quotation.pdf');
+    //     }
+    //   }, error: (err) => {
+    //   },
+    // })
   }
 
   status(record: any, code: any): void {
@@ -122,7 +156,7 @@ export class HolidayLeadBookingDetailsComponent {
             Fdata['note'] = '',
             this.HolidayLeadService.setLeadStatus(Fdata).subscribe({
               next: (res) => {
-                if(res){
+                if (res) {
                   this.alertService.showToast('success', code == 1 ? 'Holiday Completed' : 'Holiday Cancelled', "top-right", true);
                   this.bookingDetail.lead_status = 'Completed'
                 }
@@ -148,7 +182,7 @@ export class HolidayLeadBookingDetailsComponent {
             Fdata['note'] = res,
             this.HolidayLeadService.setLeadStatus(Fdata).subscribe({
               next: (response) => {
-                if(response){
+                if (response) {
                   this.alertService.showToast('success', "Holiday Reject", "top-right", true);
                   this.bookingDetail.lead_status = 'Rejected'
                   this.bookingDetail.reject_reason = res

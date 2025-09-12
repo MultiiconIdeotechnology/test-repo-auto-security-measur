@@ -32,6 +32,8 @@ import { AgentProductInfoComponent } from '../product-info/product-info.componen
 import { PurchaseProductEntrySettingsComponent } from "../purchase-product-entry-settings/purchase-product-entry-settings.component";
 import { EntityService } from 'app/services/entity.service';
 import { CRMSalesReturnRightComponent } from "../sales-return-right/sales-return-right.component";
+import { BlockReasonComponent } from 'app/modules/masters/supplier/block-reason/block-reason.component';
+import { MasterAgentComponent } from '../master-agent/master-agent.component';
 
 @Component({
     selector: 'app-purchase-product',
@@ -39,37 +41,37 @@ import { CRMSalesReturnRightComponent } from "../sales-return-right/sales-return
     styles: [`.tbl-grid { grid-template-columns: 40px 190px 45px 100px 110px 105px 120px 130px 85px}`],
     standalone: true,
     imports: [
-    NgIf,
-    NgFor,
-    NgClass,
-    DatePipe,
-    AsyncPipe,
-    FormsModule,
-    ReactiveFormsModule,
-    MatInputModule,
-    MatFormFieldModule,
-    MatSelectModule,
-    MatButtonModule,
-    MatIconModule,
-    MatSnackBarModule,
-    MatSlideToggleModule,
-    NgxMatSelectSearchModule,
-    MatTooltipModule,
-    MatAutocompleteModule,
-    RouterOutlet,
-    MatOptionModule,
-    MatDividerModule,
-    MatSortModule,
-    MatTableModule,
-    MatPaginatorModule,
-    MatMenuModule,
-    MatDialogModule,
-    CommonModule,
-    MatTabsModule,
-    MatProgressBarModule,
-    PurchaseProductEntrySettingsComponent,
-    CRMSalesReturnRightComponent
-]
+        NgIf,
+        NgFor,
+        NgClass,
+        DatePipe,
+        AsyncPipe,
+        FormsModule,
+        ReactiveFormsModule,
+        MatInputModule,
+        MatFormFieldModule,
+        MatSelectModule,
+        MatButtonModule,
+        MatIconModule,
+        MatSnackBarModule,
+        MatSlideToggleModule,
+        NgxMatSelectSearchModule,
+        MatTooltipModule,
+        MatAutocompleteModule,
+        RouterOutlet,
+        MatOptionModule,
+        MatDividerModule,
+        MatSortModule,
+        MatTableModule,
+        MatPaginatorModule,
+        MatMenuModule,
+        MatDialogModule,
+        CommonModule,
+        MatTabsModule,
+        MatProgressBarModule,
+        PurchaseProductEntrySettingsComponent,
+        CRMSalesReturnRightComponent
+    ]
 })
 export class PurchaseProductComponent {
     module_name = module_name.crmagent;
@@ -77,7 +79,7 @@ export class PurchaseProductComponent {
     total = 0;
     record: any = {};
     agentId: any;
-    currencySymbol:any;
+    currencySymbol: any;
 
     constructor(
         private crmService: CrmService,
@@ -99,7 +101,7 @@ export class PurchaseProductComponent {
 
         this.entityService.onrefreshproductPurchaseCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
             next: (item) => {
-                if(item){
+                if (item) {
                     this.refreshItems();
                 }
             }
@@ -107,7 +109,7 @@ export class PurchaseProductComponent {
 
         this.entityService.onCRMrefreshSalesReturnCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
             next: (item) => {
-                if(item){
+                if (item) {
                     this.refreshItems();
                 }
             }
@@ -116,7 +118,7 @@ export class PurchaseProductComponent {
 
     columns = [
         {
-            key: 'product_name',
+            key: 'productName',
             name: 'Product',
             is_date: false,
             date_formate: '',
@@ -143,7 +145,7 @@ export class PurchaseProductComponent {
             applied: false
         },
         {
-            key: 'count',
+            key: 'installmentCount',
             name: 'Installments',
             is_date: false,
             date_formate: '',
@@ -156,7 +158,7 @@ export class PurchaseProductComponent {
             applied: false
         },
         {
-            key: 'product_status',
+            key: 'status',
             name: 'Status',
             is_date: false,
             date_formate: '',
@@ -170,7 +172,7 @@ export class PurchaseProductComponent {
             applied: false
         },
         {
-            key: 'purchase_amount',
+            key: 'purchasePrice',
             name: 'Price',
             is_date: false,
             date_formate: '',
@@ -185,7 +187,7 @@ export class PurchaseProductComponent {
             dueAmount: false
         },
         {
-            key: 'due_Amount',
+            key: 'dueAmount',
             name: 'Due Amount',
             is_date: false,
             date_formate: '',
@@ -214,7 +216,7 @@ export class PurchaseProductComponent {
         //     applied: false
         // },
         {
-            key: 'start_integration',
+            key: 'startIntegration',
             name: 'Start Integration',
             is_date: false,
             date_formate: '',
@@ -254,7 +256,7 @@ export class PurchaseProductComponent {
         //     applied: false
         // },
         {
-            key: 'entry_date_time',
+            key: 'entryDate',
             name: 'Entry Date',
             is_date: true,
             date_formate: 'dd-MM-yyyy',
@@ -359,7 +361,7 @@ export class PurchaseProductComponent {
             next: (data) => {
                 this.isLoading = false;
                 this.dataList = data?.data;
-                if(this.dataList?.length && !this.currencySymbol){
+                if (this.dataList?.length && !this.currencySymbol) {
                     this.currencySymbol = this.dataList[0]?.['currencySymbol'];
                 }
                 // this.dataList?.forEach((row) => {
@@ -374,46 +376,114 @@ export class PurchaseProductComponent {
         });
     }
 
-    purchaseProductInfo(record, agencyName): void {
-        // if (!Security.hasNewEntryPermission(module_name.crmagent)) {
-        //     return this.alertService.showToast('error', messages.permissionDenied);
-        // }
-        this.matDialog.open(AgentProductInfoComponent, {
-            data: { data: record, agencyName: agencyName, readonly: true, purchase_product: true, currencySymbol:this.currencySymbol },
-            disableClose: true
-        });
+    setBlockUnblock(record): void {
+        if (!Security.hasPermission(agentPermissions.blockUnblockPermissions)) {
+            return this.alertService.showToast('error', messages.permissionDenied);
+        }
+
+        if (record.isBlocked) {
+            const label: string = 'Unblock Product'
+            this.confirmationService.open({
+                title: label,
+                message: 'Are you sure to ' + label.toLowerCase() + ' ' + record.productName + ' ?'
+            }).afterClosed().subscribe(res => {
+                if (res === 'confirmed') {
+                    const json = {
+                        ProductId: record.id,
+                        Isblock: false,
+                        BlockRemarks: ''
+                    }
+                    this.crmService.blockUnblock(json).subscribe({
+                        next: () => {
+                            record.isBlocked = !record.isBlocked;
+                            this.alertService.showToast('success', "Product has been Unblock!", "top-right", true);
+                            this.refreshItems();
+
+                        },
+                        error: (err) => {
+                            this.alertService.showToast('error', err, 'top-right', true);
+                        },
+                    })
+                }
+            })
+        } else {
+            this.matDialog.open(BlockReasonComponent, {
+                data: record,
+                disableClose: true
+            }).afterClosed().subscribe(res => {
+                if (res) {
+                    const json = {
+                        ProductId: record.id,
+                        Isblock: true,
+                        BlockRemarks: res
+                    }
+                    this.crmService.blockUnblock(json).subscribe({
+                        next: () => {
+                            record.isBlocked = !record.isBlocked;
+                            this.alertService.showToast('success', "Product has been Block!", "top-right", true);
+                            this.refreshItems();
+
+                        },
+                        error: (err) => {
+                            this.alertService.showToast('error', err, 'top-right', true);
+                        },
+                    })
+                }
+            })
+        }
     }
+
+    shiftProduct(record) {
+         if (!Security.hasPermission(agentPermissions.shiftProductPermissions)) {
+            return this.alertService.showToast('error', messages.permissionDenied);
+        }
+
+        this.matDialog.open(MasterAgentComponent, {
+            data: record,
+            disableClose: true
+        })
+    }
+
+    purchaseProductInfo(record, agencyName): void {
+            // if (!Security.hasNewEntryPermission(module_name.crmagent)) {
+            //     return this.alertService.showToast('error', messages.permissionDenied);
+            // }
+            this.matDialog.open(AgentProductInfoComponent, {
+                data: { data: record, agencyName: agencyName, readonly: true, purchase_product: true, currencySymbol: this.currencySymbol },
+                disableClose: true
+            });
+        }
 
     createInternal() {
-        // if (!Security.hasNewEntryPermission(module_name.crmagent)) {
-        //     return this.alertService.showToast('error', messages.permissionDenied);
-        // }
-        // this.matDialog.open(PurchaseProductEntryComponent,
-        //     { data: this.record, disableClose: true })
-        //     .afterClosed()
-        //     .subscribe((res) => {
-        //         if (res) {
-        //             this.refreshItems();
-        //             this.alertService.showToast(
-        //                 'success',
-        //                 'New record added',
-        //                 'top-right',
-        //                 true
-        //             );
-        //         }
-        //     });
-        this.entityService.raiseproductPurchaseCall({ data: this.record, addFlag: true })
-    }
+            // if (!Security.hasNewEntryPermission(module_name.crmagent)) {
+            //     return this.alertService.showToast('error', messages.permissionDenied);
+            // }
+            // this.matDialog.open(PurchaseProductEntryComponent,
+            //     { data: this.record, disableClose: true })
+            //     .afterClosed()
+            //     .subscribe((res) => {
+            //         if (res) {
+            //             this.refreshItems();
+            //             this.alertService.showToast(
+            //                 'success',
+            //                 'New record added',
+            //                 'top-right',
+            //                 true
+            //             );
+            //         }
+            //     });
+            this.entityService.raiseproductPurchaseCall({ data: this.record, addFlag: true })
+        }
 
     deleteProduct(record) {
-        if (!Security.hasPermission(agentPermissions.deleteProductPermissions)) {
+            if(!Security.hasPermission(agentPermissions.deleteProductPermissions)) {
             return this.alertService.showToast('error', messages.permissionDenied);
         }
 
         const label: string = 'Delete Purchase product'
         this.confirmationService.open({
             title: label,
-            message: 'Are you sure to ' + label.toLowerCase() + ' ' + record.product_name + ' ?'
+            message: 'Are you sure to ' + label.toLowerCase() + ' ' + record.productName + ' ?'
         }).afterClosed().subscribe(res => {
             if (res === 'confirmed') {
                 // const json = {
@@ -452,17 +522,20 @@ export class PurchaseProductComponent {
                 if (res?.action === 'confirmed') {
                     let newJson = {
                         id: record.id,
-                        cancel_remark: res?.statusRemark ? res?.statusRemark : ""
+                        CancelRemark: res?.statusRemark ? res?.statusRemark : ""
                     }
                     this.crmService.cancelPurchaseProduct(newJson).subscribe({
                         next: (res) => {
-                            this.alertService.showToast(
-                                'success',
-                                'Purchase product has been cancelled!',
-                                'top-right',
-                                true
-                            );
-                            this.refreshItems()
+                            if (res) {
+
+                                this.alertService.showToast(
+                                    'success',
+                                    'Purchase product has been cancelled!',
+                                    'top-right',
+                                    true
+                                );
+                                this.refreshItems()
+                            }
                         },
                         error: (err) => {
                             this.alertService.showToast(
@@ -486,13 +559,13 @@ export class PurchaseProductComponent {
         this.confirmationService
             .open({
                 title: label,
-                message: 'Are you sure to ' + label.toLowerCase() + ' ' + record.product_name + ' ?',
+                message: 'Are you sure to ' + label.toLowerCase() + ' ' + record.productName + ' ?',
             })
             .afterClosed()
             .subscribe((res) => {
                 if (res === 'confirmed') {
                     let payload = {
-                        id : record.id
+                        id: record.id
                     }
                     this.crmService.expiryProduct(payload).subscribe({
                         next: () => {
@@ -519,6 +592,13 @@ export class PurchaseProductComponent {
     }
 
     editProduct(record) {
+        if (record.status != 'New') {
+            this.alertService.showToast('error', 'Only new status product has been allow for modify.', 'top-right', true);
+            return
+        }
+
+        this.entityService.raiseproductPurchaseCall({ editData: record, editFlag: true })
+
         // if (!Security.hasNewEntryPermission(module_name.crmagent)) {
         //     return this.alertService.showToast('error', messages.permissionDenied);
         // }
@@ -537,10 +617,9 @@ export class PurchaseProductComponent {
         //             );
         //         }
         //     });
-        this.entityService.raiseproductPurchaseCall({ editData: record, editFlag: true })
     }
 
-    salesReturnProduct(record){
+    salesReturnProduct(record) {
         if (!Security.hasPermission(agentPermissions.salesReturnProductPermissions)) {
             return this.alertService.showToast('error', messages.permissionDenied);
         }

@@ -10,43 +10,43 @@
         <ng-template pTemplate="header">
             <tr>
                 <th class="w-5 text-center left-[-1px]" pFrozenColumn>#</th>
-                <th pSortableColumn="item_code" pResizableColumn pResizableColumn alignFrozen="left" pFrozenColumn class="dark:bg-[#1e293b]"
-                    [frozen]="frozenObj?.item_code" [ngClass]="{'left-0': !frozenObj?.item_code}">
-                    Item Code <p-sortIcon field="item_code" />
-                    <span class="float-right" (click)="isFrozenColumn('item_code');$event.stopPropagation()">
-                        <i *ngIf="!frozenObj?.item_code" class="pi pi-lock-open icon-size-3"></i>
-                        <i *ngIf="frozenObj?.item_code" class="pi pi-lock icon-size-3"></i>
+                <th pSortableColumn="itemCode" pResizableColumn pResizableColumn alignFrozen="left" pFrozenColumn class="dark:bg-[#1e293b]"
+                    [frozen]="frozenObj?.itemCode" [ngClass]="{'left-0': !frozenObj?.itemCode}">
+                    Item Code <p-sortIcon field="itemCode" />
+                    <span class="float-right" (click)="isFrozenColumn('itemCode');$event.stopPropagation()">
+                        <i *ngIf="!frozenObj?.itemCode" class="pi pi-lock-open icon-size-3"></i>
+                        <i *ngIf="frozenObj?.itemCode" class="pi pi-lock icon-size-3"></i>
                     </span>
                 </th>
-                <th pSortableColumn="item_name" pResizableColumn>
-                    Item <p-sortIcon field="item_name" />
+                <th pSortableColumn="itemName" pResizableColumn>
+                    Item <p-sortIcon field="itemName" />
                 </th>
-                <th pSortableColumn="product_name" pResizableColumn>
-                    Product <p-sortIcon field="product_name" />
+                <th pSortableColumn="productName" pResizableColumn>
+                    Product <p-sortIcon field="productName" />
                 </th>
                 <th pSortableColumn="agentCode" pResizableColumn>
                     Agent Code <p-sortIcon field="agentCode" />
                 </th>
-                <th pSortableColumn="agency_name" pResizableColumn>
-                    Agency Name <p-sortIcon field="agency_name" />
+                <th pSortableColumn="agencyName" pResizableColumn>
+                    Agency Name <p-sortIcon field="agencyName" />
                 </th>
-                <th pSortableColumn="activation_date_sub" pResizableColumn>
-                    Activation Date <p-sortIcon field="activation_date_sub" />
+                <th pSortableColumn="activationDate" pResizableColumn>
+                    Activation Date <p-sortIcon field="activationDate" />
                 </th>
-                <th pSortableColumn="expiry_date_sub" pResizableColumn>
-                    Expiry Date <p-sortIcon field="expiry_date_sub" />
+                <th pSortableColumn="expiryDate" pResizableColumn>
+                    Expiry Date <p-sortIcon field="expiryDate" />
                 </th>
             </tr>
 
             <tr *ngIf="isFilterShowCompleted">
                 <th class=" left-[-1px]" pFrozenColumn></th>
-                <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.item_code" class="min-w-[110px]">
-                    <p-columnFilter field="item_code" type="text" placeholder="Search by Item code" ariaLabel="Filter Item code"></p-columnFilter>
+                <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.itemCode" class="min-w-[110px]">
+                    <p-columnFilter field="itemCode" type="text" placeholder="Search by Item code" ariaLabel="Filter Item code"></p-columnFilter>
                 </th>
                 <th>
-                    <!-- <p-columnFilter type="text" matchMode="contains" field="item_name" placeholder="Search by Name"
+                    <!-- <p-columnFilter type="text" matchMode="contains" field="itemName" placeholder="Search by Name"
                         ariaLabel="Filter Item" /> -->
-                    <p-columnFilter field="item_name" matchMode="in" [showMenu]="false">
+                    <p-columnFilter field="itemName" matchMode="in" [showMenu]="false">
                         <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                             <p-multiSelect [ngModel]="value" [options]="globalSearchService.itemList"
                                 optionLabel="itemInfo" placeholder="Search by Name" (onChange)="filter($event.value)"
@@ -61,9 +61,9 @@
                     </p-columnFilter>
                 </th>
                 <th>
-                    <!-- <p-columnFilter type="text" matchMode="contains" field="product_name"
+                    <!-- <p-columnFilter type="text" matchMode="contains" field="productName"
                         placeholder="Search by Product" ariaLabel="Filter Product" /> -->
-                    <p-columnFilter field="product_name" matchMode="in" [showMenu]="false">
+                    <p-columnFilter field="productName" matchMode="in" [showMenu]="false">
                         <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                             <p-multiSelect [ngModel]="value" [options]="globalSearchService.productList"
                                 optionLabel="productInfo" placeholder="Search by Name" (onChange)="filter($event.value)"
@@ -82,9 +82,9 @@
                         ariaLabel="Filter Agent Code" />
                 </th>
                 <th>
-                    <!-- <p-columnFilter type="text" matchMode="contains" field="agency_name" placeholder="Search by Agency Name"
+                    <!-- <p-columnFilter type="text" matchMode="contains" field="agencyName" placeholder="Search by Agency Name"
                         ariaLabel="Filter Agency Name" /> -->
-                    <p-columnFilter class="searchableDropdown" field="agency_name" matchMode="equals" [showMenu]="false">
+                    <p-columnFilter class="searchableDropdown" field="agencyName" matchMode="equals" [showMenu]="false">
                         <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                             <p-dropdown class="filter-dropdown" [options]="agentList" optionLabel="agent_info"
                                 [filter]="true" filterBy="agent_info" [(ngModel)]="selectedAgent"
@@ -94,7 +94,7 @@
                                     <div class="flex align-items-center gap-1">
                                         <div [value]="agent.id">
                                             <div class="m-0">
-                                                {{agent.code}} - {{agent.agency_name}}
+                                                {{agent.code}} - {{agent.agencyName}}
                                                 <div class="text-sm text-slate-500">{{agent.email_address}}</div>
                                             </div>
                                         </div>
@@ -105,7 +105,7 @@
                     </p-columnFilter>
                 </th>
                 <th>
-                    <p-columnFilter field="activation_date_sub" type="date">
+                    <p-columnFilter field="activationDate" type="date">
                         <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                             <p-calendar (onSelect)="filter($event)" dateFormat="dd-mm-yy" appendTo="body"
                                 [ngModel]="value" placeholder="Search by Activation Date">
@@ -114,7 +114,7 @@
                     </p-columnFilter>
                 </th>
                 <th>
-                    <p-columnFilter field="expiry_date_sub" type="date">
+                    <p-columnFilter field="expiryDate" type="date">
                         <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                             <p-calendar (onSelect)="filter($event)" dateFormat="dd-mm-yy" appendTo="body"
                                 [ngModel]="value" placeholder="Search by Expiry Date">
@@ -141,10 +141,16 @@
                             <mat-icon class="mat-18">history</mat-icon>
                             <span style="font-weight: 600">Block</span>
                         </button>
-                        <button *ngIf="!element?.product_name?.toLowerCase().includes('rise')" mat-menu-item (click)="wlSetting(element)">
+                        <!-- <button *ngIf="!element?.productName?.toLowerCase().includes('rise')" mat-menu-item (click)="wlSetting(element)">
+                            <mat-icon class="mat-18">schedule</mat-icon>
+                            <span style="font-weight: 600">WL Settings</span>
+                        </button> -->
+
+                        <button mat-menu-item (click)="wlSetting(element)">
                             <mat-icon class="mat-18">schedule</mat-icon>
                             <span style="font-weight: 600">WL Settings</span>
                         </button>
+
                         <button mat-menu-item (click)="updateExpiryDate(element)">
                             <mat-icon class="mat-18">how_to_reg</mat-icon>
                             <span style="font-weight: 600">Update Expiry Date</span>
@@ -159,26 +165,26 @@
                         </button> -->
                     </mat-menu>
                 </td>
-                <td class="text-left min-w-[140px]" alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.item_code">
-                    {{element.item_code || '-'}}
+                <td class="text-left min-w-[140px]" alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.itemCode">
+                    {{element.itemCode || '-'}}
                 </td>
                 <td>
-                    {{element.item_name || '-'}}
+                    {{element.itemName || '-'}}
                 </td>
                 <td>
-                    {{element.product_name || '-'}}
+                    {{element.productName || '-'}}
                 </td>
                 <td>
                     {{element.agentCode || '0'}}
                 </td>
                 <td>
-                    {{element.agency_name || '-'}}
+                    {{element.agencyName || '-'}}
                 </td>
                 <td>
-                    {{(element.activation_date_sub | date: 'dd-MM-yyyy') || "-"}}
+                    {{(element.activationDate | date: 'dd-MM-yyyy') || "-"}}
                 </td>
                 <td class="w-full">
-                    {{(element.expiry_date_sub | date: 'dd-MM-yyyy') || "-"}}
+                    {{(element.expiryDate | date: 'dd-MM-yyyy') || "-"}}
                 </td>
             </tr>
         </ng-template>

@@ -77,10 +77,11 @@ export class InstallmentsInfoItemComponent {
     total = 0;
 
     @Input() installmentDetail: any;
+    @Input() recordId: any;
 
     columns = [
         {
-            key: 'installment_date',
+            key: 'installmentDate',
             name: 'Installment Date',
             is_date: true,
             date_formate: 'dd-MM-yyyy',
@@ -95,7 +96,7 @@ export class InstallmentsInfoItemComponent {
             dueAmount: false
         },
         {
-            key: 'installment_amount',
+            key: 'installmentAmount',
             name: 'Amount',
             is_date: false,
             date_formate: '',
@@ -111,7 +112,7 @@ export class InstallmentsInfoItemComponent {
             dueAmount: false
         },
         {
-            key: 'payment_date',
+            key: 'paymentDate',
             name: 'Payment Date',
             is_date: true,
             date_formate: 'dd-MM-yyyy',
@@ -126,7 +127,7 @@ export class InstallmentsInfoItemComponent {
             dueAmount: false
         },
         {
-            key: 'payment_amount',
+            key: 'paymentAmount',
             name: 'Received Amount',
             is_date: false,
             date_formate: '',
@@ -141,7 +142,7 @@ export class InstallmentsInfoItemComponent {
             dueAmount: false
         },
         {
-            key: 'dueammount',
+            key: 'dueAmount',
             name: 'Due Amount',
             is_date: false,
             date_formate: '',
@@ -176,42 +177,7 @@ export class InstallmentsInfoItemComponent {
     agentId: any;
     productId: any;
 
-    ngOnInit(): void {
-        // this.refreshItems();
-        setTimeout(() => {
-        }, 3000);
-    }
-
-    refreshItems() {
-        this.isLoading = true;
-        const filterReq = GridUtils.GetFilterReq(
-            this._paginator,
-            this._sort,
-            "",
-        );
-        // filterReq['agent_id'] = this.agentId ? this.agentId : ""
-        filterReq['Id'] = this.productId ? this.productId : ""
-        this.crmService.getProductInfoList(filterReq).subscribe({
-            next: (res) => {
-                this.isLoading = false;
-                // this.dataList = res[0];
-                this.installmentDetail = res[0];
-                //this.dataList = res?.data[0];
-            },
-            error: (err) => {
-                this.alertService.showToast('error', err, 'top-right', true);
-                this.isLoading = false;
-            },
-        });
-    }
-
-    getPaymentIndicatorClass(isPaymentAaudited: boolean): string {
-        if (isPaymentAaudited == true) {
-            return 'bg-green-600';
-        } else {
-            return 'bg-red-600';
-        }
-    }
+    
 
     constructor(
         @Inject(MAT_DIALOG_DATA) public data: any = {},
@@ -233,10 +199,51 @@ export class InstallmentsInfoItemComponent {
         this.entityService.onrefreshInstallmentCalll().pipe(takeUntil(this._unsubscribeAll)).subscribe({
             next: (item) => {
                 if(item){
-                    this.refreshItems();
+                    if(this.recordId){
+                        this.refreshItemsNew();
+                    }
                 }
             }
         })
+    }
+
+    ngOnInit(): void {
+        // this.refreshItems();
+        setTimeout(() => {
+        }, 3000);
+    }
+
+    refreshItemsNew() {
+        this.isLoading = true;
+        // const filterReq = GridUtils.GetFilterReq(
+        //     this._paginator,
+        //     this._sort,
+        //     "",
+        // );
+        // // filterReq['agent_id'] = this.agentId ? this.agentId : ""
+        // filterReq['Id'] = this.productId ? this.productId : ""
+        const Id = this.recordId
+        
+        this.crmService.getDataProduct(Id).subscribe({
+            next: (res) => {
+                this.isLoading = false;
+                // this.dataList = res[0];
+                this.installmentDetail = res.installments;
+                //this.dataList = res?.data[0];
+            },
+            error: (err) => {
+                this.alertService.showToast('error', err, 'top-right', true);
+                this.isLoading = false;
+            },
+        });
+    }
+
+    getPaymentIndicatorClass(isPaymentAaudited: boolean): string {
+        if (isPaymentAaudited == true) {
+            return 'bg-green-600';
+        } else {
+            return 'bg-red-600';
+        }
     }
 
     getNodataText(): string {

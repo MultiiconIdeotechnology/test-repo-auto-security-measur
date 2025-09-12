@@ -83,7 +83,7 @@
             [rowsPerPageOptions]="appConfig.pageSizeOptions" [lazy]="true" (onLazyLoad)="refreshItems($event)"
             [scrollable]="true" [scrollHeight]="scrollHeight" [showCurrentPageReport]="true" [showPageLinks]="false"
             [showJumpToPageDropdown]="false" currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
-            [globalFilterFields]="['agent_code', 'agency_name', 'status','relation_manager_name', 'email_address', 'mobile_number', 'currency', 'is_cashback_enable', 'entry_date_time']"
+            [globalFilterFields]="['agent_code', 'agency_name', 'agency_alias_name' , 'status','relation_manager_name', 'email_address', 'mobile_number', 'currency', 'is_cashback_enable', 'entry_date_time']"
             styleClass="p-datatable-gridlines p-datatable-sm">
 
             <ng-template pTemplate="header" let-columns>
@@ -106,6 +106,9 @@
                             <i *ngIf="!frozenObj?.agency_name" class="pi pi-lock-open icon-size-3"></i>
                             <i *ngIf="frozenObj?.agency_name" class="pi pi-lock icon-size-3"></i>
                         </span>
+                    </th>
+                      <th pSortableColumn="agency_alias_name" pResizableColumn>
+                        Alias Name <p-sortIcon field="agency_alias_name" />
                     </th>
                     <th pSortableColumn="status" pResizableColumn>
                         Status <p-sortIcon field="status" />
@@ -142,9 +145,13 @@
                         <p-columnFilter type="numeric" field="agent_code" placeholder="Search by Code"
                             ariaLabel="Filter Code" />
                     </th>
-                    <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.agency_name">
+                    <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.agency_name"> 
                         <p-columnFilter type="text" matchMode="contains" field="agency_name"
                             placeholder="Search by Agency" ariaLabel="Filter Agency" />
+                    </th>
+                     <th alignFrozen="left" pFrozenColumn> 
+                        <p-columnFilter type="text" matchMode="contains" field="agency_alias_name"
+                            placeholder="Search by Agency Alias NAme" ariaLabel="Filter Agency Alias Name" />
                     </th>
                     <th>
                         <p-columnFilter field="status" matchMode="equals" [showMenu]="false">
@@ -455,7 +462,8 @@
                         </ng-container>
 
                         <ng-container *ngIf="col.field == 'first_transaction_date_time'">
-                            <p-columnFilter *ngIf="(_filterService.selectionDateDropdownContracting$ | async) != 'custom_date_range'"
+                            <p-columnFilter
+                                *ngIf="(_filterService.selectionDateDropdownContracting$ | async) != 'custom_date_range'"
                                 field="first_transaction_date_time" matchMode="custom" [showMenu]="false">
                                 <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                     <p-dropdown #dateRangeDropdown class="filter-dropdown" [ngModel]="value"
@@ -576,6 +584,11 @@
                                 <mat-icon class="mat-18 icon-size-5">delete</mat-icon>
                                 <span style="font-weight: 500">Remove All Sub Agent</span>
                             </button>
+                            <button mat-menu-item (click)="assignPspProfile(element)">
+                                <mat-icon class="mat-18">{{ element.is_active ? "highlight_off" :
+                                    "check_circle"}}</mat-icon>
+                                Assign PSP Profile
+                            </button>
 
                             <mat-divider></mat-divider>
 
@@ -583,6 +596,7 @@
                                 <mat-icon class="mat-18 icon-size-5">login</mat-icon>
                                 <span style="font-weight: 500">Login B2B Portal</span>
                             </button>
+
 
                             <!-- <button mat-menu-item (click)="view(element)">
                                 <mat-icon class="mat-18">info</mat-icon>
@@ -649,6 +663,7 @@
                             Blocked
                         </div>
                     </td>
+                    <td>{{element.agency_alias_name || "-"}}</td>
                     <td [ngClass]="getStatusColor(element.status)">{{element.status}}</td>
                     <td>{{element.relation_manager_name || "-"}}</td>
                     <td>
@@ -713,7 +728,7 @@
             <ng-template pTemplate="emptymessage">
                 <tr class="h-14">
                     <!-- {{13 + selectedColumns?.length}} -->
-                    <td [attr.colspan]="13 + selectedColumns?.length" class="text-center font-semibold text-lg">
+                    <td [attr.colspan]="14 + selectedColumns?.length" class="text-center font-semibold text-lg">
                         {{getNodataText()}}
                     </td>
                 </tr>

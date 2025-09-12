@@ -149,26 +149,26 @@ export class ReceiptInfoEntryComponent {
         return true;
     }
 
-    refreshItems(): void {
-        const filterReq = GridUtils.GetFilterReq(
-            this._paginator,
-            this._sort,
-            this.searchInputControl.value
-        );
-        this.crmService.getProductPurchaseMasterList(filterReq).subscribe({
-            next: (data) => {
-                this.dataList = data.data;
-            },
-            error: (err) => {
-                this.alertService.showToast('error', err, 'top-right', true);
-            },
-        });
-    }
+    // refreshItems(): void {
+    //     const filterReq = GridUtils.GetFilterReq(
+    //         this._paginator,
+    //         this._sort,
+    //         this.searchInputControl.value
+    //     );
+    //     this.crmService.getProductPurchaseMasterList(filterReq).subscribe({
+    //         next: (data) => {
+    //             this.dataList = data.data;
+    //         },
+    //         error: (err) => {
+    //             this.alertService.showToast('error', err, 'top-right', true);
+    //         },
+    //     });
+    // }
 
     onProofAttachmentFile(event: any) {
         const file = (event.target as HTMLInputElement).files[0];
 
-        const extantion: string[] = ["pdf", "jpg", "jpeg", "png"];
+        const extantion: string[] = ["pdf", "jpg", "jpeg", "png", "webp"];
         var validator: DocValidationDTO = CommonUtils.isDocValid(file, extantion, 2024, null);
         if (!validator.valid) {
             this.alertService.showToast('error', validator.alertMessage, 'top-right', true);
@@ -199,7 +199,7 @@ export class ReceiptInfoEntryComponent {
 
     onPaymentAttachmentFile(event: any) {
         const file = (event.target as HTMLInputElement).files[0];
-        const extantion: string[] = ["pdf", "jpg", "jpeg", "png"];
+        const extantion: string[] = ["pdf", "jpg", "jpeg", "png", "webp"];
         var validator: DocValidationDTO = CommonUtils.isDocValid(file, extantion, 2024, null);
         if (!validator.valid) {
             this.alertService.showToast('error', validator.alertMessage, 'top-right', true);
