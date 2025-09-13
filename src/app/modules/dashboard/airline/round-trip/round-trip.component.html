@@ -2,7 +2,7 @@
     <div class="flex space-x-4 mobile:space-x-2">
         <div class="w-1/2" *ngIf="depFlightsObj && depFlightsObj.originCity">
             <div
-                class="sky-blue-bg border border-gray-border rounded-lg mobile:px-2 px-4 py-2 flex justify-between flex-wrap">
+                class="dark:bg-card bg-white border border-gray-border rounded-lg mobile:px-2 px-4 py-2 flex justify-between flex-wrap">
                 <div class="flex justify-center mobile:items-center">
                     <span class="text-lg font-semibold mobile:font-medium mobile:text-md">{{depFlightsObj?.originCity |
                         titlecase}}</span>
@@ -17,7 +17,7 @@
                     ''}}</div>
             </div>
             <div *ngFor="let flight of depFlights">
-                <div class="relative border overflow-hidden rounded-lg my-4 mobile:my-2  pt-3 mobile:px-2 mobile:pt-2 cursor-pointer dark:bg-transparent bg-white"
+                <div class="relative border overflow-hidden rounded-lg my-4 mobile:my-2  pt-3 mobile:px-2 mobile:pt-2 cursor-pointer "
                     [ngClass]="{'shadow-xl primary-border bg-card' : SelectedDepartureFlight?.id === flight.id, 'border-gray-border' : SelectedDepartureFlight?.id !== flight.id}"
                     (click)="SelectedDepartureFlight?.id === flight.id ? toggleFlightDetails(flight) : SelectedDepartureFlight = flight">
                     <div class="px-5">
@@ -142,7 +142,7 @@
         </div>
         <div class="w-1/2" *ngIf="retFlightsObj && retFlightsObj.originCity">
             <div
-                class="sky-blue-bg border border-gray-border mobile:px-2 rounded-lg px-4 py-2 flex justify-between flex-wrap">
+                class="dark:bg-card bg-white border border-gray-border mobile:px-2 rounded-lg px-4 py-2 flex justify-between flex-wrap">
                 <div class="flex justify-center mobile:items-center">
                     <span class="text-lg font-semibold mobile:font-medium mobile:text-md">{{retFlightsObj?.originCity |
                         titlecase}}</span>
@@ -157,7 +157,7 @@
                     ''}}</div>
             </div>
             <div *ngFor="let flight of retFlights">
-                <div class="relative border overflow-hidden rounded-lg mobile:my-2 my-4  pt-3 mobile:px-2 mobile:pt-2 cursor-pointer dark:bg-transparent bg-white"
+                <div class="relative border overflow-hidden rounded-lg mobile:my-2 my-4  pt-3 mobile:px-2 mobile:pt-2 cursor-pointer "
                     [ngClass]="{'shadow-xl primary-border bg-card' : SelectedReturnFlight?.id === flight.id, 'border-gray-border' : SelectedReturnFlight?.id !== flight.id}"
                     (click)="SelectedReturnFlight?.id === flight.id ? toggleFlightDetails(flight) : SelectedReturnFlight = flight">
                     <div class="px-5">

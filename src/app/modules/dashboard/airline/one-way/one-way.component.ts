@@ -120,7 +120,6 @@ export class OneWayComponent {
   }
 
   ngOnInit(): void {
-    console.log("flightsssssss", this.flights);
     
   }
 
@@ -163,7 +162,6 @@ export class OneWayComponent {
   }
 
   loadFareRules(flight, isMiniFareRule: boolean = true, scrollToID?: any): void {
-    console.log("loadfare flight", flight);
     
     const model = {
       traceId: flight.traceId,
@@ -257,7 +255,6 @@ export class OneWayComponent {
   }
 
   booking(flight: any): void {
-    console.log("flight", flight);
     
     const json = {
       adultCount: flight.adultCount,
@@ -278,7 +275,6 @@ export class OneWayComponent {
       filename: this.filename,
       travellClass: this.cabinClassSearch,
     };
-    console.log("one json", json);
 
     this.matDialog
       .open(BookNowDailogComponent, {

@@ -485,32 +485,32 @@ export class AirlineComponent implements OnInit {
     this.nextYear.setFullYear(this.today.getFullYear() + 1);
     this.currentDate = new Date(this.today);
 
-    if (this.selectedFromCity && this.selectedToCity) {
+    // if (this.selectedFromCity && this.selectedToCity) {
 
-      this.airlineDashboardService.getDateWiseFares(this.selectedFromCity, this.selectedToCity, 'ow').subscribe({
-        next: (res) => {
-          if (res) {
-            this.fareMap = res.data.reduce((acc: any, item: any) => {
-              acc[item.date] = item.price;
-              return acc;
-            }, {});
+    //   this.airlineDashboardService.getDateWiseFares(this.selectedFromCity, this.selectedToCity, 'ow').subscribe({
+    //     next: (res) => {
+    //       if (res) {
+    //         this.fareMap = res.data.reduce((acc: any, item: any) => {
+    //           acc[item.date] = item.price;
+    //           return acc;
+    //         }, {});
 
-            if (this.isFirst) {
-              this.FareDateList = this.generateDateList();
-              this.cdr.detectChanges();
-            }
+    //         if (this.isFirst) {
+    //           this.FareDateList = this.generateDateList();
+    //           this.cdr.detectChanges();
+    //         }
 
 
-          } else {
-            this.fareMap = {}
-            this.FareDateList = this.generateDateList();
-          }
-        }, error: (err) => {
-          this.fareMap = {}
-          this.FareDateList = this.generateDateList();
-        }
-      });
-    }
+    //       } else {
+    //         this.fareMap = {}
+    //         this.FareDateList = this.generateDateList();
+    //       }
+    //     }, error: (err) => {
+    //       this.fareMap = {}
+    //       this.FareDateList = this.generateDateList();
+    //     }
+    //   });
+    // }
   }
 
   generateDateList(): any[] {
@@ -535,21 +535,21 @@ export class AirlineComponent implements OnInit {
 
   // Fetch fares for return (e.g., DEL to BOM)
   fetchReturnDateFares(): void {
-    if (this.formGroup.get('type').value === 'rt' && this.selectedFromCity && this.selectedToCity) {
-      this.airlineDashboardService.getDateWiseFares(this.selectedToCity, this.selectedFromCity, 'rt').subscribe({
-        next: (res) => {
-          if (res) {
-            this.returnFareMap = res.data.reduce((acc: any, item: any) => {
-              acc[item.date] = item.price;
-              return acc;
-            }, {});
-          } else {
-            this.returnFareMap = {};
-          }
-        },
-        error: (err) => (this.returnFareMap = {}),
-      });
-    }
+    // if (this.formGroup.get('type').value === 'rt' && this.selectedFromCity && this.selectedToCity) {
+    //   this.airlineDashboardService.getDateWiseFares(this.selectedToCity, this.selectedFromCity, 'rt').subscribe({
+    //     next: (res) => {
+    //       if (res) {
+    //         this.returnFareMap = res.data.reduce((acc: any, item: any) => {
+    //           acc[item.date] = item.price;
+    //           return acc;
+    //         }, {});
+    //       } else {
+    //         this.returnFareMap = {};
+    //       }
+    //     },
+    //     error: (err) => (this.returnFareMap = {}),
+    //   });
+    // }
   }
 
   optionChange(v: any): void {
@@ -794,7 +794,6 @@ export class AirlineComponent implements OnInit {
         });
 
         let flightData = res.flights;
-        console.log("797 flightData", flightData);
         
         if (!this.groupInquiry) {
           // Refundable & Non-Refundable Merge Filter To salePrice & purchasePrice Update BN-1205
@@ -810,7 +809,6 @@ export class AirlineComponent implements OnInit {
 
         this.Allflights = flightData;
         this.flights = flightData;
-        console.log("this.flights", this.flights);
         
 
         this.returnDate = res.return_date_time;
@@ -848,9 +846,6 @@ export class AirlineComponent implements OnInit {
           supplier_name: name,
           isSelected: false
         }));
-        console.log("this.supplierList", this.supplierList);
-
-       
 
 
         // to get the list for airport code to filter (departure and arrival)
