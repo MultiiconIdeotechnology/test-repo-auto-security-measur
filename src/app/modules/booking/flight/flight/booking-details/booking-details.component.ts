@@ -384,10 +384,10 @@ export class BookingDetailsComponent {
 
   //Agent Invoice
   agentInvoice(record): void {
-    const recordData = record == 'print' ? this.mainData.agent_invoice_id : record
+    const recordData = record == 'print' ? this.mainData[0].agent_invoice_id : record
     this.flighttabService.Invoice(recordData).subscribe({
       next: (res) => {
-        CommonUtils.downloadPdf(res.data, this.mainData.agent_invoice_no + '.pdf');
+        CommonUtils.downloadPdf(res.data, this.mainData[0].agent_invoice_no + '.pdf');
       }, error: (err) => {
         this.toastr.showToast('error', err)
       }
