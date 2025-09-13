@@ -48,24 +48,24 @@
                                 </button>
 
                                 <button mat-menu-item (click)="editProduct(ListItem)"
-                                    *ngIf="ListItem.ReceiptStatus !== 'Confirmed'">
+                                    *ngIf="ListItem.receiptStatus !== 'Confirmed'">
                                     <mat-icon class="mat-18">edit</mat-icon>
                                     <span style="font-weight: 600">Modify</span>
                                 </button>
 
                                 <button mat-menu-item (click)="cancelProduct(ListItem)"
-                                    *ngIf="ListItem.status == 'Delivered' || ListItem.ReceiptStatus == 'Confirmed'">
+                                    *ngIf="ListItem.status == 'Delivered' || ListItem.receiptStatus == 'Confirmed'">
                                     <mat-icon class="mat-18">close</mat-icon>
                                     <span style="font-weight: 600">Cancel</span>
                                 </button>
 
-                                 <button mat-menu-item (click)="deleteProduct(ListItem)" *ngIf="ListItem.ReceiptStatus !== 'Confirmed'">
+                                 <button mat-menu-item (click)="deleteProduct(ListItem)" *ngIf="ListItem.receiptStatus !== 'Confirmed'">
                                     <mat-icon class="mat-18">delete</mat-icon>
                                     <span style="font-weight: 600">Delete</span>
                                 </button>
 
-                                 <button mat-menu-item (click)="salesReturnProduct(ListItem)"
-                                    *ngIf="ListItem.ReceiptStatus == 'Confirmed' && ListItem.status != 'Sales Return'">
+                                <!-- *ngIf="ListItem.receiptStatus == 'Confirmed' && ListItem.status != 'Sales Return'" -->
+                                 <button mat-menu-item (click)="salesReturnProduct(ListItem)" >
                                     <mat-icon svgIcon="heroicons_outline:currency-rupee"></mat-icon>
                                     <span style="font-weight: 600">Sales Return</span>
                                 </button>
@@ -86,15 +86,15 @@
                                     <span style="font-weight: 600">Shift Product</span>
                                 </button>
 
-                                <!--*ngIf="ListItem.ReceiptStatus !== 'Confirmed'"   for delete-->
+                                <!--*ngIf="ListItem.receiptStatus !== 'Confirmed'"   for delete-->
 
                                 <!-- <button mat-menu-item (click)="deleteProduct(ListItem)"
-                                    *ngIf="(ListItem.status.purchasePrice > 0 && ListItem.ReceiptStatus !== 'Confirmed' && ListItem.status !== 'Delivered') || (ListItem.status.purchasePrice == 0 && ListItem.status !== 'Delivered')">
+                                    *ngIf="(ListItem.status.purchasePrice > 0 && ListItem.receiptStatus !== 'Confirmed' && ListItem.status !== 'Delivered') || (ListItem.status.purchasePrice == 0 && ListItem.status !== 'Delivered')">
                                     <mat-icon class="mat-18">delete</mat-icon>
                                     <span style="font-weight: 600">Delete</span>
                                 </button> -->
 
-                                <!-- *ngIf="((ListItem.ReceiptStatus == 'Confirmed' && ListItem.status == 'Delivered') && (ListItem.status !== 'Pending' || ListItem.status !== 'Sales Return'))" -->
+                                <!-- *ngIf="((ListItem.receiptStatus == 'Confirmed' && ListItem.status == 'Delivered') && (ListItem.status !== 'Pending' || ListItem.status !== 'Sales Return'))" -->
 
                                 <!-- <button mat-menu-item (click)="paymentProduct(ListItem)">
                                     <mat-icon svgIcon="heroicons_solid:currency-rupee"></mat-icon>
