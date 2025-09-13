@@ -168,7 +168,7 @@
                             <mat-icon class="mat-18">edit</mat-icon>
                             <span style="font-weight: 600">Update Status</span>
                         </button>
-                        <ng-container *ngIf="!element?.productName?.toLowerCase().includes('rise') && element?.productServiceStatus == 'Inprocess'">
+                        <ng-container *ngIf="(!element?.productName?.toLowerCase().includes('rise') && element?.productServiceStatus == 'Inprocess') || (element?.itemName?.toLowerCase().includes('app') && element.productServiceStatus.toLowerCase() === 'google closed testing')">
                             <button mat-menu-item (click)="wlSetting(element)">
                                 <mat-icon class="mat-18">schedule</mat-icon>
                                 <span style="font-weight: 600">WL Settings</span>
