@@ -97,7 +97,7 @@ export class VerifySslComponent {
     let payloadObj = {
       id: this.data.id ? this.data.id : "",
       is_activated: true,
-      agent_id: this.data?.agentId ? this.data.agentId : "",
+      AgentId: this.data?.agentId ? this.data.agentId : "",
       product_id: this.data?.product_id
     }
     this.domainVarifyService.activate(payloadObj).subscribe({

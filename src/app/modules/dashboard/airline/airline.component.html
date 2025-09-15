@@ -17,13 +17,13 @@
       </mat-radio-group>
     </div>
 
-    <div class="flex flex-row space-x-3 mt-3 mb-5">
-      <div class="flex flex-row items-center w-1/2" *ngIf="formGroup.get('type').value != 'mc'">
+    <div class="flex flex-row space-x-3 ">
+      <div class="flex flex-row items-center" *ngIf="formGroup.get('type').value != 'mc'">
         <div
-          class="flex flex-col min-w-[49%] max-w-[49%] p-3 dark:bg-[#0f172a] bg-gray-200 rounded-lg -mr-3 cursor-pointer"
+          class="flex flex-col w-[210px] p-3 dark:bg-[#0f172a] bg-gray-200 rounded-lg -mr-3 cursor-pointer"
           (click)="openFromCityDropdown()">
           <span class="text-gray text-md text-secondary">From</span>
-          <mat-select #fromCitySelect class="font-semibold" (selectionChange)="onFromCitySelectionChange($event.value)"
+          <mat-select #fromCitySelect class="font-semibold" (selectionChange)="onFromCitySelectionChange($event.value)" panelClass="from-top-panel" 
             [matTooltip]="
                             formGroup.get('fromCity').value.display_name +
                             ', ' +
@@ -55,10 +55,10 @@
         </div>
 
         <div
-          class="flex flex-col min-w-[49%] max-w-[49%] p-3 pl-4 items-start dark:bg-[#0f172a] bg-gray-200 rounded-lg -ml-3 cursor-pointer"
+          class="flex flex-col w-[210px] p-3 pl-4 items-start dark:bg-[#0f172a] bg-gray-200 rounded-lg -ml-3 cursor-pointer"
           (click)="openToCityDropdown()">
           <span class="text-gray text-md text-secondary">To</span>
-          <mat-select #toCitySelect class="font-semibold right-mat-select"
+          <mat-select #toCitySelect class="font-semibold right-mat-select" panelClass="from-top-panel" 
             (selectionChange)="onToCitySelectionChange($event.value)" [matTooltip]="
                             formGroup.get('toCity').value.display_name +
                             ', ' +
@@ -87,7 +87,7 @@
         </div>
       </div>
 
-      <div class="flex flex-row items-center w-90 space-x-3"
+      <div class="flex flex-row items-center space-x-3"
         [ngClass]="formGroup.get('type').value == 'gi' ? 'w-full' : ''" *ngIf="formGroup.get('type').value != 'mc'">
 
         <div class="flex flex-col w-[48%] dark:bg-[#0f172a] bg-gray-200 rounded-lg p-3"
@@ -100,7 +100,7 @@
           <mat-datepicker #picker></mat-datepicker>
         </div>
 
-        <div class="w-[48%] dark:bg-[#0f172a] bg-gray-200 rounded-lg p-[10px]"
+        <div class="w-[120px] dark:bg-[#0f172a] bg-gray-200 rounded-lg p-[10px]"
           *ngIf="formGroup.get('type').value === 'ow' || formGroup.get('type').value === 'rt'">
           <span class="text-gray text-md text-secondary">Departure</span>
           <p-calendar class="fare_cal" [readonlyInput]="true" formControlName="departureDate" [showOtherMonths]="false"
@@ -117,7 +117,7 @@
         </div>
 
 
-        <div class="flex flex-col w-[48%] dark:bg-[#0f172a] bg-gray-200 rounded-lg p-3">
+        <div class="flex flex-col w-[120px] dark:bg-[#0f172a] bg-gray-200 rounded-lg p-3">
 
           <div class="flex flex-row justify-between">
             <span class="text-gray text-md text-secondary">Return</span>
@@ -158,31 +158,43 @@
 
      
 
-      <div class="flex flex-col flex-grow p-3 dark:bg-[#0f172a] bg-gray-200 rounded-lg"
+      <div class="flex flex-col min-w-[190px] max-w-[190px] flex-grow p-3 dark:bg-[#0f172a] bg-gray-200 rounded-lg"
         *ngIf="formGroup.get('type').value != 'mc' && formGroup.get('type').value != 'gi'">
         <span class="text-gray text-md text-secondary">Travellers | Class | Fare</span>
         <span
           [matTooltip]="formGroup.get('adult').value + formGroup.get('child').value + formGroup.get('infant').value + 'Pax, ' +  formGroup.get('cabinClass').value + ', '+ formGroup.get('fareType').value "
-          class="font-semibold cursor-pointer" (click)="travellersClass()">{{
+          class="font-semibold cursor-pointer truncate" (click)="travellersClass()">{{
           formGroup.get("adult").value +
           formGroup.get("child").value +
           formGroup.get("infant").value
           }}
           Pax, {{ formGroup.get("cabinClass").value }}, {{ formGroup.get("fareType").value }}</span>
       </div>
-    </div>
 
-    <div class="flex flex-row justify-center items-center -mb-11 space-x-4">
-      <button mat-flat-button class="dark:bg-primary bg-gray-200 w-50 min-h-13 rounded-lg" (click)="searchFlights()"
+       <div class="flex flex-col  p-3 pl-4 items-start w-[190px] dark:bg-[#0f172a] bg-gray-200 rounded-lg -ml-3 cursor-pointer">
+       <span class="text-gray text-md text-secondary">Supplier</span>
+        <mat-select formControlName="suppliers" multiple [compareWith]="compareWith" (selectionChange)="vaalchange()" panelClass="supplier-panel">
+          <mat-option>
+            <ngx-mat-select-search placeholderLabel="Search" noEntriesFoundLabel="'no matching supplier found'"
+              [formControlName]="'supplierfilter'">
+            </ngx-mat-select-search>
+          </mat-option>
+          <mat-option [value]="allVal" (click)="formGroup.get('suppliers').patchValue([allVal])">{{ allVal.company_name
+            }}</mat-option>
+          <mat-option *ngFor="let topping of SupplierList" [value]="topping">{{ topping.company_name }}</mat-option>
+        </mat-select>
+      </div>
+      
+        <button mat-flat-button class="dark:bg-primary bg-gray-200 rounded-lg h-[72px] max-h-[72px]" (click)="searchFlights()"
         [ngClass]="contents? 'pointer-events-none opacity-90':''">
-        <span class="white-text font-semibold text-lg">Search</span>
+        <!-- <span class="white-text font-semibold text-lg">Search</span> -->
+         <mat-icon class="white-text" svgIcon="heroicons_outline:magnifying-glass"></mat-icon>
       </button>
-
-    </div>
+  </div>
   </form>
 
   <!-- bottom -->
-  <div class="w-full flex pt-13">
+  <div class="w-full flex pt-5">
 
     <div class="left mobile:hidden w-[280px] min-w-[280px] mr-5">
       <div class="flex flex-row rounded-lg border-gray-border border bg-card items-center px-4 py-2"
