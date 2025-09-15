@@ -1370,3 +1370,17 @@ div:where(.swal2-container) button:where(.swal2-close) {
         opacity:1;
     }
 }
+
+// airline in supplier filter panel width
+
+.mat-mdc-select-panel.from-top-panel {
+  width: 300px !important;
+  max-width: 300px !important;
+  min-width: 300px !important;
+}
+
+.mat-mdc-select-panel.supplier-panel {
+  width: 240px !important;
+  max-width: 240px !important;
+  min-width: 240px !important;
+}

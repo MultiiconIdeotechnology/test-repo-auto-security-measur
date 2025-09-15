@@ -37,6 +37,7 @@ import { EnumeratePipe } from 'app/enurable.pipe';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { RoundTripComponent } from './round-trip/round-trip.component';
 import { PointListComponent } from './point-list/point-list.component';
+import { FlightTabService } from 'app/services/flight-tab.service';
 
 @Component({
   selector: 'app-airline',
@@ -258,6 +259,13 @@ export class AirlineComponent implements OnInit {
     supplier_name: any; isSelected: boolean; // add a checkbox state for UI
   }[];
 
+  supplierListAll: any[] = [];
+  SupplierList: any[] = [];
+  allVal = {
+    "id": "all",
+    "company_name": "All"
+  };
+
   constructor(
     private router: Router,
     private builder: FormBuilder,
@@ -265,6 +273,7 @@ export class AirlineComponent implements OnInit {
     private matDialog: MatDialog,
     private alertService: ToasterService,
     private airlineDashboardService: AirlineDashboardService,
+    private flighttabService: FlightTabService,
     private cdr: ChangeDetectorRef,
     private commanService: CommanLoaderService,
 
@@ -277,6 +286,10 @@ export class AirlineComponent implements OnInit {
     })
     this.getConvertCurrencyCombo();
 
+  }
+  vaalchange() {
+    var alldt = this.formGroup.get('suppliers').value.filter(x => x.id != "all");
+    this.formGroup.get('suppliers').patchValue(alldt);
   }
 
   ngOnInit() {
@@ -296,7 +309,26 @@ export class AirlineComponent implements OnInit {
       infant: [0],
       device: ['WEB'],
       multiCityObjects: [this.formDataList],
+      suppliers: [''],
+      supplierfilter: [''],
     });
+
+    /******Supplier Combo*******/
+    this.flighttabService.getSupplierBoCombo('Airline').subscribe({
+      next: (res) => {
+        this.supplierListAll = res;
+        this.SupplierList.push(...res);
+        // this.formGroup.get('supplier_id').patchValue(this.SupplierList.find(x => x.company_name.includes("All")).id)
+        // this.formGroup.get('suppliers').patchValue(this.allVal)
+        this.formGroup.get('suppliers').patchValue([this.allVal]);
+      },
+    });
+
+    this.formGroup.get('supplierfilter').valueChanges.subscribe(data => {
+      this.SupplierList = this.supplierListAll
+      this.SupplierList = this.supplierListAll.filter(x => x.company_name.toLowerCase().includes(data.toLowerCase()));
+    })
+
 
     const oldJSON = JSON.parse(
       localStorage.getItem('flight-filters') || '{}'
@@ -740,14 +772,16 @@ export class AirlineComponent implements OnInit {
     if (this.isFirst) {
       this.loading = true;
     }
+    // debugger
     this.contents = true;
     const json = this.formGroup.getRawValue();
+    json.suppliers = json.suppliers[0].id == 'all' ? null : json.suppliers.map(item => item.id);
     json.systemTraceId = this.systemTraceId || '';
     json.priority = this.priority || 1;
     json.version = 2;
 
     if (this.formGroup.get('type').value === 'rt' && this.isFirst) {
-      this.formDataList[0].fromCity = json.fromCity;
+      this.formDataList[0].fromCity = json.fromCity;  
       this.formDataList[0].toCity = json.toCity;
     }
 
@@ -768,7 +802,6 @@ export class AirlineComponent implements OnInit {
       this.commanService.raiseLoader(true, 'Fetching Flights...');
     }
     this.isLoadingProcessing = true
-
     this.airlineDashboardService.flightSearch(json).subscribe({
       next: (res) => {
 
@@ -934,6 +967,7 @@ export class AirlineComponent implements OnInit {
         this._paginator.length = this.totalflights();
 
       }, error: (err) => {
+        this.alertService.showToast('error', err);
         this.loading = false;
         this.commanService.raiseLoader(false);
         this.contents = false;
