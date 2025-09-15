@@ -45,15 +45,15 @@
                                     </div>
 
                                     <div *ngIf="col.installmentAmount">
-                                        {{ ListItem['installmentAmount'] != null ? (ListItem['installmentAmount'] | currency: (installmentDetail?.currency || 'INR') : 'symbol' : '1.2-2') : '-' }}
+                                        {{ ListItem['installmentAmount'] != null ? (ListItem['installmentAmount'] | currency: (ListItem?.currency + ' ' || 'INR') : 'symbol' : '1.2-2') : '-' }}
                                     </div>
 
                                     <div *ngIf="col.receivedAmount">
-                                        {{ ListItem['paymentAmount'] != null ? (ListItem['paymentAmount'] | currency: (installmentDetail?.currency || 'INR') : 'symbol' : '1.2-2') : '-' }}
+                                        {{ ListItem['paymentAmount'] != null ? (ListItem['paymentAmount'] | currency: (ListItem?.currency + ' ' || 'INR') : 'symbol' : '1.2-2') : '-' }}
                                     </div>
 
                                     <div *ngIf="col.dueAmount">
-                                        {{ ListItem['dueAmount'] != null ? (ListItem['dueAmount'] | currency: (installmentDetail?.currency || 'INR') : 'symbol' : '1.2-2') : '-' }}
+                                        {{ ListItem['dueAmount'] != null ? (ListItem['dueAmount'] | currency: (ListItem?.currency + ' ' || 'INR') : 'symbol' : '1.2-2') : '-' }}
                                     </div>
 
                                     <!-- {{installmentDetail?.currency}} -->
