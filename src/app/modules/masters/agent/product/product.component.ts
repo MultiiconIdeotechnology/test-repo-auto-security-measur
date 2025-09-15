@@ -265,7 +265,14 @@ export class ProductComponent {
         if (!Security.hasPermission(agentPermissions.salesReturnProductPermissions)) {
             return this.alertService.showToast('error', messages.permissionDenied);
         }
-        this.entityService.raiseCRMSalesReturnCall({ add: true, data: record })
+
+        if (record.receiptStatus === 'Confirmed' && record.status !== 'Sales Return') {
+            this.entityService.raiseCRMSalesReturnCall({ add: true, data: record })
+        } else {
+            this.alertService.showToast('error', 'Sales return not possible, because there is no any payment received.');
+            return;
+        }
+
     }
 
     setBlockUnblock(record): void {

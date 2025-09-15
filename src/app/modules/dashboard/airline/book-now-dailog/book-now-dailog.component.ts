@@ -62,8 +62,6 @@ export class BookNowDailogComponent implements OnInit {
   ) {
     this.record = data?.data
     this.supplier = data?.supplier
-    console.log("this.record", this.record);
-
   }
 
   ngOnInit() {

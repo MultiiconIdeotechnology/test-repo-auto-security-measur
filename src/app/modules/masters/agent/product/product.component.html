@@ -38,8 +38,8 @@
                                 <span style="font-weight: 600">Delete</span>
                             </button>
 
-                            <button mat-menu-item (click)="salesReturnProduct(element)"
-                                *ngIf="element.receiptStatus == 'Confirmed' && element.status != 'Sales Return'">
+                            <!-- *ngIf="element.receiptStatus == 'Confirmed' && element.status != 'Sales Return'" -->
+                            <button mat-menu-item (click)="salesReturnProduct(element)" >
                                 <mat-icon svgIcon="heroicons_outline:currency-rupee"></mat-icon>
                                 <span style="font-weight: 600">Sales Return</span>
                             </button>

@@ -255,8 +255,6 @@ export class RoundTripComponent implements OnChanges {
   }
 
   bookingDetails(depflight, retflight): void {
-    console.log("depflight", depflight);
-    console.log("retflight", retflight);
 
     const json = {
       adultCount: depflight.adultCount,
