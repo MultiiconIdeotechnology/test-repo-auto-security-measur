@@ -1242,7 +1242,7 @@ div:where(.swal2-container) button:where(.swal2-close) {
     cursor: pointer;
     padding-top: 2px;
     border-radius: 0px;
-    padding-bottom: 6px;
+    padding-bottom: 4px;
   }
 
   .fare_cal .p-calendar .p-inputtext:enabled:focus {
@@ -1383,4 +1383,13 @@ div:where(.swal2-container) button:where(.swal2-close) {
   width: 240px !important;
   max-width: 240px !important;
   min-width: 240px !important;
+}
+
+.mat-mdc-select-panel.supplier-panel .mat-pseudo-checkbox-checked {
+  background-color: #0d9488 !important; /* custom background */
+//   border-color: #00e0a1 !important;     /* border matches background */
+}
+
+.mat-mdc-select-panel.supplier-panel .mat-pseudo-checkbox-checked::after {
+  color: white !important;  /* tick mark color */
 }
