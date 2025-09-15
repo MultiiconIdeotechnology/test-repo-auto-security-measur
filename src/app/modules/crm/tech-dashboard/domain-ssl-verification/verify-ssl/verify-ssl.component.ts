@@ -95,10 +95,10 @@ export class VerifySslComponent {
     
     this.isLoading = true;
     let payloadObj = {
-      id: this.data.id ? this.data.id : "",
-      is_activated: true,
+      ServiceId: this.data.id ? this.data.id : "",
+      // is_activated: true,
       AgentId: this.data?.agentId ? this.data.agentId : "",
-      product_id: this.data?.product_id
+      // product_id: this.data?.product_id
     }
     this.domainVarifyService.activate(payloadObj).subscribe({
       next: (res) => {
