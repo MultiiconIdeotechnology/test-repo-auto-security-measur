@@ -274,6 +274,7 @@ export class SupplierEntryRightComponent {
     });
 
     this.formGroup.get('cityfilter').valueChanges.pipe(
+      filter(search => !!search),
       debounceTime(400),
       distinctUntilChanged(),
       switchMap((value: any) => {
