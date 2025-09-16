@@ -41,7 +41,7 @@ import { WalletService } from 'app/services/wallet.service';
     styles: [
         `
         .tbl-grid {
-            grid-template-columns: 40px 190px 110px 120px 64px 300px;
+            grid-template-columns: 40px 190px 110px 90px 110px 120px 225px;
         }
     `,
     ],
@@ -146,6 +146,23 @@ export class ReceiptsInfoItemComponent {
             is_sticky: false,
             align: '',
             indicator: true,
+            tooltip: false,
+            is_amount: true,
+            isicon: false,
+            isprice: false,
+            reject_reason: false,
+            reference_number: false
+        },
+        {
+            key: 'auditDate',
+            name: 'Audit On',
+            is_date: true,
+            date_formate: 'dd-MM-yyyy',
+            is_sortable: false,
+            class: '',
+            is_sticky: false,
+            align: '',
+            indicator: false,
             tooltip: false,
             is_amount: true,
             isicon: false,
