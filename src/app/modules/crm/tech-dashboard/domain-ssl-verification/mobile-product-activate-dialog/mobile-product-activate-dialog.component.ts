@@ -81,7 +81,7 @@ export class MobileProductActivateDialogComponent {
   createDomain() {
     let payloadData = this.formGroup.value;
     payloadData.agent_id = this.record?.agentid;
-    payloadData.product_id = this.record?.productPurchaseId;
+    payloadData.product_id = this.record?.id;
     this.domainVarifyService.createDomain(payloadData).subscribe({
       next: (res) => {
         if (res) {
