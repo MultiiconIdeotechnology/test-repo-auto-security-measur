@@ -38,7 +38,7 @@
                                 [ariaLabel]="'Filter '+ col.header" matchMode="contains" />
 
 
-                            <p-columnFilter *ngIf="col.type == types.select && col.field == 'item_name'"
+                            <p-columnFilter *ngIf="col.type == types.select && col.field == 'itemName'"
                                 [field]="col.field" matchMode="in" [showMenu]="false">
                                 <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                     <p-multiSelect [ngModel]="value" [options]="globalSearchService.itemList"
@@ -53,7 +53,7 @@
                                 </ng-template>
                             </p-columnFilter>
 
-                            <p-columnFilter *ngIf="col.type == types.select && col.field == 'product_name'"
+                            <p-columnFilter *ngIf="col.type == types.select && col.field == 'productName'"
                                 [field]="col.field" matchMode="in" [showMenu]="false">
                                 <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                     <p-multiSelect [ngModel]="value" [options]="globalSearchService.productList"
@@ -68,7 +68,7 @@
                                 </ng-template>
                             </p-columnFilter>
 
-                            <p-columnFilter *ngIf="col.type == types.select && col.field == 'product_status'"
+                            <p-columnFilter *ngIf="col.type == types.select && col.field == 'productServiceStatus'"
                                 [field]="col.field" matchMode="equals" [showMenu]="false">
                                 <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                     <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="statusList"
@@ -82,7 +82,7 @@
                             </p-columnFilter>
 
                             <p-columnFilter class="searchableDropdown"
-                                *ngIf="col.type == types.select && col.field == 'agency_name'" [field]="col.field "
+                                *ngIf="col.type == types.select && col.field == 'agencyName'" [field]="col.field "
                                 matchMode="equals" [showMenu]="false">
                                 <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                     <p-dropdown class="filter-dropdown" [options]="agentList" optionLabel="agent_info"
@@ -139,36 +139,31 @@
                                 <span style="font-weight: 600">Info</span>
                             </button>
                             <button mat-menu-item (click)="startIntegration(element)"
-                                *ngIf="element.is_integration_started == false">
+                                *ngIf="element.isStartIntegration === false && element?.productServiceStatus == 'Pending'">
                                 <mat-icon class="mat-18">how_to_reg</mat-icon>
                                 <span style="font-weight: 600">Start Integration</span>
                             </button>
-                            <button mat-menu-item (click)="updateStatus(element)"
-                                *ngIf="element.is_integration_started == true">
+                            <button mat-menu-item (click)="updateStatus(element)" *ngIf="element.isStartIntegration">
                                 <mat-icon class="mat-18">edit</mat-icon>
                                 <span style="font-weight: 600">Update Status</span>
                             </button>
-                            <ng-container *ngIf="!element?.product_name?.toLowerCase().includes('rise')">
-                                <button mat-menu-item (click)="wlSetting(element)"
-                                    *ngIf="element.is_integration_started == true">
+                            <ng-container
+                                *ngIf="(!element?.productName?.toLowerCase().includes('rise') && element?.productServiceStatus == 'Inprocess') || (element?.itemName?.toLowerCase().includes('app') && element.productServiceStatus.toLowerCase() === 'google closed testing')">
+                                <button mat-menu-item (click)="wlSetting(element)">
                                     <mat-icon class="mat-18">schedule</mat-icon>
                                     <span style="font-weight: 600">WL Settings</span>
                                 </button>
                             </ng-container>
                             <button mat-menu-item (click)="activate(element, i)" *ngIf="(
-                                (element.is_integration_started == true &&
-                                !['003', '004', '006', '007'].includes(element.item_code)) ||
-                                element.product_status.toLowerCase() === 'google closed testing') 
-                                &&
-                                (
-                                element?.item_name?.toLowerCase()?.includes('android') ||
-                                element?.item_name?.toLowerCase()?.includes('ios')
+                                (element.isStartIntegration == true && !['003', '004', '006', '007'].includes(element.itemCode)) ||
+                                element.productServiceStatus.toLowerCase() === 'google closed testing') && ( element?.itemName?.toLowerCase()?.includes('android') ||
+                                element?.itemName?.toLowerCase()?.includes('ios')
                                 )">
                                 <mat-icon class="mat-18">history</mat-icon>
                                 <span style="font-weight: 600">Activate</span>
                             </button>
-                            <button mat-menu-item (click)="googleClosedTesting(element)" *ngIf="element.product_status.toLowerCase() == 'inprocess' && (element.item_code == '003' ||
-                             element.item_code == '004' || element.item_code == '006' || element.item_code == '007')">
+                            <button mat-menu-item (click)="googleClosedTesting(element)" *ngIf="element.productServiceStatus.toLowerCase() == 'inprocess' && (element.itemCode == '003' ||
+                             element.itemCode == '004' || element.itemCode == '006' || element.itemCode == '007')">
                                 <mat-icon svgIcon="heroicons_outline:clipboard-document-check"></mat-icon>
                                 <span style="font-weight: 600">Google Closed Testing</span>
                             </button>

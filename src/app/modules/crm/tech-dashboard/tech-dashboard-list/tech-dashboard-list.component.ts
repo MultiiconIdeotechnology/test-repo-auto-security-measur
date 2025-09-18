@@ -171,7 +171,7 @@ export class CRMTechDashboardListComponent implements OnDestroy {
                 this.tab = 'domain';
                 // if (this.isFourth) {
                 this.domain?.refreshItems();
-                 this.isSix = false;
+                this.isSix = false;
                 // }
                 break;
 
@@ -191,14 +191,14 @@ export class CRMTechDashboardListComponent implements OnDestroy {
         //         // }
         //         break;
 
-            // case 'Domain':
-            //     this.tab = 'domain';
-            //     // if (this.isFourth) {
-            //     this.domain?.refreshItems();
-            //     // }
-            //     break;
-        }
-    
+        // case 'Domain':
+        //     this.tab = 'domain';
+        //     // if (this.isFourth) {
+        //     this.domain?.refreshItems();
+        //     // }
+        //     break;
+    }
+
 
     openTabFiterDrawer() {
         if (this.tabNameStr == 'Pending') {
@@ -216,23 +216,23 @@ export class CRMTechDashboardListComponent implements OnDestroy {
         }
     }
 
-      toggleOverlayPanel(event: MouseEvent) {
-    switch (this.tabNameStr) {
-      case 'Pending':
-        this.pending.toggleOverlayPanel(event);
-        break;
-      case 'Completed':
-        this.completed.toggleOverlayPanel(event);
-        break;
-      case 'Blocked':
-        this.blocked.toggleOverlayPanel(event);
-        break;
-        case 'Expired':
-        this.expired.toggleOverlayPanel(event);
-        break;
-    }
+    toggleOverlayPanel(event: MouseEvent) {
+        switch (this.tabNameStr) {
+            case 'Pending':
+                this.pending.toggleOverlayPanel(event);
+                break;
+            case 'Completed':
+                this.completed.toggleOverlayPanel(event);
+                break;
+            case 'Blocked':
+                this.blocked.toggleOverlayPanel(event);
+                break;
+            case 'Expired':
+                this.expired.toggleOverlayPanel(event);
+                break;
+        }
 
-  }
+    }
 
     refreshItemsTab(tabString: any): void {
         switch (tabString) {
@@ -296,9 +296,9 @@ export class CRMTechDashboardListComponent implements OnDestroy {
         this.cancelled.searchInputControlCancelled.patchValue(event);
         this.cancelled?.refreshItems();
     }
-   
+
     domainRefresh(event:any) {
-        this.domain.searchInputControlDomain.patchValue(event); 
+        this.domain.searchInputControlDomain.patchValue(event);
         this.domain?.refreshItems();
     }
 

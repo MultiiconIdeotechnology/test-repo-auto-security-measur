@@ -38,7 +38,7 @@
                                 [field]="col.field" [placeholder]="'Search by '+ col.header"
                                 [ariaLabel]="'Filter '+ col.header" matchMode="contains" />
 
-                            <p-columnFilter *ngIf="col.type == types.select && col.field == 'item_name'"
+                            <p-columnFilter *ngIf="col.type == types.select && col.field == 'itemName'"
                                 [field]="col.field" matchMode="in" [showMenu]="false">
                                 <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                     <p-multiSelect [ngModel]="value" [options]="globalSearchService.itemList"
@@ -53,7 +53,7 @@
                                 </ng-template>
                             </p-columnFilter>
 
-                            <p-columnFilter *ngIf="col.type == types.select && col.field == 'product_name'"
+                            <p-columnFilter *ngIf="col.type == types.select && col.field == 'productName'"
                                 [field]="col.field" matchMode="in" [showMenu]="false">
                                 <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                     <p-multiSelect [ngModel]="value" [options]="globalSearchService.productList"
@@ -69,7 +69,7 @@
                             </p-columnFilter>
 
                             <p-columnFilter class="searchableDropdown"
-                                *ngIf="col.type == types.select && col.field == 'agency_name'" [field]="col.field "
+                                *ngIf="col.type == types.select && col.field == 'agencyName'" [field]="col.field "
                                 matchMode="equals" [showMenu]="false">
                                 <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                     <p-dropdown class="filter-dropdown" [options]="agentList" optionLabel="agent_info"
@@ -120,33 +120,38 @@
                             <mat-icon> more_vert </mat-icon>
                         </span>
 
-                        <mat-menu #optionMenu>
-                            <button mat-menu-item (click)="viewDetail(element)">
-                                <mat-icon class="mat-18">info</mat-icon>
-                                <span style="font-weight: 600">Info</span>
-                            </button>
-                            <button mat-menu-item (click)="blockAction(element, i)">
-                                <mat-icon class="mat-18">history</mat-icon>
-                                <span style="font-weight: 600">Block</span>
-                            </button>
-                            <button *ngIf="!element?.product_name?.toLowerCase().includes('rise')" mat-menu-item
-                                (click)="wlSetting(element)">
-                                <mat-icon class="mat-18">schedule</mat-icon>
-                                <span style="font-weight: 600">WL Settings</span>
-                            </button>
-                            <button mat-menu-item (click)="updateExpiryDate(element)">
-                                <mat-icon class="mat-18">how_to_reg</mat-icon>
-                                <span style="font-weight: 600">Update Expiry Date</span>
-                            </button>
-                            <!-- <button mat-menu-item (click)="techDate(element)">
+                     <mat-menu #optionMenu>
+                        <button mat-menu-item (click)="viewDetail(element)">
+                            <mat-icon class="mat-18">info</mat-icon>
+                            <span style="font-weight: 600">Info</span>
+                        </button>
+                        <button mat-menu-item (click)="blockAction(element, i)">
+                            <mat-icon class="mat-18">history</mat-icon>
+                            <span style="font-weight: 600">Block</span>
+                        </button>
+                        <!-- <button *ngIf="!element?.productName?.toLowerCase().includes('rise')" mat-menu-item (click)="wlSetting(element)">
+                            <mat-icon class="mat-18">schedule</mat-icon>
+                            <span style="font-weight: 600">WL Settings</span>
+                        </button> -->
+
+                        <button mat-menu-item (click)="wlSetting(element)">
+                            <mat-icon class="mat-18">schedule</mat-icon>
+                            <span style="font-weight: 600">WL Settings</span>
+                        </button>
+
+                        <button mat-menu-item (click)="updateExpiryDate(element)">
+                            <mat-icon class="mat-18">how_to_reg</mat-icon>
+                            <span style="font-weight: 600">Update Expiry Date</span>
+                        </button>
+                        <!-- <button mat-menu-item (click)="techDate(element)">
                             <mat-icon class="mat-18">how_to_reg</mat-icon>
                             <span style="font-weight: 600">Cancel Date</span>
                         </button> -->
-                            <!-- <button mat-menu-item (click)="link(ListItem)">
+                        <!-- <button mat-menu-item (click)="link(ListItem)">
                             <mat-icon class="mat-18">how_to_reg</mat-icon>
                             <span style="font-weight: 600">Link</span>
                         </button> -->
-                        </mat-menu>
+                    </mat-menu>
                     </td>
                     <td *ngFor="let col of columns" [ngClass]="col.class">
                         <ng-container *ngIf="(col.type === types.text || col.type === types.select)">

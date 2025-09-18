@@ -132,14 +132,14 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
         this._filterService.applyDefaultFilter(this.filter_table_name);
 
         this.selectedColumns = [
-            { field: 'item_code', header: 'Item Code', type: Types.text },
-            { field: 'item_name', header: 'Item', type: Types.select },
-            { field: 'product_name', header: 'Product', type: Types.select },
-            { field: 'product_status', header: 'Status', type: Types.select, isCustomColor: true },
+            { field: 'itemCode', header: 'Item Code', type: Types.text },
+            { field: 'itemName', header: 'Item', type: Types.select },
+            { field: 'productName', header: 'Product', type: Types.select },
+            { field: 'productServiceStatus', header: 'Status', type: Types.select, isCustomColor: true },
             { field: 'agentCode', header: 'Agent Code', type: Types.number, fixVal: 0 },
-            { field: 'agency_name', header: 'Agency Name', type: Types.select },
-            { field: 'integration_start_date_time', header: 'Start Int. Date', type: Types.date, dateFormat: 'dd-MM-yyyy' },
-            { field: 'entry_date_time', header: 'Entry Date', type: Types.date, dateFormat: 'dd-MM-yyyy' }
+            { field: 'agencyName', header: 'Agency Name', type: Types.select },
+            { field: 'startIntegrationDateTime', header: 'Start Int. Date', type: Types.date, dateFormat: 'dd-MM-yyyy' },
+            { field: 'entryDateTime ', header: 'Entry Date', type: Types.date, dateFormat: 'dd-MM-yyyy' }
         ];
 
         this.cols.unshift(...this.selectedColumns);
@@ -150,7 +150,7 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
         this.agentList = this._filterService.agentListByValue;
 
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
-            this.selectedAgent = resp['table_config']['agency_name']?.value;
+            this.selectedAgent = resp['table_config']['agencyName']?.value;
             if (this.selectedAgent && this.selectedAgent.id) {
                 const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
                 if (!match) {
@@ -159,8 +159,8 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
             }
             // this.sortColumn = resp['sortColumn'];
             // this.primengTable['_sortField'] = resp['sortColumn'];
-            if (resp['table_config']['integration_start_date_time'].value) {
-                resp['table_config']['integration_start_date_time'].value = new Date(resp['table_config']['integration_start_date_time'].value);
+            if (resp['table_config']['startIntegrationDateTime'].value) {
+                resp['table_config']['startIntegrationDateTime'].value = new Date(resp['table_config']['startIntegrationDateTime'].value);
             }
             if (resp['table_config']['entryDateTime'].value) {
                 resp['table_config']['entryDateTime'].value = new Date(resp['table_config']['entryDateTime'].value);
@@ -180,7 +180,7 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
             this.isFilterShowPendingChange.emit(this.isFilterShowPending);
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
             setTimeout(() => {
-                this.selectedAgent = filterData['table_config']['agency_name']?.value;
+                this.selectedAgent = filterData['table_config']['agencyName']?.value;
                 if (this.selectedAgent && this.selectedAgent.id) {
                     const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
                     if (!match) {
@@ -189,8 +189,8 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
                 }
             }, 1000);
 
-            if (filterData['table_config']['integration_start_date_time'].value) {
-                filterData['table_config']['integration_start_date_time'].value = new Date(filterData['table_config']['integration_start_date_time'].value);
+            if (filterData['table_config']['startIntegrationDateTime'].value) {
+                filterData['table_config']['startIntegrationDateTime'].value = new Date(filterData['table_config']['startIntegrationDateTime'].value);
             }
             if (filterData['table_config']['entryDateTime'].value) {
                 filterData['table_config']['entryDateTime'].value = new Date(filterData['table_config']['entryDateTime'].value);
@@ -252,8 +252,8 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
             this.agentList = data;
 
             for (let i in this.agentList) {
-                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`;
-                this.agentList[i].id_by_value = this.agentList[i].agency_name;
+                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agencyName}-${this.agentList[i].email_address}`;
+                this.agentList[i].id_by_value = this.agentList[i].agencyName;
             }
         })
     }

@@ -127,13 +127,13 @@ export class TechDashboardBlockedComponent extends BaseListingComponent {
 
         this.selectedColumns = [
 
-            { field: 'item_code', header: 'Item Code', type: Types.text },
-            { field: 'item_name', header: 'Item', type: Types.select },
-            { field: 'product_name', header: 'Product', type: Types.select},
+            { field: 'itemCode', header: 'Item Code', type: Types.text },
+            { field: 'itemName', header: 'Item', type: Types.select },
+            { field: 'productName', header: 'Product', type: Types.select},
             { field: 'agentCode', header: 'Agent Code', type: Types.number, fixVal: 0  },
-            { field: 'agency_name', header: 'Agency Name', type: Types.select },
-            { field: 'block_date_time', header: 'Block Date', type: Types.date, dateFormat: 'dd-MM-yyyy' },
-            { field: 'expiry_date', header: 'Expiry Date', type: Types.date, dateFormat: 'dd-MM-yyyy' },
+            { field: 'agencyName', header: 'Agency Name', type: Types.select },
+            { field: 'blockDate', header: 'Block Date', type: Types.date, dateFormat: 'dd-MM-yyyy' },
+            { field: 'expiryDate', header: 'Expiry Date', type: Types.date, dateFormat: 'dd-MM-yyyy' },
             { field: 'rm', header: 'RM', type: Types.text }
         ];
 
@@ -146,7 +146,7 @@ export class TechDashboardBlockedComponent extends BaseListingComponent {
 
         // common filter
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
-            this.selectedAgent = resp['table_config']['agency_name']?.value;
+            this.selectedAgent = resp['table_config']['agencyName']?.value;
             if (this.selectedAgent && this.selectedAgent.id) {
                 const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
                 if (!match) {
@@ -158,8 +158,8 @@ export class TechDashboardBlockedComponent extends BaseListingComponent {
             if (resp['table_config']['blockDate'].value) {
                 resp['table_config']['blockDate'].value = new Date(resp['table_config']['blockDate'].value);
             }
-            if (resp['table_config']['expiry_date'].value) {
-                resp['table_config']['expiry_date'].value = new Date(resp['table_config']['expiry_date'].value);
+            if (resp['table_config']['expiryDate'].value) {
+                resp['table_config']['expiryDate'].value = new Date(resp['table_config']['expiryDate'].value);
             }
             this.primengTable['filters'] = resp['table_config'];
             this.isFilterShowBlocked = true;
@@ -176,7 +176,7 @@ export class TechDashboardBlockedComponent extends BaseListingComponent {
             this.isFilterShowBlockedChange.emit(this.isFilterShowBlocked);
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
             setTimeout(() => {
-                this.selectedAgent = filterData['table_config']['agency_name']?.value;
+                this.selectedAgent = filterData['table_config']['agencyName']?.value;
                 if (this.selectedAgent && this.selectedAgent.id) {
                     const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
                     if (!match) {
@@ -188,8 +188,8 @@ export class TechDashboardBlockedComponent extends BaseListingComponent {
             if (filterData['table_config']['blockDate'].value) {
                 filterData['table_config']['blockDate'].value = new Date(filterData['table_config']['blockDate'].value);
             }
-            if (filterData['table_config']['expiry_date'].value) {
-                filterData['table_config']['expiry_date'].value = new Date(filterData['table_config']['expiry_date'].value);
+            if (filterData['table_config']['expiryDate'].value) {
+                filterData['table_config']['expiryDate'].value = new Date(filterData['table_config']['expiryDate'].value);
             }
             this.primengTable['filters'] = filterData['table_config'];
             this.selectedColumns = this.checkSelectedColumn(filterData['selectedColumns'] || [], this.selectedColumns);
@@ -315,7 +315,7 @@ export class TechDashboardBlockedComponent extends BaseListingComponent {
         });
     }
 
-    // Api call to Get Agent data
+     // Api call to Get Agent data
     getAgent(value: string) {
         this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
             this.agentList = data;
@@ -326,6 +326,7 @@ export class TechDashboardBlockedComponent extends BaseListingComponent {
             }
         })
     }
+
 
     // wlSetting(record): void {
     //     if (!Security.hasPermission(techDashPermissions.wlSettingPermissions)) {
@@ -354,7 +355,7 @@ export class TechDashboardBlockedComponent extends BaseListingComponent {
             return this.alertService.showToast('error', messages.permissionDenied);
         }
 
-        this.crmService.getWLSettingListTwoParams(record?.code, record?.item_name).subscribe({
+        this.crmService.getWLSettingListTwoParams(record?.code, record?.itemName).subscribe({
             next: (data) => {
                 this.isLoading = false;
                 this.getWLSettingList = data[0];

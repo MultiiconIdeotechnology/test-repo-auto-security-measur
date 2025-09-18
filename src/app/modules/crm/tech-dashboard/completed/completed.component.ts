@@ -126,13 +126,13 @@ export class TechDashboardCompletedComponent extends BaseListingComponent {
         this.Mainmodule = this;
         this._filterService.applyDefaultFilter(this.filter_table_name);
         this.selectedColumns = [
-            { field: 'item_code', header: 'Item Code', type: Types.text },
-            { field: 'item_name', header: 'Item', type: Types.select },
-            { field: 'product_name', header: 'Product', type: Types.select },
+            { field: 'itemCode', header: 'Item Code', type: Types.text },
+            { field: 'itemName', header: 'Item', type: Types.select },
+            { field: 'productName', header: 'Product', type: Types.select },
             { field: 'agentCode', header: 'Agent Code', type: Types.number, fixVal: 0 },
-            { field: 'agency_name', header: 'Agency Name', type: Types.select },
-            { field: 'activation_date_sub', header: 'Activation Date', type: Types.date, dateFormat: 'dd-MM-yyyy' },
-            { field: 'expiry_date_sub', header: 'Expiry Date', type: Types.date, dateFormat: 'dd-MM-yyyy' }
+            { field: 'agencyName', header: 'Agency Name', type: Types.select },
+            { field: 'activationDate', header: 'Activation Date', type: Types.date, dateFormat: 'dd-MM-yyyy' },
+            { field: 'expiryDate', header: 'Expiry Date', type: Types.date, dateFormat: 'dd-MM-yyyy' }
         ];
 
         this.cols.unshift(...this.selectedColumns);
@@ -145,7 +145,7 @@ export class TechDashboardCompletedComponent extends BaseListingComponent {
         // common filter
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
             // this.sortColumn = resp['sortColumn'];
-            this.selectedAgent = resp['table_config']['agency_name']?.value;
+            this.selectedAgent = resp['table_config']['agencyName']?.value;
             if (this.selectedAgent && this.selectedAgent.id) {
                 const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
                 if (!match) {
@@ -157,8 +157,8 @@ export class TechDashboardCompletedComponent extends BaseListingComponent {
             if (resp['table_config']['activationDate'].value) {
                 resp['table_config']['activationDate'].value = new Date(resp['table_config']['activationDate'].value);
             }
-            if (resp['table_config']['expiry_date_sub'].value) {
-                resp['table_config']['expiry_date_sub'].value = new Date(resp['table_config']['expiry_date_sub'].value);
+            if (resp['table_config']['expiryDate'].value) {
+                resp['table_config']['expiryDate'].value = new Date(resp['table_config']['expiryDate'].value);
             }
             this.primengTable['filters'] = resp['table_config'];
             this.isFilterShowCompleted = true;
@@ -175,7 +175,7 @@ export class TechDashboardCompletedComponent extends BaseListingComponent {
             this.isFilterShowCompletedChange.emit(this.isFilterShowCompleted);
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
             setTimeout(() => {
-                this.selectedAgent = filterData['table_config']['agency_name']?.value;
+                this.selectedAgent = filterData['table_config']['agencyName']?.value;
                 if (this.selectedAgent && this.selectedAgent.id) {
 
                     const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
@@ -187,8 +187,8 @@ export class TechDashboardCompletedComponent extends BaseListingComponent {
             if (filterData['table_config']['activationDate'].value) {
                 filterData['table_config']['activationDate'].value = new Date(filterData['table_config']['activationDate'].value);
             }
-            if (filterData['table_config']['expiry_date_sub'].value) {
-                filterData['table_config']['expiry_date_sub'].value = new Date(filterData['table_config']['expiry_date_sub'].value);
+            if (filterData['table_config']['expiryDate'].value) {
+                filterData['table_config']['expiryDate'].value = new Date(filterData['table_config']['expiryDate'].value);
             }
             this.primengTable['filters'] = filterData['table_config'];
             this.selectedColumns = this.checkSelectedColumn(filterData['selectedColumns'] || [], this.selectedColumns);
@@ -406,7 +406,7 @@ export class TechDashboardCompletedComponent extends BaseListingComponent {
                 inputBox: 'Date',
                 dateCustomShow: true,
                 customShow: false,
-                datepickerParameter: record?.expiry_date_sub
+                datepickerParameter: record?.expiryDate
             })
             .afterClosed()
             .subscribe((res) => {

@@ -129,13 +129,13 @@ export class TechDashboardExpiredComponent extends BaseListingComponent {
         this._filterService.applyDefaultFilter(this.filter_table_name);
 
         this.selectedColumns = [
-            { field: 'item_code', header: 'Item Code', type: Types.text },
-            { field: 'item_name', header: 'Item', type: Types.select },
-            { field: 'product_name', header: 'Product', type: Types.select },
+            { field: 'itemCode', header: 'Item Code', type: Types.text },
+            { field: 'itemName', header: 'Item', type: Types.select },
+            { field: 'productName', header: 'Product', type: Types.select },
             { field: 'agentCode', header: 'Agent Code', type: Types.number, fixVal: 0 },
-            { field: 'agency_name', header: 'Agency Name', type: Types.select },
-            { field: 'activation_date', header: 'Activation Date', type: Types.date, dateFormat: 'dd-MM-yyyy' },
-            { field: 'expiry_date', header: 'Expiry Date', type: Types.date, dateFormat: 'dd-MM-yyyy' },
+            { field: 'agencyName', header: 'Agency Name', type: Types.select },
+            { field: 'activationDate', header: 'Activation Date', type: Types.date, dateFormat: 'dd-MM-yyyy' },
+            { field: 'expiryDate', header: 'Expiry Date', type: Types.date, dateFormat: 'dd-MM-yyyy' },
             { field: 'rm', header: 'RM', type: Types.text }
         ];
 
@@ -148,7 +148,7 @@ export class TechDashboardExpiredComponent extends BaseListingComponent {
 
         // common filter
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
-            this.selectedAgent = resp['table_config']['agency_name']?.value;
+            this.selectedAgent = resp['table_config']['agencyName']?.value;
             if (this.selectedAgent && this.selectedAgent.id) {
 
                 const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
@@ -158,8 +158,8 @@ export class TechDashboardExpiredComponent extends BaseListingComponent {
             }
             // this.sortColumn = resp['sortColumn'];
             // this.primengTable['_sortField'] = resp['sortColumn'];
-            if (resp['table_config']['activation_date'].value) {
-                resp['table_config']['activation_date'].value = new Date(resp['table_config']['activation_date'].value);
+            if (resp['table_config']['activationDate'].value) {
+                resp['table_config']['activationDate'].value = new Date(resp['table_config']['activationDate'].value);
             }
             if (resp['table_config']['expiryDate'].value) {
                 resp['table_config']['expiryDate'].value = new Date(resp['table_config']['expiryDate'].value);
@@ -179,7 +179,7 @@ export class TechDashboardExpiredComponent extends BaseListingComponent {
             this.isFilterShowExpiredChange.emit(this.isFilterShowExpired);
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
             setTimeout(() => {
-                this.selectedAgent = filterData['table_config']['agency_name']?.value;
+                this.selectedAgent = filterData['table_config']['agencyName']?.value;
                 if (this.selectedAgent && this.selectedAgent.id) {
 
                     const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
@@ -188,8 +188,8 @@ export class TechDashboardExpiredComponent extends BaseListingComponent {
                     }
                 }
             }, 1000);
-            if (filterData['table_config']['activation_date'].value) {
-                filterData['table_config']['activation_date'].value = new Date(filterData['table_config']['activation_date'].value);
+            if (filterData['table_config']['activationDate'].value) {
+                filterData['table_config']['activationDate'].value = new Date(filterData['table_config']['activationDate'].value);
             }
             if (filterData['table_config']['expiryDate'].value) {
                 filterData['table_config']['expiryDate'].value = new Date(filterData['table_config']['expiryDate'].value);
@@ -317,7 +317,7 @@ export class TechDashboardExpiredComponent extends BaseListingComponent {
             return this.alertService.showToast('error', messages.permissionDenied);
         }
 
-        this.crmService.getWLSettingListTwoParams(record?.code, record?.item_name).subscribe({
+        this.crmService.getWLSettingListTwoParams(record?.code, record?.itemName).subscribe({
             next: (data) => {
                 this.isLoading = false;
                 this.getWLSettingList = data[0];
