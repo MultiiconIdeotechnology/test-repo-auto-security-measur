@@ -47,8 +47,8 @@
                                     <span style="font-weight: 600">Info</span>
                                 </button>
 
-                                <button mat-menu-item (click)="editProduct(ListItem)"
-                                    *ngIf="ListItem.receiptStatus !== 'Confirmed'">
+                                <!-- *ngIf="ListItem.receiptStatus !== 'Confirmed'" -->
+                                <button mat-menu-item (click)="editProduct(ListItem)">
                                     <mat-icon class="mat-18">edit</mat-icon>
                                     <span style="font-weight: 600">Modify</span>
                                 </button>
@@ -59,7 +59,8 @@
                                     <span style="font-weight: 600">Cancel</span>
                                 </button>
 
-                                 <button mat-menu-item (click)="deleteProduct(ListItem)" *ngIf="ListItem.receiptStatus !== 'Confirmed'">
+                                <!-- *ngIf="ListItem.receiptStatus !== 'Confirmed'" -->
+                                 <button mat-menu-item (click)="deleteProduct(ListItem)" >
                                     <mat-icon class="mat-18">delete</mat-icon>
                                     <span style="font-weight: 600">Delete</span>
                                 </button>
@@ -81,7 +82,8 @@
                                     <span style="font-weight: 500">{{ListItem.isBlocked ? "Unblock" : "Block"}}</span>
                                 </button>
 
-                                <button mat-menu-item (click)="shiftProduct(ListItem)" *ngIf="ListItem.status == 'Delivered'">
+                                <!-- *ngIf="ListItem.status == 'Delivered'" -->
+                                <button mat-menu-item (click)="shiftProduct(ListItem)" >
                                     <mat-icon svgIcon="heroicons_outline:arrows-right-left"></mat-icon>
                                     <span style="font-weight: 600">Shift Product</span>
                                 </button>
