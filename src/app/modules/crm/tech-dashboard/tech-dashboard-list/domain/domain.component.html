@@ -10,7 +10,7 @@
         <ng-template pTemplate="header">
             <tr>
                 <th class="w-5 text-center left-[-1px] dark:bg-gray-800 bg-gray-50" pFrozenColumn>#</th>
-                <th class="text-center dark:bg-gray-800 bg-gray-50" pFrozenColumn>Select Domain</th>
+                <th class="text-center dark:bg-gray-800 bg-gray-50" pFrozenColumn>Domain</th>
                 <th pSortableColumn="agentCode" pResizableColumn pResizableColumn alignFrozen="left" pFrozenColumn
                     class="dark:bg-[#1e293b] min-w-[160px]" [frozen]="frozenObj?.agentCode"
                     [ngClass]="{'left-0': !frozenObj?.agentCode}">
@@ -136,12 +136,13 @@
                     </mat-checkbox>
                 </td> -->
                 <td alignFrozen="left" pFrozenColumn class="text-center dark:bg-gray-900 bg-gray-50">
-                    <mat-checkbox (change)="toggleSelection(element)" [checked]="isSelected(element)">
-                    </mat-checkbox>
+                    <!-- <mat-checkbox (change)="toggleSelection(element)" [checked]="isSelected(element)">
+                    </mat-checkbox> -->
+                    <input type="checkbox" (change)="toggleSelection(element)" [checked]="isSelected(element)" />
                 </td>
 
                 <td>{{ element.agentCode || '-' }}</td>
-                <td>{{ element.domain_name || '-' }}</td>
+                <td><a [href]="'//'+ element.domain_name" target="_blank" class="underline">{{ element.domain_name || '-' }}</a></td>
                 <td>{{ element.ip_address || '-' }}</td>
                 <td>{{ element.ssl_expire_date_time ? (element.ssl_expire_date_time | date: 'dd-MM-yyyy'):'-' }}
                 </td>

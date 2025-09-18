@@ -1231,3 +1231,165 @@ div:where(.swal2-container) button:where(.swal2-close) {
         pointer-events: none !important;
     }
 }
+
+ /********Fare Calender*********/
+  .fare_cal .p-calendar .p-inputtext.p-component {
+    border: none;
+    background: transparent;
+    // color: #ffffff;
+    padding: 0px;
+    font-weight: 600;
+    cursor: pointer;
+    padding-top: 2px;
+    border-radius: 0px;
+    padding-bottom: 4px;
+  }
+
+  .fare_cal .p-calendar .p-inputtext:enabled:focus {
+    box-shadow: none;
+  }
+
+  .fare_cal .p-calendar .p-datepicker.p-component {
+    width: 410px;
+  }
+
+  .fare_cal .p-calendar .p-datepicker.p-component .p-datepicker-group-container .p-datepicker-group .p-datepicker-calendar-container .p-datepicker-calendar thead tr th span {
+    font-weight: 600;
+    color: #64748B;
+    font-size: 14px;
+  }
+
+  .fare_cal .p-calendar .p-datepicker.p-component .p-datepicker-group-container .p-datepicker-group .p-datepicker-calendar-container .p-datepicker-calendar tbody tr .p-datepicker-today span:nth-child(1) {
+    background: #ebebeba8;
+  }
+
+  .fare_cal .p-calendar .p-datepicker.p-component .p-datepicker-group-container .p-datepicker-group .p-datepicker-calendar-container .p-datepicker-calendar tbody tr td .p-ripple.p-element {
+    padding: 0px !important;
+    display: grid;
+    width: 50px;
+    height: 45px;
+    justify-content: center;
+    text-align: center;
+    border-radius: 4px;
+    margin: 2px auto;
+  }
+
+   .fare_cal .p-calendar .p-datepicker.p-component .p-datepicker-group-container .p-datepicker-group .p-datepicker-calendar-container .p-datepicker-calendar tbody tr td .p-ripple.p-disabled{
+    pointer-events: none;
+   }
+
+  .fare_cal .p-calendar .p-datepicker.p-component .p-datepicker-group-container .p-datepicker-group .p-datepicker-header .p-datepicker-title button {
+    font-size: 14px;
+    font-weight: 600;
+    // color: #ffffff;
+  }
+
+  .fare_cal .p-calendar .p-datepicker.p-component .p-datepicker-group-container .p-datepicker-group .p-datepicker-calendar-container .p-datepicker-calendar tbody tr td .p-ripple.p-element span:nth-child(1) {
+    background: transparent;
+    font-weight: 600;
+    // color: #ffffff;
+    font-size: 14px;
+  }
+
+  .fare_cal .p-calendar .p-datepicker.p-component .p-datepicker-group-container .p-datepicker-group .p-datepicker-calendar-container .p-datepicker-calendar tbody tr td .p-ripple.p-element span:nth-child(2) {
+    font-size: 11px;
+    background: transparent;
+    color: green;
+  }
+
+  .fare_cal .p-calendar .p-datepicker.p-component .p-datepicker-group-container .p-datepicker-group .p-datepicker-calendar-container .p-datepicker-calendar tbody tr td>span.p-highlight {
+    // color: #ffffff;
+    border: 1px solid #95A4B9;
+    background: transparent;
+  }
+  
+   .fixedDepartCarousel {
+    .fixed-depart-left-arrow {
+      position: absolute;
+      left: 0px;
+      top: 0px;
+      font-size: 22px;
+      cursor: pointer;
+      opacity: 1;
+      height: 55px;
+      width: 40px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+    }
+
+    .fixed-depart-left-arrow.slick-disabled,
+    .fixed-depart-right-arrow.slick-disabled {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
+    .fixed-depart-right-arrow {
+      position: absolute;
+      right: 0px;
+      top: 0px;
+      font-size: 22px;
+      cursor: pointer;
+      opacity: 1;
+      height: 55px;
+      width: 40px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+    }
+  }
+
+  .fixedDepartCarousel .slick-slide {
+    margin-right: 10px;
+}
+
+.fixedDepartCarousel {
+    .fixed-depart-left-arrow {
+        position: absolute;
+        left: -35px;
+        top: -9px;
+        font-size: 26px;
+        cursor:pointer;
+        opacity: 1;
+    }
+
+    .fixed-depart-left-arrow.slick-disabled,
+    .fixed-depart-right-arrow.slick-disabled {
+        opacity: 0.5;
+        pointer-events: none; 
+    }
+
+    .fixed-depart-right-arrow {
+        position: absolute;
+        right: -35px;
+        top: -9px;
+        font-size: 26px;
+        cursor: pointer;
+        opacity:1;
+    }
+}
+
+// airline in supplier filter panel width
+
+.mat-mdc-select-panel.from-top-panel {
+  width: 300px !important;
+  max-width: 300px !important;
+  min-width: 300px !important;
+}
+
+.mat-mdc-select-panel.supplier-panel {
+  width: 240px !important;
+  max-width: 240px !important;
+  min-width: 240px !important;
+}
+
+.mat-mdc-select-panel.supplier-panel .mat-pseudo-checkbox-checked {
+  background-color: #0d9488 !important; /* custom background */
+//   border-color: #00e0a1 !important;     /* border matches background */
+}
+
+.mat-mdc-select-panel.supplier-panel .mat-pseudo-checkbox-checked::after {
+  color: white !important;  /* tick mark color */
+}

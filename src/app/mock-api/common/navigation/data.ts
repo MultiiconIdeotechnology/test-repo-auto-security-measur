@@ -4,6 +4,23 @@ import { Routes } from 'app/common/const';
 
 export const defaultNavigation: FuseNavigationItem[] = [
     {
+        id: 'dashboard',
+        title: 'Dashboard',
+        type: 'group',
+        pid: 'MAINMENU_DASHBOARD_VIEW',
+        icon: 'heroicons_outline:cube',
+        children: [
+            {
+                id: 'dashboard.airline',
+                title: 'Airline',
+                type: 'basic',
+                pid: 'DASHBOARD_AIRLINE_VIEW',
+                icon: 'flight_takeoff',
+                link: Routes.dashboard.airline_route
+            },
+        ]
+    },
+    {
         id: 'crm',
         title: 'CRM',
         type: 'group',
@@ -315,7 +332,14 @@ export const defaultNavigation: FuseNavigationItem[] = [
                         type: 'basic',
                         pid: 'BOOKINGS-FLIGHT_GROUPINQUIRY_VIEW',
                         link: Routes.booking.group_inquiry_path
-                    }
+                    },
+                    {
+                        id: 'booking.airline-block',
+                        title: 'Airline BLock',
+                        type: 'basic',
+                        pid: 'BOOKINGS-FLIGHT_AIRLINEBLOCK_VIEW',
+                        link: Routes.booking.airline_block_lead_path
+                    },
                 ]
             },
             {
@@ -530,7 +554,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 ]
             },
 
-              {
+            {
                 id: 'reports.account2.0',
                 title: 'Accounts 2.0',
                 type: 'collapsable',
@@ -960,6 +984,14 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 link: Routes.inventory.holiday_v2_route
             },
             {
+                id: 'inventory.air_block',
+                title: 'Airline Block',
+                type: 'basic',
+                pid: 'INVENTORY_AIRLINEBLOCK_VIEW',
+                icon: 'mat_outline:flight',
+                link: Routes.inventory.airline_block_path
+            },
+            {
                 id: 'inventory.cab',
                 title: 'Cab',
                 type: 'basic',
@@ -1138,6 +1170,14 @@ export const defaultNavigation: FuseNavigationItem[] = [
     }
 ];
 export const compactNavigation: FuseNavigationItem[] = [
+    {
+        id: 'dashboard',
+        title: 'Dashboard',
+        type: 'aside',
+        pid: 'MAINMENU_DASHBOARD_VIEW',
+        icon: 'heroicons_outline:cube',
+        children: []
+    },
     {
         id: 'crm',
         title: 'CRM',

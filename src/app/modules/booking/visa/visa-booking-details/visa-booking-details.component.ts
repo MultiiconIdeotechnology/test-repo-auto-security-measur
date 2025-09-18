@@ -136,11 +136,24 @@ export class VisaBookingDetailsComponent {
         })
     }
 
+    // Your Invocie
     printInvoice(): void {
         const invoice_id = this.bookingDetail.invoice_id;
         this.visaService.printInvoice(invoice_id).subscribe({
             next: (res) => {
                 CommonUtils.downloadPdf(res.print, this.mainDataAll.invoice_no + '.pdf');
+            }, error: (err) => {
+                this.toastr.showToast('error', err);
+            }
+        })
+    }
+
+    //Agent Invoice
+      AgentPrintInvoice(): void {
+        const agent_invoice_id = this.bookingDetail.agent_invoice_id;
+        this.visaService.printInvoice(agent_invoice_id).subscribe({
+            next: (res) => {
+                CommonUtils.downloadPdf(res.print, this.mainDataAll.agent_invoice_no + '.pdf');
             }, error: (err) => {
                 this.toastr.showToast('error', err);
             }

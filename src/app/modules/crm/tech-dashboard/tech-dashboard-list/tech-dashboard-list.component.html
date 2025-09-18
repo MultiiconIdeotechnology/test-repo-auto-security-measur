@@ -57,6 +57,13 @@
                     (click)="blockedRefresh(blockedRef.value)"></mat-icon>
             </div>
 
+            <div class="flex ctm_search" *ngIf="tabNameStr == 'Cancelled'">
+                <input #cancelledRef matInput [formControl]="searchInputControlCancelled" [autocomplete]="'off'"
+                    [placeholder]="'Search'" (keyup.enter)="cancelledRefresh(cancelledRef.value)" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"
+                    (click)="cancelledRefresh(cancelledRef.value)"></mat-icon>
+            </div>
+            
             <div class="flex ctm_search" *ngIf="tabNameStr == 'Domain'">
                 <input #domainRef matInput [formControl]="searchInputControlDomain" [autocomplete]="'off'"
                     [placeholder]="'Search'" (keyup.enter)="domainRefresh(domainRef.value)" />
@@ -101,6 +108,16 @@
                     alt="c">
             </button>
 
+            <button *ngIf="this.tabNameStr == 'Cancelled'" class="ml-4 rounded-full" mat-flat-button [color]="'primary'"
+                matTooltip="Advanced Filter" [disabled]="cancelled?.isLoading"
+                (click)="isFilterShowCancelled  = !isFilterShowCancelled ">
+                <img *ngIf="!isFilterShowCancelled" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg"
+                    alt="c">
+                <img *ngIf="isFilterShowCancelled " class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg"
+                    alt="c">
+            </button>
+            
+            
             <button *ngIf="this.tabNameStr == 'Domain'" class="ml-4 rounded-full" mat-flat-button [color]="'primary'"
                 matTooltip="Advanced Filter" [disabled]="domain?.isLoading"
                 (click)="isFilterShowDomain  = !isFilterShowDomain ">
@@ -141,7 +158,7 @@
                     matTooltip="Refresh">
                     <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
                 </button>
-                 <button mat-raised-button [color]="'primary'" [matMenuTriggerFor]="menu" class="ml-4">
+                <button mat-raised-button [color]="'primary'" [matMenuTriggerFor]="menu" class="ml-4">
                     <mat-icon class="icon-size-6">more_vert</mat-icon>
                 </button>
                 <mat-menu #menu>
@@ -185,17 +202,33 @@
                 </mat-menu>
             </ng-container>
 
+            <ng-container *ngIf="tabNameStr == 'Cancelled'">
+                <button class="ml-4" mat-flat-button [color]="'primary'" (click)="refreshItemsTab('Cancelled')"
+                    matTooltip="Refresh">
+                    <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
+                </button>
+                
+
+                <button mat-raised-button [color]="'primary'" [matMenuTriggerFor]="menu" class="ml-4">
+                    <mat-icon class="icon-size-6">more_vert</mat-icon>
+                </button>
+                <mat-menu #menu>
+                    <button mat-menu-item (click)="exportExcel()">
+                        <mat-icon>arrow_downward</mat-icon>
+                        <span>Export Excel</span>
+                    </button>
+                </mat-menu>
+            </ng-container> 
+            
             <ng-container *ngIf="tabNameStr == 'Domain'">
                 <button class="ml-4" mat-flat-button [color]="'primary'" (click)="refreshItemsTab('Domain')"
                     matTooltip="Refresh">
                     <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
                 </button>
-
-                <button class="ml-4" mat-flat-button matTooltip="Generate SSL" [color]="'primary'" (click)="generateSSL()">
+                 <button class="ml-4" mat-flat-button matTooltip="Generate SSL" [color]="'primary'" (click)="generateSSL()">
                     <mat-icon [svgIcon]="'heroicons_outline:cog-8-tooth'"></mat-icon>
                     <span class="ml-2 mr-1">SSL</span>
                 </button>
-
                 <button mat-raised-button [color]="'primary'" [matMenuTriggerFor]="menu" class="ml-4">
                     <mat-icon class="icon-size-6">more_vert</mat-icon>
                 </button>
@@ -217,7 +250,7 @@
             </ng-container>
         </mat-tab>
 
-        <mat-tab label="Completed" [aria-label]="'Completed'" *ngIf="getTabsPermission('completed')">
+        <mat-tab label="Delivered" [aria-label]="'Completed'" *ngIf="getTabsPermission('completed')">
             <ng-container *ngIf="tabNameStr == 'Completed'">
                 <app-crm-tech-dashboard-completed #completed
                     [(isFilterShowCompleted)]="isFilterShowCompleted"></app-crm-tech-dashboard-completed>
@@ -235,6 +268,12 @@
             <ng-container *ngIf="tabNameStr == 'Expired'">
                 <app-crm-tech-dashboard-expired #expired
                     [(isFilterShowExpired)]="isFilterShowExpired"></app-crm-tech-dashboard-expired>
+            </ng-container>
+        </mat-tab>
+
+        <mat-tab label="Cancelled" [aria-label]="'Cancelled'" *ngIf="getTabsPermission('cancelled')">
+            <ng-container *ngIf="tabNameStr == 'Cancelled'">
+                <app-cancelled #cancelled [(isFilterShowCancelled)]="isFilterShowCancelled"></app-cancelled>
             </ng-container>
         </mat-tab>
 

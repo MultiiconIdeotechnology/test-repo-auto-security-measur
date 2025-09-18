@@ -123,7 +123,7 @@ export class TechDashboardExpiredComponent extends BaseListingComponent {
     ) {
         super(module_name.techDashboard)
         this.key = this.module_name;
-        this.sortColumn = 'expiry_date';
+        this.sortColumn = 'expiryDate';
         this.sortDirection = 'desc';
         this.Mainmodule = this;
         this._filterService.applyDefaultFilter(this.filter_table_name);
@@ -161,8 +161,8 @@ export class TechDashboardExpiredComponent extends BaseListingComponent {
             if (resp['table_config']['activation_date'].value) {
                 resp['table_config']['activation_date'].value = new Date(resp['table_config']['activation_date'].value);
             }
-            if (resp['table_config']['expiry_date'].value) {
-                resp['table_config']['expiry_date'].value = new Date(resp['table_config']['expiry_date'].value);
+            if (resp['table_config']['expiryDate'].value) {
+                resp['table_config']['expiryDate'].value = new Date(resp['table_config']['expiryDate'].value);
             }
             this.primengTable['filters'] = resp['table_config'];
             this.isFilterShowExpired = true;
@@ -191,8 +191,8 @@ export class TechDashboardExpiredComponent extends BaseListingComponent {
             if (filterData['table_config']['activation_date'].value) {
                 filterData['table_config']['activation_date'].value = new Date(filterData['table_config']['activation_date'].value);
             }
-            if (filterData['table_config']['expiry_date'].value) {
-                filterData['table_config']['expiry_date'].value = new Date(filterData['table_config']['expiry_date'].value);
+            if (filterData['table_config']['expiryDate'].value) {
+                filterData['table_config']['expiryDate'].value = new Date(filterData['table_config']['expiryDate'].value);
             }
             this.primengTable['filters'] = filterData['table_config'];
             this.selectedColumns = this.checkSelectedColumn(filterData['selectedColumns'] || [], this.selectedColumns);
@@ -353,24 +353,24 @@ export class TechDashboardExpiredComponent extends BaseListingComponent {
                 inputBox: 'Date',
                 dateCustomShow: true,
                 customShow: false,
-                datepickerParameter: record?.activation_date
+                datepickerParameter: record?.expiryDate
             })
             .afterClosed()
             .subscribe((res) => {
                 if (res?.action === 'confirmed') {
                     let newJson = {
-                        id: record?.subid ? record?.subid : "",
-                        expiry_date: res?.date ? DateTime.fromISO(res?.date).toFormat('yyyy-MM-dd') : ""
+                        id: record?.id ? record?.id : "",
+                        NewExpiryDate: res?.date ? DateTime.fromISO(res?.date).toFormat('yyyy-MM-dd') : ""
                     }
                     this.crmService.updateExpiryDate(newJson).subscribe({
                         next: (res) => {
-                            this.alertService.showToast(
-                                'success',
-                                'Update Expiry Date has been updated!',
-                                'top-right',
-                                true
-                            );
                             if (res) {
+                                this.alertService.showToast(
+                                    'success',
+                                    'Update Expiry Date has been updated!',
+                                    'top-right',
+                                    true
+                                );
                                 this.refreshItems();
                             }
                         },
@@ -420,19 +420,19 @@ export class TechDashboardExpiredComponent extends BaseListingComponent {
             .subscribe((res) => {
                 if (res?.action === 'confirmed') {
                     let newJson = {
-                        id: record.subid,
-                        is_block: true,
-                        special_status_remark: res?.statusRemark ? res?.statusRemark : ""
+                        ServiceId: record.id,
+                        Isblock: true,
+                        BlockRemarks: res?.statusRemark ? res?.statusRemark : ""
                     }
                     this.crmService.blocked(newJson).subscribe({
                         next: (res) => {
-                            this.alertService.showToast(
-                                'success',
-                                'Blocked Successfully!',
-                                'top-right',
-                                true
-                            );
                             if (res) {
+                                this.alertService.showToast(
+                                    'success',
+                                    'Blocked Successfully!',
+                                    'top-right',
+                                    true
+                                );
                                 this.dataList.splice(index, 1);
                             }
                         },
@@ -469,19 +469,19 @@ export class TechDashboardExpiredComponent extends BaseListingComponent {
 
         this.crmService.getTechExpiredProductList(filterReq).subscribe(data => {
             for (var dt of data.data) {
-                dt.activation_date = dt.activation_date ? DateTime.fromISO(dt.activation_date).toFormat('dd-MM-yyyy') : ''
-                dt.expiry_date = dt.expiry_date ? DateTime.fromISO(dt.expiry_date).toFormat('dd-MM-yyyy') : ''
+                dt.activationDate = dt.activationDate ? DateTime.fromISO(dt.activationDate).toFormat('dd-MM-yyyy') : ''
+                dt.expiryDate = dt.expiryDate ? DateTime.fromISO(dt.expiryDate).toFormat('dd-MM-yyyy') : ''
             }
             Excel.export(
                 'Expired',
                 [
-                    { header: 'Item Code', property: 'item_code' },
-                    { header: 'Item.', property: 'item_name' },
-                    { header: 'Product', property: 'product_name' },
+                    { header: 'Item Code', property: 'itemCode' },
+                    { header: 'Item', property: 'itemName' },
+                    { header: 'Product', property: 'productName' },
                     { header: 'Agent Code', property: 'agentCode' },
-                    { header: 'Agency Name', property: 'agency_name' },
-                    { header: 'Activation Date', property: 'activation_date' },
-                    { header: 'Expiry Date', property: 'expiry_date' },
+                    { header: 'Agency Name', property: 'agencyName' },
+                    { header: 'Activation Date', property: 'activationDate' },
+                    { header: 'Expiry Date', property: 'expiryDate' },
                     { header: 'RM', property: 'rm' },
                 ],
                 data.data, "Expired", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 5 } }]);

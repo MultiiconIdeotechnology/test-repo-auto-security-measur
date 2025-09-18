@@ -81,7 +81,7 @@ export class PendingLinkComponent {
         const json = this.formGroup.getRawValue();
         const newJson = {
             id: this.record?.data?.id ? this.record?.data?.id : "",
-            link_url: json?.link_url ? json?.link_url : ""
+            LinkUrl: json?.link_url ? json?.link_url : ""
         }
         this.crmService.createLinkUrl(newJson).subscribe({
             next: () => {

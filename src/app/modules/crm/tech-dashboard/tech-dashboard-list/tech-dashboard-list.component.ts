@@ -23,6 +23,7 @@ import { TechDashboardExpiredComponent } from '../expired/expired.component';
 import { TechDashboardBlockedComponent } from '../blocked/blocked.component';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { GlobalSearchService } from 'app/services/global-search.service';
+import { CancelledComponent } from '../cancelled/cancelled.component';
 import { TechDashboardDomainComponent } from './domain/domain.component';
 import { DomainInfoComponent } from './domain/domain-info/domain-info.component';
 import { SelectedSslInfoComponent } from './domain/selected-ssl-info/selected-ssl-info.component';
@@ -54,6 +55,7 @@ import { SelectedSslInfoComponent } from './domain/selected-ssl-info/selected-ss
         TechDashboardCompletedComponent,
         TechDashboardExpiredComponent,
         TechDashboardBlockedComponent,
+        CancelledComponent,
         TechDashboardDomainComponent,
         DomainInfoComponent,
         SelectedSslInfoComponent
@@ -62,10 +64,10 @@ import { SelectedSslInfoComponent } from './domain/selected-ssl-info/selected-ss
 export class CRMTechDashboardListComponent implements OnDestroy {
     @ViewChild('pending') pending: TechDashboardPendingComponent;
     @ViewChild('completed') completed: TechDashboardCompletedComponent;
-    @ViewChild('expired') expired: TechDashboardExpiredComponent;
     @ViewChild('blocked') blocked: TechDashboardBlockedComponent;
+    @ViewChild('expired') expired: TechDashboardExpiredComponent;
+    @ViewChild('cancelled') cancelled: CancelledComponent;
     @ViewChild('domain') domain: TechDashboardDomainComponent;
-
     module_name = module_name.techDashboard;
     filter_table_name = filter_module_name;
     public apiCalls: any = {};
@@ -76,12 +78,15 @@ export class CRMTechDashboardListComponent implements OnDestroy {
     isSecond: boolean = true;
     isThird: boolean = true;
     isFourth: boolean = true;
+    isFive: boolean = true;
+    isSix: boolean = true;
     filterData: any = {};
     searchInputControlPending = new FormControl('');
     _unsubscribeAll: Subject<any> = new Subject<any>();
     searchInputControlCompleted = new FormControl('');
     searchInputControlExpired = new FormControl('');
     searchInputControlBlocked = new FormControl('');
+    searchInputControlCancelled = new FormControl('');
     searchInputControlDomain = new FormControl('');
 
     itemList = [];
@@ -105,6 +110,9 @@ export class CRMTechDashboardListComponent implements OnDestroy {
         }
         if (tab == 'blocked') {
             return Security.hasPermission(techDashPermissions.blockedTabPermissions)
+        }
+        if (tab == 'cancelled') {
+            return Security.hasPermission(techDashPermissions.cancelledTabPermissions)
         }
         if (tab == 'domain') {
             return Security.hasPermission(techDashPermissions.domainTabPermissions)
@@ -151,14 +159,46 @@ export class CRMTechDashboardListComponent implements OnDestroy {
                 // }
                 break;
 
+            case 'Cancelled':
+                this.tab = 'cancelled';
+                // if (this.isFourth) {
+                this.cancelled?.refreshItems();
+                this.isFive = false;
+                // }
+                break;
+
             case 'Domain':
                 this.tab = 'domain';
                 // if (this.isFourth) {
                 this.domain?.refreshItems();
+                 this.isSix = false;
                 // }
                 break;
+
+            // case 'SSL':
+            //     this.tab = 'ssl';
+            //     // if (this.isFourth) {
+            //     this.ssl?.refreshItems();
+            //     this.isSix = false;
+            //     // }
+            //     break;
         }
-    }
+        //     case 'Expired':
+        //         this.tab = 'expired';
+        //         // if (this.isFourth) {
+        //         this.expired?.refreshItems();
+        //         this.isFourth = false;
+        //         // }
+        //         break;
+
+            // case 'Domain':
+            //     this.tab = 'domain';
+            //     // if (this.isFourth) {
+            //     this.domain?.refreshItems();
+            //     // }
+            //     break;
+        }
+    
 
     openTabFiterDrawer() {
         if (this.tabNameStr == 'Pending') {
@@ -167,7 +207,9 @@ export class CRMTechDashboardListComponent implements OnDestroy {
             this._filterService.openDrawer(this.filter_table_name.tech_dashboard_completed, this.completed.primengTable);
         } else if (this.tabNameStr == 'Blocked') {
             this._filterService.openDrawer(this.filter_table_name.tech_dashboard_blocked, this.blocked.primengTable);
-        } else if (this.tabNameStr == 'expired') {
+        } else if (this.tabNameStr == 'Cancelled') {
+            this._filterService.openDrawer(this.filter_table_name.tech_dashboard_cancelled, this.cancelled.primengTable);
+        }  else if (this.tabNameStr == 'expired') {
             this._filterService.openDrawer(this.filter_table_name.tech_dashboard_expired, this.expired.primengTable);
         } else if (this.tabNameStr == 'Domain') {
             this._filterService.openDrawer(this.filter_table_name.tech_dashboard_domain, this.domain.primengTable);
@@ -206,6 +248,9 @@ export class CRMTechDashboardListComponent implements OnDestroy {
             case 'Blocked':
                 this.blocked?.refreshItems();
                 break;
+            case 'Cancelled':
+                this.cancelled?.refreshItems();
+                break;
             case 'Domain':
                 this.domain?.refreshItems();
                 break;
@@ -219,6 +264,8 @@ export class CRMTechDashboardListComponent implements OnDestroy {
             this.completed.exportExcel();
         else if (this.tab == 'blocked')
             this.blocked.exportExcel();
+        else if (this.tab == 'cancelled')
+            this.cancelled.exportExcel()
         else if(this.tab == 'domain')
             this.domain.exportExcel();
         else
@@ -245,6 +292,11 @@ export class CRMTechDashboardListComponent implements OnDestroy {
         this.blocked?.refreshItems();
     }
 
+    cancelledRefresh(event: any) {
+        this.cancelled.searchInputControlCancelled.patchValue(event);
+        this.cancelled?.refreshItems();
+    }
+   
     domainRefresh(event:any) {
         this.domain.searchInputControlDomain.patchValue(event); 
         this.domain?.refreshItems();

@@ -165,6 +165,8 @@ export class BusBookingDetailsComponent {
     })
   }
 
+
+  // Your Invoice
   invoice(): void {
     if (!Security.hasPermission(busBookingPermissions.invoicePermissions)) {
       return this.alertService.showToast('error', messages.permissionDenied);
@@ -173,6 +175,21 @@ export class BusBookingDetailsComponent {
     this.flighttabService.Invoice(this.mainData.invoice_id).subscribe({
       next: (res) => {
         CommonUtils.downloadPdf(res.data, this.mainDataAll.invoice_no == null ? this.mainDataAll.booking_ref_no : this.mainDataAll.invoice_no + '.pdf');
+      }, error: (err) => {
+        this.toastr.showToast('error', err)
+      }
+    })
+  }
+
+  // Agent Invoice 
+   agentInvoice(): void {
+    if (!Security.hasPermission(busBookingPermissions.invoicePermissions)) {
+      return this.alertService.showToast('error', messages.permissionDenied);
+    }
+
+    this.flighttabService.Invoice(this.mainData.agent_invoice_id).subscribe({
+      next: (res) => {
+        CommonUtils.downloadPdf(res.data, this.mainDataAll.agent_invoice_no == null ? this.mainDataAll.booking_ref_no : this.mainDataAll.agent_invoice_no + '.pdf');
       }, error: (err) => {
         this.toastr.showToast('error', err)
       }

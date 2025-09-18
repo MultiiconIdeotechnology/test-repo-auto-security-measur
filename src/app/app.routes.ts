@@ -76,6 +76,9 @@ export const appRoutes: Route[] = [
             initialData: initialDataResolver
         },
         children: [
+            // Dashboard
+            { path: Routes.dashboard.airline_path, loadChildren: () => import('app/modules/dashboard/airline/airline.routes') },
+            
             // CRM
             { path: Routes.crm.lead_path, loadChildren: () => import('app/modules/crm/lead/lead-list/lead-list.routes') },
             { path: Routes.crm.agents_path, loadChildren: () => import('app/modules/crm/agent/agent-list/agent-list.routes') },
@@ -147,6 +150,7 @@ export const appRoutes: Route[] = [
             { path: Routes.inventory.product_flight_path, loadChildren: () => import('app/modules/Inventory/Product-Flight/product-flight.routes') },
             { path: Routes.inventory.visa_path, loadChildren: () => import('app/modules/Inventory/visa/visa-list/visa.routes') },
             { path: Routes.inventory.cab_path, loadChildren: () => import('app/modules/Inventory/cab/cab-inventory.routes') },
+            { path: Routes.inventory.airline_block_path, loadChildren: () => import('app/modules/Inventory/airline-block/airline-block.routes') },
 
             // new holiday
             { path: Routes.inventory.holiday_v2_path, loadChildren: () => import('app/modules/Inventory/holiday-new/holiday-list/holiday-list.routes') },
@@ -190,6 +194,7 @@ export const appRoutes: Route[] = [
             { path: Routes.booking.offline_service_path, loadChildren: () => import('app/modules/booking/offline-service/offline-list/offline.routes') },
             { path: Routes.booking.holiday_lead_path, loadChildren: () => import('app/modules/booking/holiday/holiday-list/holiday-lead.routes') },
             { path: Routes.booking.cab_path, loadChildren: () => import('app/modules/booking/cab/cab-list/cab.routes') },
+            { path: Routes.booking.airline_block_lead_path, loadChildren: () => import('app/modules/booking/airline-block/airline-block-lead.routes') },
 
             // SETTINGS
             { path: Routes.settings.erpsettings_path, loadChildren: () => import('app/modules/settings/erp-settings/erp-settings.routes') },

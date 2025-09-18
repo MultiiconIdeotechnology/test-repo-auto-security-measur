@@ -56,7 +56,7 @@ export class VerifySslComponent {
 
   onDomainVerify() {
     this.isLoading = true;
-    this.domainVarifyService.generateSSl(this.wlId, this.data?.subid).subscribe({
+    this.domainVarifyService.generateSSl(this.wlId, this.data?.product_id).subscribe({
       next: (res) => {
         if (res) {
           this.alertService.showToast('success', 'SSL Verified Successfully');
@@ -95,10 +95,10 @@ export class VerifySslComponent {
     
     this.isLoading = true;
     let payloadObj = {
-      id: this.data.id ? this.data.id : "",
-      is_activated: true,
-      agent_id: this.data?.agentid ? this.data.agentid : "",
-      product_id: this.data?.product_id
+      ServiceId: this.data.id ? this.data.id : "",
+      // is_activated: true,
+      AgentId: this.data?.agentId ? this.data.agentId : "",
+      // product_id: this.data?.product_id
     }
     this.domainVarifyService.activate(payloadObj).subscribe({
       next: (res) => {

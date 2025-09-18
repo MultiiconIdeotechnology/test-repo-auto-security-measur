@@ -121,7 +121,7 @@ export class TechDashboardCompletedComponent extends BaseListingComponent {
     ) {
         super(module_name.techDashboard);
         this.key = this.module_name;
-        this.sortColumn = 'activation_date_sub';
+        this.sortColumn = 'activationDate';
         this.sortDirection = 'desc';
         this.Mainmodule = this;
         this._filterService.applyDefaultFilter(this.filter_table_name);
@@ -154,8 +154,8 @@ export class TechDashboardCompletedComponent extends BaseListingComponent {
             }
 
             // this.primengTable['_sortField'] = resp['sortColumn'];
-            if (resp['table_config']['activation_date_sub'].value) {
-                resp['table_config']['activation_date_sub'].value = new Date(resp['table_config']['activation_date_sub'].value);
+            if (resp['table_config']['activationDate'].value) {
+                resp['table_config']['activationDate'].value = new Date(resp['table_config']['activationDate'].value);
             }
             if (resp['table_config']['expiry_date_sub'].value) {
                 resp['table_config']['expiry_date_sub'].value = new Date(resp['table_config']['expiry_date_sub'].value);
@@ -184,8 +184,8 @@ export class TechDashboardCompletedComponent extends BaseListingComponent {
                     }
                 }
             }, 1000);
-            if (filterData['table_config']['activation_date_sub'].value) {
-                filterData['table_config']['activation_date_sub'].value = new Date(filterData['table_config']['activation_date_sub'].value);
+            if (filterData['table_config']['activationDate'].value) {
+                filterData['table_config']['activationDate'].value = new Date(filterData['table_config']['activationDate'].value);
             }
             if (filterData['table_config']['expiry_date_sub'].value) {
                 filterData['table_config']['expiry_date_sub'].value = new Date(filterData['table_config']['expiry_date_sub'].value);
@@ -256,7 +256,7 @@ export class TechDashboardCompletedComponent extends BaseListingComponent {
         const filterReq = this.getNewFilterReq(event);
         filterReq['Filter'] = this.searchInputControlCompleted.value;
 
-        this.crmService.getTechCompletedProductList(filterReq).subscribe({
+        this.crmService.getDeliveredProductList(filterReq).subscribe({
             next: (data) => {
                 this.isLoading = false;
                 this.dataList = data.data;
@@ -308,7 +308,7 @@ export class TechDashboardCompletedComponent extends BaseListingComponent {
             return this.alertService.showToast('error', messages.permissionDenied);
         }
 
-        this.crmService.getWLSettingListTwoParams(record?.code, record?.item_name).subscribe({
+        this.crmService.getWLSettingListTwoParams(record?.agentId, record?.itemName).subscribe({
             next: (data) => {
                 this.isLoading = false;
                 this.getWLSettingList = data[0];
@@ -363,19 +363,19 @@ export class TechDashboardCompletedComponent extends BaseListingComponent {
             .subscribe((res) => {
                 if (res?.action === 'confirmed') {
                     let newJson = {
-                        id: record.id,
-                        is_block: true,
-                        special_status_remark: res?.statusRemark ? res?.statusRemark : ""
+                        ServiceId: record.id,
+                        Isblock: true,
+                        BlockRemarks: res?.statusRemark ? res?.statusRemark : ""
                     }
                     this.crmService.blocked(newJson).subscribe({
                         next: (res) => {
-                            this.alertService.showToast(
-                                'success',
-                                'Blocked Successfully!',
-                                'top-right',
-                                true
-                            );
                             if (res) {
+                                this.alertService.showToast(
+                                    'success',
+                                    'Blocked Successfully!',
+                                    'top-right',
+                                    true
+                                );
                                 this.dataList.splice(index, 1);
                             }
                         },
@@ -412,8 +412,8 @@ export class TechDashboardCompletedComponent extends BaseListingComponent {
             .subscribe((res) => {
                 if (res?.action === 'confirmed') {
                     let newJson = {
-                        id: record?.id ? record?.id : "",
-                        expiry_date: res?.date ? DateTime.fromISO(res?.date).toFormat('yyyy-MM-dd') : ""
+                        Id: record?.id ? record?.id : "",
+                        NewExpiryDate: res?.date ? DateTime.fromISO(res?.date).toFormat('yyyy-MM-dd') : ""
                     }
                     this.crmService.updateExpiryDate(newJson).subscribe({
                         next: (res) => {
@@ -448,23 +448,23 @@ export class TechDashboardCompletedComponent extends BaseListingComponent {
         filterReq['Filter'] = this.searchInputControlCompleted.value;
         filterReq['Take'] = this.totalRecords;
 
-        this.crmService.getTechCompletedProductList(filterReq).subscribe(data => {
+        this.crmService.getDeliveredProductList(filterReq).subscribe(data => {
             for (var dt of data.data) {
-                dt.activation_date = dt.activation_date ? DateTime.fromISO(dt.activation_date).toFormat('dd-MM-yyyy') : ''
-                dt.expiry_date = dt.expiry_date ? DateTime.fromISO(dt.expiry_date).toFormat('dd-MM-yyyy') : ''
+                dt.activationDate = dt.activationDate ? DateTime.fromISO(dt.activationDate).toFormat('dd-MM-yyyy') : ''
+                dt.expiryDate = dt.expiryDate ? DateTime.fromISO(dt.expiryDate).toFormat('dd-MM-yyyy') : ''
             }
             Excel.export(
-                'Completed',
+                'Delivered',
                 [
-                    { header: 'Item Code', property: 'item_code' },
-                    { header: 'Item.', property: 'item_name' },
-                    { header: 'Product', property: 'product_name' },
+                    { header: 'Item Code', property: 'itemCode' },
+                    { header: 'Item', property: 'itemName' },
+                    { header: 'Product', property: 'productName' },
                     { header: 'Agent Code', property: 'agentCode' },
-                    { header: 'Agency Name', property: 'agency_name' },
-                    { header: 'Activation Date', property: 'activation_date' },
-                    { header: 'Expiry Date', property: 'expiry_date' },
+                    { header: 'Agency Name', property: 'agencyName' },
+                    { header: 'Activation Date', property: 'activationDate' },
+                    { header: 'Expiry Date', property: 'expiryDate' },
                 ],
-                data.data, "Completed", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 5 } }]);
+                data.data, "Delivered", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 5 } }]);
         });
     }
 

@@ -1,0 +1,579 @@
+<div class="mx-auto pt-7 max-w-[1200px] min-w-[1200px]">
+  <!-- Loader -->
+  <div class="absolute inset-x-0 top-0 z-99999" *ngIf="isLoadingProcessing">
+    <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
+  </div>
+
+  <form [formGroup]="formGroup" class="flex flex-col px-4 pt-5  shadow pb-5 border rounded-2xl bg-card">
+    <div class="flex flex-row">
+      <mat-radio-group formControlName="type" (change)="optionChange($event.value)">
+        <div class="flex flex-row space-x-8">
+          <mat-radio-button *ngFor="let ft of flightType" [value]="ft.id"><span [ngClass]="
+                                ft.id === selectedFlightType
+                                    ? 'primary-text font-semibold'
+                                    : 'text-gray'
+                            ">{{ ft.name }}</span></mat-radio-button>
+        </div>
+      </mat-radio-group>
+    </div>
+
+    <div class="flex flex-row space-x-3 ">
+      <div class="flex flex-row items-center" *ngIf="formGroup.get('type').value != 'mc'">
+        <div
+          class="flex flex-col w-[210px] p-3 dark:bg-[#0f172a] bg-gray-200 rounded-lg -mr-3 cursor-pointer"
+          (click)="openFromCityDropdown()">
+          <span class="text-gray text-md text-secondary">From</span>
+          <mat-select #fromCitySelect class="font-semibold" (selectionChange)="onFromCitySelectionChange($event.value)" panelClass="from-top-panel" 
+            [matTooltip]="
+                            formGroup.get('fromCity').value.display_name +
+                            ', ' +
+                            formGroup.get('fromCity').value.country +
+                            ', ' +
+                            formGroup.get('fromCity').value.airport_name
+                        " [compareWith]="compareWith" formControlName="fromCity">
+            <mat-option>
+              <ngx-mat-select-search placeholderLabel="Search City" noEntriesFoundLabel="'no matching city found'"
+                formControlName="fromCityfilter">
+              </ngx-mat-select-search>
+            </mat-option>
+            <mat-option *ngFor="let ct of fromCityList | async" [value]="ct">
+              <div class="flex flex-col h-15 justify-center">
+                <span class="font-medium">{{ ct.display_name }},
+                  {{ ct.country }}</span>
+                <span class="text-sm text-gray -mt-1">{{
+                  ct.airport_name
+                  }}</span>
+              </div>
+            </mat-option>
+          </mat-select>
+        </div>
+
+        <div (click)="switch()"
+          class="flex flex-row justify-center items-center w-9 h-9 bg-card rounded-full z-20 cursor-pointer"
+          [matTooltip]="'Switch'">
+          <mat-icon svgIcon="heroicons_outline:arrows-right-left" class="primary-text icon-size-4"></mat-icon>
+        </div>
+
+        <div
+          class="flex flex-col w-[210px] p-3 pl-4 items-start dark:bg-[#0f172a] bg-gray-200 rounded-lg -ml-3 cursor-pointer"
+          (click)="openToCityDropdown()">
+          <span class="text-gray text-md text-secondary">To</span>
+          <mat-select #toCitySelect class="font-semibold right-mat-select" panelClass="from-top-panel" 
+            (selectionChange)="onToCitySelectionChange($event.value)" [matTooltip]="
+                            formGroup.get('toCity').value.display_name +
+                            ', ' +
+                            formGroup.get('toCity').value.country +
+                            ', ' +
+                            formGroup.get('toCity').value.airport_name
+                        " [compareWith]="compareWith" formControlName="toCity">
+            <mat-option>
+              <ngx-mat-select-search placeholderLabel="Search City" noEntriesFoundLabel="'no matching city found'"
+                formControlName="toCityfilter">
+              </ngx-mat-select-search>
+            </mat-option>
+            <mat-option [ngClass]="{
+                                hidden:
+                                    ct.id === formGroup.get('fromCity').value.id
+                            }" *ngFor="let ct of toCityList | async" [value]="ct">
+              <div class="flex flex-col h-15 justify-center">
+                <span class="font-medium">{{ ct.display_name }},
+                  {{ ct.country }}</span>
+                <span class="text-sm text-gray -mt-1">{{
+                  ct.airport_name
+                  }}</span>
+              </div>
+            </mat-option>
+          </mat-select>
+        </div>
+      </div>
+
+      <div class="flex flex-row items-center space-x-3"
+        [ngClass]="formGroup.get('type').value == 'gi' ? 'w-full' : ''" *ngIf="formGroup.get('type').value != 'mc'">
+
+        <div class="flex flex-col w-[48%] dark:bg-[#0f172a] bg-gray-200 rounded-lg p-3"
+          *ngIf="formGroup.get('type').value != 'ow' && formGroup.get('type').value != 'rt'">
+          <span class="text-gray text-md text-secondary">Departure</span>
+          <div class="flex flex-row">
+            <input class="font-semibold dark:text-white" [min]="minDate" (click)="picker.open()" [readonly]="true"
+              [matDatepicker]="picker" formControlName="departureDate" />
+          </div>
+          <mat-datepicker #picker></mat-datepicker>
+        </div>
+
+        <div class="w-[120px] dark:bg-[#0f172a] bg-gray-200 rounded-lg p-[10px]"
+          *ngIf="formGroup.get('type').value === 'ow' || formGroup.get('type').value === 'rt'">
+          <span class="text-gray text-md text-secondary">Departure</span>
+          <p-calendar class="fare_cal" [readonlyInput]="true" formControlName="departureDate" [showOtherMonths]="false"
+            [selectOtherMonths]="false" [minDate]="minDate" [dateFormat]="'dd M yy'">
+            <ng-template pTemplate="date" let-date>
+              <span>
+                {{ date.day }}
+              </span>
+              <span *ngIf="fareMap[getFormattedDateNew(date)]">{{ fareMap[getFormattedDateNew(date)]
+                }}</span>
+            </ng-template>
+          </p-calendar>
+
+        </div>
+
+
+        <div class="flex flex-col w-[120px] dark:bg-[#0f172a] bg-gray-200 rounded-lg p-3">
+
+          <div class="flex flex-row justify-between">
+            <span class="text-gray text-md text-secondary">Return</span>
+            <mat-icon class="icon-size-4"
+              *ngIf="formGroup.get('type').value === 'rt' || formGroup.get('type').value === 'gi'"
+              (click)="cancelReturnDate()">cancel</mat-icon>
+          </div>
+
+          <div *ngIf="formGroup.get('type').value == 'gi'">
+            <div class="flex flex-row w-full">
+              <input class="font-semibold w-full" [min]="formGroup.get('departureDate').value" [ngClass]="{
+                                hidden: formGroup.get('type').value !== 'rt' && formGroup.get('type').value !== 'gi'
+                            }" (click)="pickerRe.open()" [readonly]="true" [matDatepicker]="pickerRe"
+                formControlName="returnDate" />
+              <span (click)="formGroup.get('type').value == 'ow' ? formGroup.get('type').patchValue('rt') : null"
+                *ngIf="formGroup.get('type').value !== 'rt'" class="font-semibold text-lg max-w-32 w-full">-</span>
+            </div>
+            <mat-datepicker #pickerRe></mat-datepicker>
+          </div>
+
+          <div class="relative" *ngIf="formGroup.get('type').value != 'gi'">
+            <div class="absolute z-10 left-0 top-0 font-bold" *ngIf="formGroup.get('type').value === 'ow'">-
+            </div>
+            <p-calendar class="fare_cal" [readonlyInput]="true" formControlName="returnDate" [showOtherMonths]="false"
+              [selectOtherMonths]="false" [minDate]="formGroup.get('departureDate').value" [dateFormat]="'dd M yy'"
+              (click)="formGroup.get('type').value == 'ow' ? formGroup.get('type').patchValue('rt') : null; fetchReturnDateFares()">
+              <ng-template pTemplate="date" let-date>
+                <span>
+                  {{ date.day }}
+                </span>
+                <span *ngIf="returnFareMap[getFormattedDateNew(date)]">{{ returnFareMap[getFormattedDateNew(date)]
+                  }}</span>
+              </ng-template>
+            </p-calendar>
+          </div>
+        </div>
+      </div>
+
+     
+
+      <div class="flex flex-col min-w-[190px] max-w-[190px] flex-grow p-3 dark:bg-[#0f172a] bg-gray-200 rounded-lg h-fit"
+        *ngIf="formGroup.get('type').value != 'mc' && formGroup.get('type').value != 'gi'">
+        <span class="text-gray text-md text-secondary">Travellers | Class | Fare</span>
+        <span
+          [matTooltip]="formGroup.get('adult').value + formGroup.get('child').value + formGroup.get('infant').value + 'Pax, ' +  formGroup.get('cabinClass').value + ', '+ formGroup.get('fareType').value "
+          class="font-semibold cursor-pointer truncate py-[3px]" (click)="travellersClass()">{{
+          formGroup.get("adult").value +
+          formGroup.get("child").value +
+          formGroup.get("infant").value
+          }}
+          Pax, {{ formGroup.get("cabinClass").value }}, {{ formGroup.get("fareType").value }}</span>
+      </div>
+
+       <div class="flex flex-col  p-3 pl-4 items-start min-w-[185px] max-w-[185px]  dark:bg-[#0f172a] bg-gray-200 rounded-lg -ml-3 cursor-pointer h-fit">
+       <span class="text-gray text-md text-secondary mb-[3px]">Supplier</span>
+        <mat-select class="font-semibold" formControlName="suppliers" multiple [compareWith]="compareWith" (selectionChange)="vaalchange()" panelClass="supplier-panel">
+          <mat-option>
+            <ngx-mat-select-search placeholderLabel="Search" noEntriesFoundLabel="'no matching supplier found'"
+              [formControlName]="'supplierfilter'">
+            </ngx-mat-select-search>
+          </mat-option>
+          <mat-option [value]="allVal" (click)="formGroup.get('suppliers').patchValue([allVal])">{{ allVal.company_name
+            }}</mat-option>
+          <mat-option *ngFor="let topping of SupplierList" [value]="topping">{{ topping.company_name }}</mat-option>
+        </mat-select>
+      </div>
+      
+        <button mat-flat-button class="dark:bg-primary bg-gray-200 rounded-lg max-w-[60px] min-w-[60px] w-[60px] h-[70px] max-h-[70px]" (click)="searchFlights()"
+        [ngClass]="contents? 'pointer-events-none opacity-90':''">
+        <!-- <span class="white-text font-semibold text-lg">Search</span> -->
+         <mat-icon class="white-text" svgIcon="heroicons_outline:magnifying-glass"></mat-icon>
+      </button>
+  </div>
+  </form>
+
+  <!-- bottom -->
+  <div class="w-full flex pt-5">
+
+    <div class="left mobile:hidden w-[280px] min-w-[280px] mr-5">
+      <div class="flex flex-row rounded-lg border-gray-border border bg-card items-center px-4 py-2"
+        [ngClass]="{'justify-center':groupInquiry, 'justify-between':!groupInquiry,'field-blue-bg':!is_search_complete}">
+        <span *ngIf="is_search_complete">Total <span class="font-semibold text-lg"> {{loading ? '0':totalflights()}}
+          </span> flights found</span>
+        <span *ngIf="!is_search_complete" class="font-semibold flex items-center justify-center">
+          <mat-icon [svgIcon]="'heroicons_outline:arrow-path'" class=" theme-black-text icon-size-5"
+            [ngClass]="{'animate-spin' : isLoadingProcessing }"></mat-icon>
+          <span class="py-1 pl-4">Fetching best price</span>
+        </span>
+        <div *ngIf="is_search_complete" class="green-toggle" [matTooltip]="'Show Offer Price'"
+          [ngClass]="{hidden: groupInquiry}">
+          <mat-slide-toggle (change)="toggleby($event)"></mat-slide-toggle>
+        </div>
+      </div>
+
+      <div class="first rounded-lg border-gray-border border mt-5 bg-card" *ngIf="!groupInquiry">
+        <div class="title flex justify-between px-4 py-2" [matMenuTriggerFor]="currMenu">
+          <div>
+            <span class="text-lg font-bold">Currency :</span> <span class="pl-2">
+              {{currencySymbol?.currency_symbol }} {{currencySymbol?.currency_short_code}}
+            </span>
+          </div>
+          <mat-icon svgIcon="mat_outline:keyboard_arrow_down"></mat-icon>
+        </div>
+
+        <mat-menu class="fuse-horizontal-navigation-menu-panel" [overlapTrigger]="false" #currMenu>
+          <div class="min-w-[250px] h-[48px] flex items-center hover:bg-[#0000000a] cursor-pointer px-3"
+            *ngFor="let tp of convertCurrencyList" (click)="currency.patchValue(tp.id);getCurrencyData()">
+            {{tp.currency_symbol }}
+            {{tp.currency_short_code }}
+          </div>
+        </mat-menu>
+      </div>
+
+
+      <div class="first rounded-lg border-gray-border border mt-5 bg-card">
+        <div class="title flex justify-between px-4 py-2">
+          <span class="text-xl font-bold">Sort By</span>
+        </div>
+        <div class="border-b border-dashed border-gray-border w-full"></div>
+        <div class="px-4">
+          <ng-container *ngFor="let sorter of sortBy; let i = index">
+            <div *ngIf="!groupInquiry || (groupInquiry && sorter.key)" class="sub-title mt-2">
+              <span class="text-lg font-semibold pb-2">{{sorter.key}}</span>
+
+              <ng-container>
+                <div class="flex justify-between items-center" *ngFor="let s of sorter.value">
+                  <mat-checkbox [(ngModel)]="s.is_selected" (change)="sortByChange(s)">
+                    <span>
+                      {{s.name}}
+                    </span>
+                  </mat-checkbox>
+                </div>
+              </ng-container>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+
+      <div [ngClass]="isSticky ? 'sticky' : 'static'" [ngStyle]="isSticky ? { 'top': stickyTopSignal() } : {}">
+        <div class="sec rounded-lg border-gray-border border mt-5 bg-card" #scrollableContainer>
+          <div class="title flex justify-between px-4 py-2">
+            <span class="text-xl font-semibold">Filters</span>
+            <button class="text-lg font-medium primary-text cursor-pointer" (click)="ClearFilter()">
+              Reset All
+            </button>
+          </div>
+          <div class="border-b border-dashed border-gray-border w-full mb-3"></div>
+
+          <div class="px-4 border-b border-dashed border-gray-border w-full mb-3" *ngIf="!groupInquiry">
+            <mat-checkbox [(ngModel)]="isRefundable" (change)="RefundableChange('isRefundable');DataFilter()">
+              <span>Refundable</span>
+            </mat-checkbox>
+
+            <mat-checkbox class="mt-[-5px]" [(ngModel)]="isNonRefundable"
+              (change)="RefundableChange('isNonRefundable'); DataFilter()">
+              <span>Non Refundable</span>
+            </mat-checkbox>
+
+            <ng-container *ngIf="oneWay || (roundTrip && !is_domestic)">
+              <mat-checkbox class="mt-[-5px]" [(ngModel)]="isHoldAvailable" (change)="DataFilter()">
+                <span>Hold Available</span>
+              </mat-checkbox>
+            </ng-container>
+          </div>
+
+          <ng-container *ngFor="let filter of filterList; let i = index">
+            <div *ngIf="trip_type === 'RETURN'? i<6:i<3" class="px-4">
+              <div *ngIf="trip_type === 'RETURN'">
+                <span *ngIf="i === 0" class="primary-text text-lg font-semibold pb-2 block">
+                  Onward Journey
+                </span>
+                <span *ngIf="i === 3" class="primary-text text-lg font-semibold pb-2 block">
+                  Return Journey
+                </span>
+              </div>
+              <div class="sub-title">
+                <span class="font-semibold pb-2 flex">
+                  <span class="text-lg" *ngIf="trip_type !== 'RETURN'">{{
+                    filter.value[0].title}}</span>
+                  <span class="text-lg" *ngIf="trip_type === 'RETURN'">
+                    <span *ngIf="(i === 0)||(i === 3)">{{ filter.value[0].title}}</span>
+                    <span *ngIf="i === 1">{{ filter.value[0].title}} from
+                      {{this.formDataList[0].fromCity?.city}}</span>
+                    <span *ngIf="i === 2">{{ filter.value[0].title}} at
+                      {{this.formDataList[0].toCity?.city}}</span>
+                    <span *ngIf="i === 4">{{ filter.value[0].title}} from
+                      {{this.formDataList[0].toCity?.city}}</span>
+                    <span *ngIf="i === 5">{{ filter.value[0].title}} at
+                      {{this.formDataList[0].fromCity?.city}}</span>
+                  </span>
+                </span>
+                <div class="flex justify-between items-center" *ngFor="let f of filter.value">
+                  <mat-checkbox [(ngModel)]="f.is_selected" (change)="DataFilter()">
+                    <span> {{ f.name }}</span>
+                  </mat-checkbox>
+                </div>
+              </div>
+              <div class="sub"></div>
+            </div>
+
+            <!-- Arrival Airports -->
+            <ng-container
+              *ngIf="(i == 2 && arrivalAirportObj?.arrivalAirport?.length > 1) || (i == 5 && arrivalAirportObj?.retarrivalAirport?.length > 1)">
+              <div class="border-t border-dashed border-gray-border w-full pt-3 px-4">
+                <span class="font-semibold text-lg pb-2 flex">
+                  Arrival Airports
+                </span>
+                <div class="flex justify-between items-center"
+                  *ngFor="let item of (i == 2 ? arrivalAirportObj?.arrivalAirport : arrivalAirportObj?.retarrivalAirport)">
+                  <mat-checkbox [(ngModel)]="item.is_selected" (change)="DataFilter()">
+                    <span> {{ item.name }}</span>
+                  </mat-checkbox>
+                </div>
+              </div>
+            </ng-container>
+
+            <div *ngIf="trip_type === 'RETURN'? i<6:i<3"
+              [ngClass]="(layoverPoints.length < 1 && (filterList.length-1 === i))? 'hidden':''"
+              class="border-b border-dashed border-gray-border w-full mb-3">
+            </div>
+          </ng-container>
+
+          <ng-container *ngIf="formGroup.get('type')?.value == 'ow' && !is_domestic">
+            <div class="sub-title px-4 pb-2" *ngIf="displayAirportCodeFilters?.oneway?.origin?.length > 1">
+              <span class="font-semibold text-lg pb-4">Departure Airport</span>
+              <ng-container *ngFor="let origin of displayAirportCodeFilters.oneway.origin; let i = index">
+                <div class="flex justify-between items-center">
+                  <mat-checkbox [(ngModel)]="origin.isSelected" (change)="DataFilter()">
+                    <span class="truncate w-[190px] block">{{origin.code}}</span>
+                  </mat-checkbox>
+                </div>
+              </ng-container>
+            </div>
+
+            <div class="sub-title px-4 pb-2" *ngIf="displayAirportCodeFilters?.oneway?.destination?.length > 1">
+              <span class="font-semibold text-lg pb-4">Arrival Airport</span>
+              <ng-container *ngFor="let destination of displayAirportCodeFilters?.oneway?.destination; let i = index">
+                <div class="flex justify-between items-center">
+                  <mat-checkbox [(ngModel)]="destination.isSelected" (change)="DataFilter()">
+                    <span class="truncate w-[190px] block">{{destination.code}}</span>
+                  </mat-checkbox>
+                </div>
+              </ng-container>
+            </div>
+
+            <div
+              *ngIf="displayAirportCodeFilters?.oneway?.origin?.length > 1 && displayAirportCodeFilters?.oneway?.destination?.length > 1"
+              class="border-b border-dashed border-gray-border w-full mb-3"></div>
+          </ng-container>
+
+          <ng-container *ngIf="formGroup.get('type')?.value == 'rt' && !is_domestic">
+            <ng-container>
+              <span class="primary-text text-lg font-semibold pb-2 px-4 block"
+                *ngIf="displayAirportCodeFilters?.roundtrip?.departureOrigin?.length > 1 || displayAirportCodeFilters?.roundtrip?.departureDestination?.length > 1">
+                Onward Journey
+              </span>
+              <div class="sub-title px-4 pb-2"
+                *ngIf="displayAirportCodeFilters?.roundtrip?.departureOrigin?.length > 1">
+                <span class="font-semibold text-lg pb-4">Departure Airport</span>
+                <ng-container
+                  *ngFor="let origin of displayAirportCodeFilters?.roundtrip?.departureOrigin; let i = index">
+                  <div class="flex justify-between items-center">
+                    <mat-checkbox [(ngModel)]="origin.isSelected" (change)="DataFilter()">
+                      <span class="truncate w-[190px] block">{{origin.code}}</span>
+                    </mat-checkbox>
+                  </div>
+                </ng-container>
+              </div>
+
+              <div class="sub-title px-4 pb-2"
+                *ngIf="displayAirportCodeFilters?.roundtrip?.departureDestination?.length > 1">
+                <span class="font-semibold text-lg pb-4">Arrival Airport</span>
+                <ng-container
+                  *ngFor="let destination of displayAirportCodeFilters?.roundtrip?.departureDestination; let i = index">
+                  <div class="flex justify-between items-center">
+                    <mat-checkbox [(ngModel)]="destination.isSelected" (change)="DataFilter()">
+                      <span class="truncate w-[190px] block">{{destination.code}}</span>
+                    </mat-checkbox>
+                  </div>
+                </ng-container>
+              </div>
+              <div
+                *ngIf="displayAirportCodeFilters?.roundtrip?.departureOrigin?.length > 1 || displayAirportCodeFilters?.roundtrip?.departureDestination?.length > 1"
+                class="border-b border-dashed border-gray-border w-full mb-3"></div>
+            </ng-container>
+
+            <span class="primary-text text-lg font-semibold pb-2 px-4 block"
+              *ngIf="displayAirportCodeFilters?.roundtrip?.returnOrigin?.length > 1 || displayAirportCodeFilters?.roundtrip?.returnDestination?.length > 1">
+              Return Journey
+            </span>
+            <div class="sub-title px-4 pb-2" *ngIf="displayAirportCodeFilters?.roundtrip?.returnOrigin?.length > 1">
+              <span class="font-semibold text-lg pb-4">Departure Airport</span>
+              <ng-container *ngFor="let origin of displayAirportCodeFilters?.roundtrip?.returnOrigin; let i = index">
+                <div class="flex justify-between items-center">
+                  <mat-checkbox [(ngModel)]="origin.isSelected" (change)="DataFilter()">
+                    <span class="truncate w-[190px] block">{{origin.code}}</span>
+                  </mat-checkbox>
+                </div>
+              </ng-container>
+            </div>
+
+            <div class="sub-title px-4 pb-2"
+              *ngIf="displayAirportCodeFilters?.roundtrip?.returnDestination?.length > 1">
+              <span class="font-semibold text-lg pb-4">Arrival Airport</span>
+              <ng-container
+                *ngFor="let destination of displayAirportCodeFilters?.roundtrip?.returnDestination; let i = index">
+                <div class="flex justify-between items-center">
+                  <mat-checkbox [(ngModel)]="destination.isSelected" (change)="DataFilter()">
+                    <span class="truncate w-[190px] block">{{destination.code}}</span>
+                  </mat-checkbox>
+                </div>
+              </ng-container>
+            </div>
+
+            <div
+              *ngIf="displayAirportCodeFilters?.roundtrip?.returnDestination?.length > 1 && displayAirportCodeFilters?.roundtrip?.returnDestination?.length > 1"
+              class="border-b border-dashed border-gray-border w-full mb-3"></div>
+          </ng-container>
+
+          <div class="sub-title px-4 pb-2" *ngIf="layoverPoints.length > 0">
+            <span class="font-semibold text-lg pb-4">Layovers</span>
+            <ng-container *ngFor="let layoverPoint of layoverPoints; let i = index">
+              <div *ngIf="i < 4" class="flex justify-between items-center">
+                <mat-checkbox [(ngModel)]="layoverPoint.isSelected" (change)="DataFilter()"><span
+                    class="truncate w-[190px] block"
+                    [matTooltip]="layoverPoint.key">{{layoverPoint.key}}</span></mat-checkbox>
+              </div>
+            </ng-container>
+
+            <div *ngIf="layoverPoints.length > 4" class="text-md bonton-orange-text font-bold cursor-pointer"
+              (click)="Points('layover')">Show
+              More...</div>
+          </div>
+          <div *ngIf="layoverPoints.length > 0" class="border-b border-dashed border-gray-border w-full mb-3">
+          </div>
+
+          <div *ngIf="layoverPoints.length > 0" class="sub-title px-4 pb-2">
+            <span class="font-semibold text-lg pb-4">Layover duration</span>
+            <ng-container *ngFor="let ld of layoverDurations; let i = index">
+              <div class="flex justify-between items-center">
+                <mat-checkbox [(ngModel)]="ld.isSelected" (change)="DataFilter()">{{ld.name}}</mat-checkbox>
+              </div>
+            </ng-container>
+          </div>
+          <div class="border-b border-dashed border-gray-border w-full mb-3"
+            *ngIf="!groupInquiry && (Allflights?.length)"></div>
+
+          <div>
+            <div class="flex flex-col price-range px-4 py-2"
+              *ngIf="!groupInquiry && (Allflights && Allflights?.length)">
+              <div class="title flex justify-between mb-4">
+                <span class="flex items-center gap-1">
+                  <span class="text-lg font-semibold">Price Range</span>
+                  <i class="material-icons text-[16px]"
+                    matTooltip="Tip: You can also use ↑ ↓ keys or Page Up/Down keys to change the value.">help</i>
+                </span>
+                <span class="text-lg font-medium primary-text cursor-pointer" (click)="resetPriceRange()">Reset</span>
+              </div>
+
+
+              <mat-slider class="w-11/12" [min]="minSlider" [max]="maxSlider"
+                (change)="DataFilter(false, $event, 'priceRange')">
+                <input matInput matSliderStartThumb [(ngModel)]="startThumbValue" />
+                <input matInput [(ngModel)]="endThumbValue" matSliderEndThumb />
+              </mat-slider>
+
+              <div class="flex justify-between items-center">
+                <span>{{currShortCode}} {{(startThumbValue * actual_markup_roe) |
+                  number:'1.0-0'}}</span>
+                <span>{{currShortCode}} {{(endThumbValue * actual_markup_roe) | number:'1.0-0'}}</span>
+              </div>
+
+            </div>
+
+            <div class="border-b border-dashed border-gray-border w-full my-3" *ngIf="AirLines.length > 0">
+            </div>
+            <div *ngIf="AirLines.length > 0" class="sub-title mt-2 px-4 py-2">
+              <span class="text-lg font-semibold pb-2">Airline</span>
+              <div class="flex justify-between items-center" *ngFor="let al of AirLines">
+                <mat-checkbox [(ngModel)]="al.checked" (change)="DataFilter()">
+                  <span class="flex items-center">
+                    <img loading="lazy" class="w-5 h-5 object-contain" [src]="al.value[0].airline_logo"
+                      alt="airline_logo" />
+                    <span class="pl-2">{{al.value[0].airlineName}}</span>
+                  </span>
+                </mat-checkbox>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+        <div class="pt-3" #targetDiv>
+          <button
+            class=" flex items-center gap-2 px-6 py-1 w-full border border-primaryColor text-primaryColor rounded-full text-sm font-semibold transition-all justify-center"
+            (click)="scrollTotTop()">
+            SCROLL TO TOP <i class="material-icons text-md">arrow_upward</i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex flex-col space-y-6  min-w-[900px]">
+
+      <!------One Way Fare Date Calendar-------->
+      <div *ngIf=" supplierList?.length > 0">
+        <div class="flex flex-col rounded-lg mb-0 relative bg-card "
+          style="box-shadow: 0px 2px 8px 0px rgba(0, 0, 0, 0.04);"
+          [ngClass]="supplierList.length > 7 ? 'px-10 py-[10px]': 'py-[10px]'">
+          <ngx-slick-carousel class="carousel fixedDepartCarousel pr-3" #slickModal4="slick-carousel"
+            [config]="fixedFareDateSlideConfig">
+            <div ngxSlickItem *ngFor="let data of supplierList; let i = index; let last = last;"
+              class="theme-black-text mr-0 font-medium text-base   text-center cursor-pointer"
+              [ngClass]="[contents ? 'pointer-events-none opacity-90' : '', !last ? 'border-r dark:border-r-gray-600' : '']">
+              <div class="grid p-2 px-5" (click)="supplierFilter(data)"
+                [ngClass]="{'dark:bg-primary bg-gray-200 rounded-lg mx-2': data.isSelected }">
+                <span class="dark:text-white text-sm font-semibold">{{data.supplier_name}} </span>
+              </div>
+            </div>
+          </ngx-slick-carousel>
+        </div>
+      </div>
+
+      <!-- *ngIf="flights.length > 0" -->
+      <div *ngIf="oneWay">
+        <app-one-way [isShowItinerary]="isShowItinerary" [flights]="flights" [searchdateTime]="search_date_time"
+          [filename]="filename" [trip_type]="trip_type" [cabinClassSearch]="cabinClassSearch"
+          [offervalue]="offervalue"></app-one-way>
+      </div>
+
+      <div *ngIf="roundTrip">
+        <app-round-trip #rt [flights]="flights" [allflights]="Allflights" [isShowItinerary]="isShowItinerary"
+          [searchdateTime]="search_date_time" [returnDate]="returnDate" [is_domestic]="is_domestic"
+          [filename]="filename" [trip_type]="trip_type" [cabinClassSearch]="cabinClassSearch"
+          [offervalue]="offervalue"></app-round-trip>
+      </div>
+
+      <div class="w-full h-128 flex flex-row justify-center items-center" *ngIf="flights.length < 1 && !isLoading">
+        <div class="w-50 text-center">
+          <img loading="lazy" src="assets/images/logo/Flight_Found.svg" />
+          <div class="font-bold text-xl uppercase pt-3 text-primary">{{!is_search_complete ? 'Loading...' : 'No Flights
+            Found'}}</div>
+        </div>
+      </div>
+
+      <div class="z-10 flex justify-end bg-card border border-gray-border rounded-lg w-full overflow-hidden">
+        <mat-paginator [ngClass]="{'pointer-events-none': isLoading}" [pageSizeOptions]="appConfig.pageSizeOptions"
+          [pageSize]="appConfig.pageSize" (page)="DataFilter(true,$event)"
+          [showFirstLastButtons]="appConfig.showFirstLastButtons">
+        </mat-paginator>
+      </div>
+    </div>
+    <!-- <div *ngIf="roundTrip">
+      <app-round-trip #rt [flights]="flights" [allflights]="Allflights" [isShowItinerary]="isShowItinerary"
+        [searchdateTime]="search_date_time" [returnDate]="returnDate" [is_domestic]="is_domestic" [filename]="filename"
+        [trip_type]="trip_type" [cabinClassSearch]="cabinClassSearch" [offervalue]="offervalue"></app-round-trip>
+    </div> -->
+  </div>
+</div>
