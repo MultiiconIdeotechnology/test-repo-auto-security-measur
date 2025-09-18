@@ -53,8 +53,8 @@
                                     <span style="font-weight: 600">Modify</span>
                                 </button>
 
-                                <button mat-menu-item (click)="cancelProduct(ListItem)"
-                                    *ngIf="ListItem.status == 'Delivered' || ListItem.receiptStatus == 'Confirmed'">
+                                <!-- *ngIf="ListItem.status == 'Delivered' || ListItem.receiptStatus == 'Confirmed'" -->
+                                <button mat-menu-item (click)="cancelProduct(ListItem)">
                                     <mat-icon class="mat-18">close</mat-icon>
                                     <span style="font-weight: 600">Cancel</span>
                                 </button>
