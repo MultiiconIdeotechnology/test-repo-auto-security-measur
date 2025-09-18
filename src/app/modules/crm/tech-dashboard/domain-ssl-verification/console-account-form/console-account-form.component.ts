@@ -100,13 +100,12 @@ export class ConsoleAccountFormComponent {
       this.formGroup.markAllAsTouched();
       return;
     }
-
     let payloadData = this.formGroup.value;
     payloadData.agent_id = this.data?.agentId;
-    payloadData.product_id = this.data?.productPurchaseId;
+    payloadData.product_id = this.data?.id;
     payloadData.wl_id = this.wlSettingData?.wl_id;
     payloadData.is_account_active = this.is_account_active;
-
+    
     this.domainVarifyService.androidIosConfig(payloadData).subscribe({
       next: (res) => {
         if (res) {
