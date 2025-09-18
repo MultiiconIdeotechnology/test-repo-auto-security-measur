@@ -106,7 +106,7 @@ export class ManageMobileAppDomainFormComponent {
 
     let payloadData = this.formGroup.value;
     payloadData.agent_id = this.data?.agentId;
-    payloadData.product_id = this.data?.productPurchaseId;
+    payloadData.product_id = this.data?.id;
 
     this.domainVarifyService.createDomain(payloadData).subscribe({
       next: (res) => {
