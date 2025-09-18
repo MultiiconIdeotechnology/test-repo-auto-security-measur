@@ -196,7 +196,7 @@ export class tabStatusChangedLogComponent {
             this.searchInputControl.value
         );
         // filterReq['id']= this.record?.data.purchase_id;
-        filterReq['module_for'] ='Product_Purchase_master',
+        filterReq['module_for'] ='product_purchase_master_sub',
         filterReq['module_for_id'] = this.record?.data?.id || "";
         this.crmService.getStatusChangeLogsList(filterReq).subscribe({
             next: (data) => {

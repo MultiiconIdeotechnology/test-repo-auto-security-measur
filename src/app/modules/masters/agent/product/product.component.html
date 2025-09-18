@@ -43,12 +43,12 @@
                                 <mat-icon svgIcon="heroicons_outline:currency-rupee"></mat-icon>
                                 <span style="font-weight: 600">Sales Return</span>
                             </button>
-
-                            <button mat-menu-item (click)="expiryProduct(element)"
+                            
+                            <!-- <button mat-menu-item (click)="expiryProduct(element)"
                                 *ngIf="element.status == 'Delivered'">
                                 <mat-icon svgIcon="mat_solid:history_toggle_off"></mat-icon>
                                 <span style="font-weight: 600">Expiry</span>
-                            </button>
+                            </button> -->
 
                             <button mat-menu-item (click)="setBlockUnblock(element)">
                                 <mat-icon class="mat-18 icon-size-5">{{element.isBlocked ? "highlight_off" :

@@ -71,11 +71,11 @@
                                     <span style="font-weight: 600">Sales Return</span>
                                 </button>
 
-                                <button mat-menu-item (click)="expiryProduct(ListItem)"
+                                <!-- <button mat-menu-item (click)="expiryProduct(ListItem)"
                                     *ngIf="ListItem.status == 'Delivered'">
                                     <mat-icon svgIcon="mat_solid:history_toggle_off"></mat-icon>
                                     <span style="font-weight: 600">Expiry</span>
-                                </button>
+                                </button> -->
 
                                 <button mat-menu-item (click)="setBlockUnblock(ListItem)">
                                     <mat-icon class="mat-18 icon-size-5">{{ListItem.isBlocked ? "highlight_off" : "check_circle"}}</mat-icon>
