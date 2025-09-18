@@ -19,9 +19,9 @@
                                 <mat-icon class="mat-18">info</mat-icon>
                                 <span style="font-weight: 600;">Info</span>
                             </button>
-
-                            <button mat-menu-item (click)="editProduct(element)"
-                                *ngIf="element.receiptStatus !== 'Confirmed'">
+                            
+                            <!-- *ngIf="element.receiptStatus !== 'Confirmed'" -->
+                            <button mat-menu-item (click)="editProduct(element)">
                                 <mat-icon class="mat-18">edit</mat-icon>
                                 <span style="font-weight: 600">Modify</span>
                             </button>
@@ -32,8 +32,8 @@
                                 <span style="font-weight: 600">Cancel</span>
                             </button>
 
-                            <button mat-menu-item (click)="deleteProduct(element)"
-                                *ngIf="element.receiptStatus !== 'Confirmed'">
+                            <!-- *ngIf="element.receiptStatus !== 'Confirmed'" -->
+                            <button mat-menu-item (click)="deleteProduct(element)">
                                 <mat-icon class="mat-18">delete</mat-icon>
                                 <span style="font-weight: 600">Delete</span>
                             </button>
@@ -43,12 +43,12 @@
                                 <mat-icon svgIcon="heroicons_outline:currency-rupee"></mat-icon>
                                 <span style="font-weight: 600">Sales Return</span>
                             </button>
-
-                            <button mat-menu-item (click)="expiryProduct(element)"
+                            
+                            <!-- <button mat-menu-item (click)="expiryProduct(element)"
                                 *ngIf="element.status == 'Delivered'">
                                 <mat-icon svgIcon="mat_solid:history_toggle_off"></mat-icon>
                                 <span style="font-weight: 600">Expiry</span>
-                            </button>
+                            </button> -->
 
                             <button mat-menu-item (click)="setBlockUnblock(element)">
                                 <mat-icon class="mat-18 icon-size-5">{{element.isBlocked ? "highlight_off" :
@@ -56,8 +56,8 @@
                                 <span style="font-weight: 500">{{element.isBlocked ? "Unblock" : "Block"}}</span>
                             </button>
 
-                            <button mat-menu-item (click)="shiftProduct(element)"
-                                *ngIf="element.status == 'Delivered'">
+                            <!-- *ngIf="element.status == 'Delivered'" -->
+                            <button mat-menu-item (click)="shiftProduct(element)">
                                 <mat-icon svgIcon="heroicons_outline:arrows-right-left"></mat-icon>
                                 <span style="font-weight: 600">Shift Product</span>
                             </button>
