@@ -80,7 +80,7 @@ export class MobileProductActivateDialogComponent {
   // api just to save app url
   createDomain() {
     let payloadData = this.formGroup.value;
-    payloadData.agent_id = this.record?.agentid;
+    payloadData.agent_id = this.record?.agentId;
     payloadData.product_id = this.record?.id;
     this.domainVarifyService.createDomain(payloadData).subscribe({
       next: (res) => {
@@ -99,7 +99,7 @@ export class MobileProductActivateDialogComponent {
     let payloadObj = {
       ServiceId: this.record?.id,
       // is_activated: true,
-      AgentId: this.record?.agentid,
+      AgentId: this.record?.agentId,
       // product_id: this.record?.product_id
     }
     this.domainVarifyService.activate(payloadObj).subscribe({
