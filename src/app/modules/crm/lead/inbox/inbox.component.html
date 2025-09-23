@@ -65,6 +65,19 @@
                                 </ng-template>
                             </p-columnFilter>
 
+                            <p-columnFilter *ngIf="col.type == types.select && col.field == 'last_call_feedback' "
+                                [field]="col.field" matchMode="equals" [showMenu]="false">
+                                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                    <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="feedbackList"
+                                        (onChange)="filter($event.value)" placeholder="Select Type" [showClear]="true"
+                                        appendTo="body">
+                                        <ng-template let-option pTemplate="item">
+                                            <p>{{option}}</p>
+                                        </ng-template>
+                                    </p-dropdown>
+                                </ng-template>
+                            </p-columnFilter>
+
                             <ng-container *ngIf="col.type == types.dateTime && col.field == 'last_call_date_time' ">
                                 <p-columnFilter
                                     *ngIf="(_filterService.selectionDateDropdown$ | async) != 'custom_date_range'"

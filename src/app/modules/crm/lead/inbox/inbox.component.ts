@@ -138,6 +138,7 @@ export class InboxComponent extends BaseListingComponent {
             { field: 'last_call_date_time', header: 'Last Call', type: Types.dateTime, dateFormat: 'dd-MM-yyyy' },
             { field: 'assignByName', header: 'Assigned By', type: Types.text },
             { field: 'lead_source', header: 'Source', type: Types.text },
+            { field: 'last_call_feedback', header: 'Feedback', type: Types.select },
             { field: 'entry_date_time', header: 'Lead Date', type: Types.dateTime, dateFormat: 'dd-MM-yyyy HH:mm' },
             { field: 'call_date_time', header: 'Call Date', type: Types.dateTime, dateFormat: 'dd-MM-yyyy HH:mm' },
         ];
