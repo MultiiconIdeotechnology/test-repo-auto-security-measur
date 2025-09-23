@@ -67,7 +67,19 @@ export class AmendmentInfoComponent {
     });
   }
 
+  //Your Invoice
   invoice(id : string,name: string): void {
+    this.flighttabService.printInvoice(id).subscribe({
+      next: (res) => {
+        CommonUtils.downloadPdf(res?.data, name + '.pdf');
+      }, error: (err) => {
+        this.alertService.showToast('error', err);
+      }
+    })
+  }
+
+   //Agent Invoice
+  agentInvoice(id : string,name: string): void {
     this.flighttabService.printInvoice(id).subscribe({
       next: (res) => {
         CommonUtils.downloadPdf(res?.data, name + '.pdf');

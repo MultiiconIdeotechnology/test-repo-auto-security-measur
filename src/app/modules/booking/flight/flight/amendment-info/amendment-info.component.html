@@ -121,6 +121,13 @@
                         <th class="border-l w-[20%] font-normal">
                             Refund Date
                         </th>
+                        <th class="border-l w-[16%] text-center font-normal">
+                            Your Credit Invoice
+                        </th>
+                        <th class="border-l w-[16%] text-center font-normal">
+                            Your Debit Invoice
+                        </th>
+
                         <th class="border-l w-[12.5%] text-center font-normal">
                             Credit Invoice
                         </th>
@@ -139,18 +146,35 @@
                             {{allData?.pgRefund?.refund_date ? (allData?.pgRefund?.refund_date
                             | date:'dd-MM-yyyy HH:mm:ss') : '-'}}
                         </td>
-                        <td class="border-l w-[13.5%] text-center">
+                        <!-- Your Credit & Debit Invoice-->
+                        <td class="border-l w-[15.5%] text-center">
                             <mat-icon svgIcon="heroicons_mini:arrow-down-tray"
                                 (click)="allData?.pgRefund?.credit_invoice ? invoice(allData?.pgRefund?.credit_invoice,'Credit Invoice') : null"
                                 class="icon-size-5 cursor-pointer"
                                 [ngClass]="allData?.pgRefund?.credit_invoice ? 'text-blue-500' : 'text-gray-500' "
                                 [matTooltip]="'Download'"></mat-icon>
                         </td>
-                        <td class="border-l w-[13.5%] text-center">
+                        <td class="border-l w-[15.5%] text-center">
                             <mat-icon svgIcon="heroicons_mini:arrow-down-tray"
                                 (click)="allData?.pgRefund?.debit_invoice ? invoice(allData?.pgRefund?.debit_invoice,'Debit Invoice') : null"
                                 class="icon-size-5 cursor-pointer"
                                 [ngClass]="allData?.pgRefund?.debit_invoice ? 'text-blue-500' : 'text-gray-500' "
+                                [matTooltip]="'Download'"></mat-icon>
+                        </td>
+
+                        <!-- Agent Credit & Debit Invoice-->
+                        <td class="border-l w-[13.5%] text-center">
+                            <mat-icon svgIcon="heroicons_mini:arrow-down-tray"
+                                (click)="allData?.pgRefund?.credit_invoice_id ? agentInvoice(allData?.pgRefund?.credit_invoice_id,'Agent Credit Invoice') : null"
+                                class="icon-size-5 cursor-pointer"
+                                [ngClass]="allData?.pgRefund?.credit_invoice_id ? 'text-blue-500' : 'text-gray-500' "
+                                [matTooltip]="'Download'"></mat-icon>
+                        </td>
+                        <td class="border-l w-[13.5%] text-center">
+                            <mat-icon svgIcon="heroicons_mini:arrow-down-tray"
+                                (click)="allData?.pgRefund?.debit_invoice_id ? agentInvoice(allData?.pgRefund?.debit_invoice_id,'Agent Debit Invoice') : null"
+                                class="icon-size-5 cursor-pointer"
+                                [ngClass]="allData?.pgRefund?.debit_invoice_id ? 'text-blue-500' : 'text-gray-500' "
                                 [matTooltip]="'Download'"></mat-icon>
                         </td>
                     </tr>
