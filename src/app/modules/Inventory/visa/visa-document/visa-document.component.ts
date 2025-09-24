@@ -45,6 +45,7 @@ export class VisaDocumentComponent {
     { value: 'Passport Size Photo', viewValue: 'Passport Size Photo' },
     { value: 'Passport Front Page', viewValue: 'Passport Front Page' },
     { value: 'Passport Last Page', viewValue: 'Passport Last Page' },
+    { value: 'passportExternalCoverPage', viewValue: 'Passport External Cover Page' },
     { value: 'Pan Card', viewValue: 'Pan Card' },
     { value: 'Onward Ticket', viewValue: 'Onward Ticket' },
     { value: 'Return Ticket', viewValue: 'Return Ticket' },
@@ -55,6 +56,7 @@ export class VisaDocumentComponent {
     { value: 'US / UK / Schengen Visa', viewValue: 'US / UK / Schengen Visa' },
     { value: 'Travel Insurance', viewValue: 'Travel Insurance' },
     { value: 'Covid Vaccination Certificate', viewValue: 'Covid Vaccination Certificate' },
+    
     
 
 

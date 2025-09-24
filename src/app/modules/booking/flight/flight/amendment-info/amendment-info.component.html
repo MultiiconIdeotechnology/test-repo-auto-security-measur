@@ -165,16 +165,16 @@
                         <!-- Agent Credit & Debit Invoice-->
                         <td class="border-l w-[13.5%] text-center">
                             <mat-icon svgIcon="heroicons_mini:arrow-down-tray"
-                                (click)="allData?.pgRefund?.credit_invoice_id ? agentInvoice(allData?.pgRefund?.credit_invoice_id,'Agent Credit Invoice') : null"
+                                (click)="allData?.pgRefund?.sub_agent_credit_invoice ? agentInvoice(allData?.pgRefund?.sub_agent_credit_invoice,'Agent Credit Invoice') : null"
                                 class="icon-size-5 cursor-pointer"
-                                [ngClass]="allData?.pgRefund?.credit_invoice_id ? 'text-blue-500' : 'text-gray-500' "
+                                [ngClass]="allData?.pgRefund?.sub_agent_credit_invoice ? 'text-blue-500' : 'text-gray-500' "
                                 [matTooltip]="'Download'"></mat-icon>
                         </td>
                         <td class="border-l w-[13.5%] text-center">
                             <mat-icon svgIcon="heroicons_mini:arrow-down-tray"
-                                (click)="allData?.pgRefund?.debit_invoice_id ? agentInvoice(allData?.pgRefund?.debit_invoice_id,'Agent Debit Invoice') : null"
+                                (click)="allData?.pgRefund?.sub_agent_debit_invoice ? agentInvoice(allData?.pgRefund?.sub_agent_debit_invoice,'Agent Debit Invoice') : null"
                                 class="icon-size-5 cursor-pointer"
-                                [ngClass]="allData?.pgRefund?.debit_invoice_id ? 'text-blue-500' : 'text-gray-500' "
+                                [ngClass]="allData?.pgRefund?.sub_agent_debit_invoice ? 'text-blue-500' : 'text-gray-500' "
                                 [matTooltip]="'Download'"></mat-icon>
                         </td>
                     </tr>

@@ -203,9 +203,13 @@ export class AmendmentRequestEntryComponent {
                             { name: 'PSP Name', value: data.pgRefund?.psp_name || '-' },
                             { name: 'PSP Ref. No.', value: data.pgRefund?.psp_ref_no || '-' },
                         ];
-                        if (this.recordList.is_refundable)
-                            this.PGRefundList.push({ name: 'Credit Invoice', value: data.pgRefund.credit_invoice })
-                        this.PGRefundList.push({ name: 'Debit Invoice', value: data.pgRefund.debit_invoice })
+                        if (this.recordList.is_refundable) {
+                            this.PGRefundList.push({ name: 'Your Credit Invoice', value: data.pgRefund.credit_invoice })
+                            this.PGRefundList.push({ name: 'Credit Invoice', value: data.pgRefund.sub_agent_credit_invoice })
+                        }
+                        this.PGRefundList.push({ name: 'Your Debit Invoice', value: data.pgRefund.debit_invoice })
+                        this.PGRefundList.push({ name: 'Debit Invoice', value: data.pgRefund.sub_agent_debit_invoice })
+                        
 
                         this.SupplierRefundDetailsList = [
                             { name: this.recordList.is_refundable ? 'Refund Amount' : 'Payment Amount', value: `INR ${(data.supplier_refund_details?.refund_amount?.toFixed(2) || '0.00')}` },
@@ -255,7 +259,7 @@ export class AmendmentRequestEntryComponent {
 
                             if (this.recordList.is_refundable)
                                 this.roeList.push({ name: 'Credit Invoice', value: data.pgRefund.agent_credit_invoice })
-                            this.roeList.push({ name: 'Debit Invoice', value: data.pgRefund.agent_debit_invoice })
+                                this.roeList.push({ name: 'Debit Invoice', value: data.pgRefund.agent_debit_invoice })
                         } else {
                             this.roeList = [];
                         }
