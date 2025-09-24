@@ -205,10 +205,10 @@ export class AmendmentRequestEntryComponent {
                         ];
                         if (this.recordList.is_refundable) {
                             this.PGRefundList.push({ name: 'Your Credit Invoice', value: data.pgRefund.credit_invoice })
-                            this.PGRefundList.push({ name: 'Credit Invoice', value: data.pgRefund.sub_agent_credit_invoice })
+                            this.PGRefundList.push({ name: 'Credit Invoice', value: data.pgRefund.agent_credit_invoice })
                         }
                         this.PGRefundList.push({ name: 'Your Debit Invoice', value: data.pgRefund.debit_invoice })
-                        this.PGRefundList.push({ name: 'Debit Invoice', value: data.pgRefund.sub_agent_debit_invoice })
+                        this.PGRefundList.push({ name: 'Debit Invoice', value: data.pgRefund.agent_debit_invoice })
                         
 
                         this.SupplierRefundDetailsList = [
@@ -260,6 +260,7 @@ export class AmendmentRequestEntryComponent {
                             if (this.recordList.is_refundable)
                                 this.roeList.push({ name: 'Credit Invoice', value: data.pgRefund.agent_credit_invoice })
                                 this.roeList.push({ name: 'Debit Invoice', value: data.pgRefund.agent_debit_invoice })
+                                
                         } else {
                             this.roeList = [];
                         }

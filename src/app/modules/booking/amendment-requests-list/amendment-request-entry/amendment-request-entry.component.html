@@ -146,8 +146,18 @@
                             </div>
 
                             <mat-icon svgIcon="heroicons_mini:arrow-down-tray"
-                                *ngIf="af.name == 'Your Credit Invoice' || af.name == 'Credit Invoice' || af.name == 'Debit Invoice' || af.name == 'Your Debit Invoice'"
-                                (click)="af.value ? invoice(af.value,af.name) : null" class="icon-size-5 cursor-pointer"
+                                *ngIf="af.name == 'Your Credit Invoice' || af.name == 'Credit Invoice' || af.name == 'Debit Invoice' || af.name == 'Your Debit Invoice'"                               
+                               (click)="
+                                    af.value
+                                        ? invoice(
+                                            af.value,
+                                            af.name == 'Your Credit Invoice' || af.name == 'Your Debit Invoice'
+                                            ?  recordList?.agent_invoice_no
+                                            : af.name == 'Credit Invoice'
+                                                ? recordList?.pgRefund?.agent_credit_invoice_no
+                                                : af.name == 'Debit Invoice'
+                                                ?  recordList?.pgRefund?.agent_debit_invoice_no
+                                                : af.name): null" class="icon-size-5 cursor-pointer" [ngClass]="af.value ? 'text-blue-500' : 'text-gray-500' "
                                 [ngClass]="af.value ? 'text-blue-500' : 'text-gray-500' "
                                 [matTooltip]="af.value ? 'Download' : ''"></mat-icon>
 
