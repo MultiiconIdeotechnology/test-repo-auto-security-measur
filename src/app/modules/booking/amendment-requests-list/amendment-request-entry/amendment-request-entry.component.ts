@@ -209,7 +209,7 @@ export class AmendmentRequestEntryComponent {
                         }
                         this.PGRefundList.push({ name: 'Your Debit Invoice', value: data.pgRefund.debit_invoice })
                         this.PGRefundList.push({ name: 'Debit Invoice', value: data.pgRefund.agent_debit_invoice })
-                        
+
 
                         this.SupplierRefundDetailsList = [
                             { name: this.recordList.is_refundable ? 'Refund Amount' : 'Payment Amount', value: `INR ${(data.supplier_refund_details?.refund_amount?.toFixed(2) || '0.00')}` },
@@ -259,8 +259,8 @@ export class AmendmentRequestEntryComponent {
 
                             if (this.recordList.is_refundable)
                                 this.roeList.push({ name: 'Credit Invoice', value: data.pgRefund.agent_credit_invoice })
-                                this.roeList.push({ name: 'Debit Invoice', value: data.pgRefund.agent_debit_invoice })
-                                
+                            this.roeList.push({ name: 'Debit Invoice', value: data.pgRefund.agent_debit_invoice })
+
                         } else {
                             this.roeList = [];
                         }
@@ -638,4 +638,19 @@ export class AmendmentRequestEntryComponent {
             }
         })
     }
+
+    getInvoiceParam(af: any) {
+        switch (af.name) {
+            case 'Your Credit Invoice':
+                return this.recordList?.pgRefund?.credit_invoice_no;
+            case 'Your Debit Invoice':
+                return this.recordList?.pgRefund?.debit_invoice_no;
+            case 'Credit Invoice':
+                return this.recordList?.pgRefund?.agent_credit_invoice_no;
+            case 'Debit Invoice':
+                return this.recordList?.pgRefund?.agent_debit_invoice_no;
+            default:
+                return 'Invoice';
+        }
+    } 
 }
