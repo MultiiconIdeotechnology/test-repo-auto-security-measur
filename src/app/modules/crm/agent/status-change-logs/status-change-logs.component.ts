@@ -79,7 +79,7 @@ export class StatusChangeLogsComponent {
     
       {
         key: 'date',
-        name: 'Date',
+        name: 'Time',
         is_date: true,
         date_formate: 'dd-MM-yyyy HH:mm',
         is_sortable: false,

@@ -28,7 +28,7 @@
                                             {{ col.is_date ? (List[col.key] | date: col.date_formate) ||
                                                 " - " : List[col.key] || " - " }}
                                         </span>
-                                        <span class="truncate" *ngIf="col.isCombine" [matTooltip]="List['activity'] || ' - '">
+                                        <span class="truncate" *ngIf="col.isCombine" [matTooltip]="List['activity'] + (List['ipAddress'] ? ' (' + List['ipAddress'] + ')' : '') || ' - '">
                                             {{ List['activity'] || " - " }} ( {{ List['ipAddress'] || " - " }} )
                                         </span>
                                     </div>

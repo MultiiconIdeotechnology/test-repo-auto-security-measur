@@ -33,7 +33,7 @@ import { Subject } from 'rxjs';
   styles: [
     `
         .tbl-grid {
-            grid-template-columns: 140px 140px 460px 150px;
+            grid-template-columns: 140px 140px 300px 310px;
         }
     `,
   ],
@@ -78,7 +78,7 @@ export class ProductLogsComponent {
   columns = [
      {
       key: 'activityDateTime',
-      name: 'Date Time',
+      name: 'Time',
       is_date: true,
       date_formate: 'dd-MM-yyyy HH:mm',
       is_sortable: false,
@@ -103,8 +103,20 @@ export class ProductLogsComponent {
       serviceName: false
     },
     {
-      key: 'activity',
+      key: 'activityType',
       name: 'Activity',
+      is_date: false,
+      date_formate: '',
+      is_sortable: false,
+      class: '',
+      is_sticky: false,
+      align: 'center',
+      indicator: false,
+      tooltip: true,
+    },
+      {
+      key: 'activity',
+      name: 'Remark',
       is_date: false,
       date_formate: '',
       is_sortable: false,
@@ -116,19 +128,6 @@ export class ProductLogsComponent {
       toColor: false,
       isCombine: true
     },
-    {
-      key: 'activityType',
-      name: 'Activity Type',
-      is_date: false,
-      date_formate: '',
-      is_sortable: false,
-      class: '',
-      is_sticky: false,
-      align: 'center',
-      indicator: false,
-      tooltip: true,
-    },
-   
     // {
     //   key: 'ipAddress',
     //   name: 'IP Address',
