@@ -50,6 +50,7 @@ import { WalletService } from 'app/services/wallet.service';
 import { UserService } from 'app/core/user/user.service';
 import { InfoWalletComponent } from 'app/modules/account/wallet/info-wallet/info-wallet.component';
 import { cloneDeep } from 'lodash';
+import { EntityService } from 'app/services/entity.service';
 
 @Component({
     selector: 'app-receipt-list',
@@ -118,6 +119,7 @@ export class ReceiptListComponent extends BaseListingComponent implements OnDest
         public _filterService: CommonFilterService,
         private walletService: WalletService,
         private _userService: UserService,
+        private entityService : EntityService
     ) {
         super(module_name.receipts);
 
@@ -464,6 +466,17 @@ export class ReceiptListComponent extends BaseListingComponent implements OnDest
         } else if (record?.transaction_ref_no?.substring(0, 3) == 'OSB') {
             Linq.recirect('/booking/offline-service/entry/' + record.product_id + '/readonly');
         }
+       else if (record?.transaction_ref_no?.substring(0, 3) == 'AIR') {
+                        // if (!Security.hasViewDetailPermission(module_name.wallet)) {
+                        //     return this.alertService.showToast('error', messages.permissionDenied);
+                        // }
+                        //this.formGroup.get('searchfilter').patchValue("");
+                        this.router.navigate(['/booking/amendment-requests'])
+                        setTimeout(() => {
+                            this.entityService.raiseAmendmentInfoCall({ data: {id:record.product_id}, global_withdraw: true })
+                        }, 1000);
+                        this.matDialog.closeAll();
+                    }
     }
 
     viewAgentData(data): void {

@@ -214,7 +214,8 @@ export class AgentListComponent extends BaseListingComponent {
         this.selectedColumns = [
             { field: 'agent_code', header: 'Code', type: Types.number, fixVal: 0 },
             { field: 'agency_name', header: 'Agency', type: Types.text },
-            { field: 'agency_alias_name', header: ' Alias Name', type: Types.text },       
+            { field: 'agency_alias_name', header: ' Alias Name', type: Types.text },    
+            { field: 'pincode', header: 'Pin Code', type: Types.text },       
             { field: 'status', header: 'Status', type: Types.select, isCustomColor: true },
             { field: 'relation_manager_name', header: 'RM', type: Types.select },
             { field: 'email_address', header: 'Email', type: Types.text },
