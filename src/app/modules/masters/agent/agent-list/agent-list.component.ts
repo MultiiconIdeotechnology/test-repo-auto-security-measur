@@ -131,6 +131,10 @@ export class AgentListComponent extends BaseListingComponent {
         { field: 'first_transaction_date_time', header: 'First Time Transaction', type: Types.dateTime, dateFormat: 'dd-MM-yyyy' },
         { field: 'agent_assign_by', header: 'Assign By', type: Types.text },
         { field: 'agent_assign_by_date', header: 'Assign By Date', type: Types.date, dateFormat: 'dd-MM-yyyy' },
+        { field: 'address_line1', header: 'Address', type: Types.text },
+        { field: 'city_name', header: 'City', type: Types.text },
+        { field: 'state', header: 'State', type: Types.text },
+        { field: 'pincode', header: 'Pin Code', type: Types.text },   
     ];
     selectedColumns: Column[] = [];
     exportCol: Column[] = [];
@@ -214,15 +218,15 @@ export class AgentListComponent extends BaseListingComponent {
         this.selectedColumns = [
             { field: 'agent_code', header: 'Code', type: Types.number, fixVal: 0 },
             { field: 'agency_name', header: 'Agency', type: Types.text },
-            { field: 'agency_alias_name', header: ' Alias Name', type: Types.text },    
-            { field: 'pincode', header: 'Pin Code', type: Types.text },       
+            { field: 'agency_alias_name', header: ' Alias Name', type: Types.text },               
             { field: 'status', header: 'Status', type: Types.select, isCustomColor: true },
             { field: 'relation_manager_name', header: 'RM', type: Types.select },
             { field: 'email_address', header: 'Email', type: Types.text },
             { field: 'mobile_no', header: 'Mobile', type: Types.text,},
             { field: 'currency', header: 'Currency', type: Types.select },
             { field: 'is_cashback_enable', header: 'Cashback', type: Types.boolean },
-            { field: 'entry_date_time', header: 'Signup', type: Types.dateTime, dateFormat: 'dd-MM-yyyy' }
+            { field: 'entry_date_time', header: 'Signup', type: Types.dateTime, dateFormat: 'dd-MM-yyyy' },
+           
         ];
 
         this.cols.unshift(...this.selectedColumns);
