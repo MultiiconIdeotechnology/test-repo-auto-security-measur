@@ -119,8 +119,9 @@ export class ProformaInvoiceComponent extends BaseListingComponent implements On
       { field: 'customer_name', header: 'Customer Name', type: Types.text },
       { field: 'taxable_amount', header: 'Taxable Amount',type: Types.number, fixVal: 2, class: 'text-right' },
       { field: 'tax', header: 'Tax', type: Types.number, fixVal: 2, class: 'text-right' },
-      { field: 'total_amount', header: 'Total Amount', type: Types.number, fixVal: 2, class: 'text-right' },
-      { field: 'currency', header: 'Currency', type: Types.text }
+      { field: 'total_amount', header: 'Service Charge', type: Types.number, fixVal: 2, class: 'text-right' },
+      { field: 'currency', header: 'Currency', type: Types.text },
+      { field: 'gst', header: 'GST', type: Types.text }
     ];
     this.cols.unshift(...this.selectedColumns);
     this.exportCol = cloneDeep(this.cols);
@@ -274,7 +275,7 @@ export class ProformaInvoiceComponent extends BaseListingComponent implements On
           { header: 'Customer Name', property: 'customer_name' },
           { header: 'Taxable Amount', property: 'taxable_amount' },
           { header: 'Tax', property: 'tax' },
-          { header: 'Total Amount', property: 'total_amount' },
+          { header: 'Service Charge', property: 'total_amount' },
           { header: 'Currency', property: 'currency' },
         ],
         data.data,
