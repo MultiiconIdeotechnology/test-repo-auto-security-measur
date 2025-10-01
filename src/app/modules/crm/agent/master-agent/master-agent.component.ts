@@ -90,9 +90,12 @@ export class MasterAgentComponent {
       AgentId : formData.AgentId
     }
     this.crmService.shiftProduct(json).subscribe({
-      next: () => {
-        this.disableBtn = false;
-        this.alertService.showToast('success', 'Product Shift', 'top-right', true);
+      next: (res) => {
+        if(res){
+          this.disableBtn = false;
+          this.alertService.showToast('success', 'Product Shift', 'top-right', true);
+          this.matDialogRef.close()
+        }
       },
       error: (err) => {
         this.disableBtn = false;
