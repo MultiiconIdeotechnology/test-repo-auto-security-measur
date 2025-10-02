@@ -27,6 +27,7 @@ import { CrmService } from 'app/services/crm.service';
 import { EntityService } from 'app/services/entity.service';
 import { ToasterService } from 'app/services/toaster.service';
 import { GridUtils } from 'app/utils/grid/gridUtils';
+import { DateTime } from 'luxon';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
 import { Subject, takeUntil } from 'rxjs';
@@ -106,7 +107,7 @@ export class InstallmentRightComponent implements OnInit, OnDestroy {
                 this.record = item ?? {}
                 if (item?.edit) {
                     this.record = item?.data ?? {}
-                    this.formGroup.get('installment_date').patchValue(this.record?.installment_date);
+                    this.formGroup.get('installment_date').patchValue(this.record?.installmentDate);
                 }
             }
         })
@@ -171,17 +172,19 @@ export class InstallmentRightComponent implements OnInit, OnDestroy {
 
         const newJson = {
             id: this.record?.id ? this.record?.id : "",
-            NewInstallmentDate: json?.installment_date ? json?.installment_date : ""
+            NewInstallmentDate: json?.installment_date ?  DateTime.fromJSDate(new Date(json?.installment_date)).toFormat('yyyy-MM-dd') : ""
         }
 
         this.disableBtn = true;
         this.crmService.updateInstallment(newJson).subscribe({
-            next: () => {
-                this.router.navigate([this.leadListRoute]);
-                this.disableBtn = false;
-                this.entityService.raiserefreshInstallmentCall(true);
-                this.settingsDrawer.close()
-                this.alertService.showToast('success', 'Record modified', 'top-right', true);
+            next: (res) => {
+                if(res){
+                    this.router.navigate([this.leadListRoute]);
+                    this.disableBtn = false;
+                    this.entityService.raiserefreshInstallmentCall(true);
+                    this.settingsDrawer.close()
+                    this.alertService.showToast('success', 'Record modified', 'top-right', true);
+                }
             },
             error: (err) => {
                 this.alertService.showToast('error', err, 'top-right', true);
