@@ -101,9 +101,15 @@ export class InstallmentRightComponent implements OnInit, OnDestroy {
         public alertService: ToasterService,
         private crmService: CrmService,
     ) {
+         this.formGroup = this.formBuilder.group({
+            installment_date: ['', Validators.required]
+        });
+
         this.entityService.onInstallmentCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
             next: (item) => {
-                this.settingsDrawer.toggle();
+                if(item)
+                this.settingsDrawer?.toggle();
+            
                 this.record = item ?? {}
                 if (item?.edit) {
                     this.record = item?.data ?? {}
@@ -123,9 +129,7 @@ export class InstallmentRightComponent implements OnInit, OnDestroy {
                 this.config = config;
             });
 
-        this.formGroup = this.formBuilder.group({
-            installment_date: ['', Validators.required]
-        });
+       
     }
 
     numberOnly(event): boolean {

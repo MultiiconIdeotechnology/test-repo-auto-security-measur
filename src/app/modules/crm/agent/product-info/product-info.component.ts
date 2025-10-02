@@ -140,6 +140,7 @@ export class AgentProductInfoComponent {
             next: (item) => {
                 if (item) {
                     this.matDialogRef.close();
+                    this.entityService.raiserefreshInstallmentCall(false);
                 }
             }
         })

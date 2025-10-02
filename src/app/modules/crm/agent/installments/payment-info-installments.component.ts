@@ -196,15 +196,15 @@ export class InstallmentsInfoItemComponent {
         // this.productId = this.record?.product_id;
         this.productId = this.record?.id;
 
-        this.entityService.onrefreshInstallmentCalll().pipe(takeUntil(this._unsubscribeAll)).subscribe({
-            next: (item) => {
-                if(item){
-                    if(this.recordId){
-                        this.refreshItemsNew();
-                    }
-                }
-            }
-        })
+        // this.entityService.onrefreshInstallmentCalll().pipe(takeUntil(this._unsubscribeAll)).subscribe({
+        //     next: (item) => {
+        //         if(item){
+        //             if(this.recordId){
+        //                 this.refreshItemsNew();
+        //             }
+        //         }
+        //     }
+        // })
     }
 
     ngOnInit(): void {

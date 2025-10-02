@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, ReplaySubject, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, ReplaySubject, Subject } from 'rxjs';
 
 @Injectable({
     providedIn: 'root'
@@ -33,7 +33,7 @@ export class EntityService {
     private supplierKycInfoCall = new ReplaySubject<any>();
     private agentKycInfoCall = new ReplaySubject<any>();
     private appliedOnCall = new ReplaySubject<any>();
-    private refreshInstallmentCall = new ReplaySubject<any>();
+    private refreshInstallmentCall = new BehaviorSubject<any>(false);
     private installmentCall = new ReplaySubject<any>();
     private refreshCRMSalesReturnCall = new ReplaySubject<any>();
     private crmSalesReturnCall = new ReplaySubject<any>();
