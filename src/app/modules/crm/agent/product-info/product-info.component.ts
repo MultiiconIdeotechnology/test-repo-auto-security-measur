@@ -29,7 +29,7 @@ import { ReceiptsInfoItemComponent } from '../receipts/receipts-info-installment
 import { GridUtils } from 'app/utils/grid/gridUtils';
 import { CrmService } from 'app/services/crm.service';
 import { ToasterService } from 'app/services/toaster.service';
-import { Subject } from 'rxjs';
+import { Subject, takeUntil } from 'rxjs';
 import { EntityService } from 'app/services/entity.service';
 import { ReceiptRightComponent } from "../receipt-right/receipt-right.component";
 import { PaymentInfoWLSetttingLinkComponent } from '../wl-settings-link/payment-info-wl-settings-link.component';
@@ -135,8 +135,14 @@ export class AgentProductInfoComponent {
     ) {
 
         this.mainData = data
-        console.log(" 139 info main this.record", data);
 
+        this.entityService.onrefreshInstallmentCalll().pipe(takeUntil(this._unsubscribeAll)).subscribe({
+            next: (item) => {
+                if (item) {
+                    this.matDialogRef.close();
+                }
+            }
+        })
 
 
         // super(module_name.crmagent)
