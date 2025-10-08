@@ -38,6 +38,11 @@
                                 [field]="col.field" [placeholder]="'Search by '+ col.header"
                                 [ariaLabel]="'Filter '+ col.header" matchMode="contains" />
 
+                             <!-- digit point number-->
+                            <p-columnFilter *ngIf="col.type == types.number" [type]="'numeric'" [field]="col.field"
+                                [matchMode]="'equals'" [placeholder]="'Search by '+ col.header"
+                                [ariaLabel]="'Filter '+ col.header" locale="en-US">
+                            </p-columnFilter>
 
                             <p-columnFilter *ngIf="col.type == types.select && col.field == 'lead_status' "
                                 [field]="col.field" matchMode="equals" [showMenu]="false">
