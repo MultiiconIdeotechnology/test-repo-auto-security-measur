@@ -65,7 +65,9 @@
                                 class="min-h-[7px] min-w-[7px] max-h-[7px] max-w-[7px] block rounded-full bg-[#707070] dark:bg-gray-100 mx-2 "></span>
                             <span class="text-gray dark:text-gray-100 pl-2 text-lg text-[#1C1C1C]">{{ ex.sector }}</span>
                         </div>
-                        <div class="text-[#707070] dark:text-gray-300 text-base font-normal pl-8">{{ex.description}}</div>
+                        <div class="break-words text-[#707070] dark:text-gray-300 text-base font-normal pl-8" [innerHTML]="ex?.description | sanitizeHtml"
+                            style="white-space: pre-wrap;">
+                        </div>
                     </div>
                 </div>
 
@@ -125,10 +127,9 @@
                                                 <span class="mb-1 text-sm block font-medium dark:text-gray-400">Meal Plan: {{
                                                     ht.meal_plan}}</span>
                                                 <div class="font-semibold">Room Inclusion:</div>
-                                                <span class="flex flex-row">
-                                                    <span class="text-sm font-medium dark:text-gray-400">
-                                                        {{ ht.description}}</span>
-                                                </span>
+                                                <div class="break-words text-sm font-medium dark:text-gray-400" [innerHTML]="ht?.description | sanitizeHtml"
+                                                    style="white-space: pre-wrap;">
+                                                </div>
                                             </div>
                                         </div>
 
@@ -196,19 +197,21 @@
                                 
                                         <div class="text-gray ">
                                             <div *ngIf="fl.description.length <= 540; else longContent">
-                                                <p class="text-base font-normal break-all">{{ fl.description }}</p>
+                                                <div class="break-words text-base font-medium dark:text-gray-400" [innerHTML]="fl?.description | sanitizeHtml"
+                                                    style="white-space: pre-wrap;">
+                                                </div>
                                             </div>
                                             <ng-template #longContent>
                                                 <div>
-                                                    <span class="text-sm font-medium dark:text-gray-400" *ngIf="!fl.expanded">{{
-                                                        fl.description.slice(0, 540) }}</span>
-                                                    <span class="text-sm font-medium dark:text-gray-400" *ngIf="fl.expanded">{{
-                                                        fl.description}}</span>
-                                                    <span
-                                                        class="text-sm font-medium text-[#234977] dark:text-blue-300 cursor-pointer"
+                                                    <div class="text-base font-medium dark:text-gray-400 mb-3" *ngIf="!fl.expanded"
+                                                        [innerHTML]="fl.description.slice(0, 540) | sanitizeHtml"></div>
+                                                    <div class="text-base font-medium dark:text-gray-400 mb-3" *ngIf="fl.expanded"
+                                                        [innerHTML]="fl.description | sanitizeHtml"></div>
+                                                    <div
+                                                        class="text-base font-medium text-[#234977] dark:text-blue-300 cursor-pointer"
                                                         (click)="toggleContent(fl)">
                                                         Read {{ fl.expanded ? 'Less...' : 'More...'}}
-                                                    </span>
+                                                    </div>
                                                 </div>
                                             </ng-template>
                                         </div>
@@ -229,7 +232,7 @@
                             Sightseeing
                         </div>
                     </div>
-                    <div class="py-4 text-lg" 
+                    <div class="pt-4 text-lg" 
                         *ngFor="let fl of DisplayDetails.sightseeingList; let index = index" [ngClass]="{'border-b border-[#D9D9D9] dark:border-gray-600 ': index < DisplayDetails?.sightseeingList?.length - 1}">
                         <div class="tab-content flex space-x-4 pt-0">
                             <ngx-slick-carousel *ngIf="fl.image.length !== 0"
@@ -273,14 +276,16 @@
                                     <div class="text-lg font-medium text-[#1C1C1C] dark:text-gray-100">{{fl.sightname}}</div>
                                 </div>
                                 <div *ngIf="fl.description.length <= 440; else longContent">
-                                    <div class="text-base font-normal pl-3 dark:text-gray-300">{{ fl.description }}</div>
+                                    <div class="break-words text-base font-normal pl-3 dark:text-gray-300" [innerHTML]="fl?.description | sanitizeHtml"
+                                        style="white-space: pre-wrap;">
+                                    </div>
                                 </div>
                                 <ng-template #longContent>
                                     <div>
-                                        <div class="text-base font-normal pl-3 dark:text-gray-300" *ngIf="!fl.expanded">{{
-                                            fl.description.slice(0, 440) }}</div>
-                                        <div class="text-base font-normal pl-3 dark: text-gray-300" *ngIf="fl.expanded">{{
-                                            fl.description}}</div>
+                                        <div class="text-base font-normal pl-3 dark:text-gray-300 mb-3" *ngIf="!fl.expanded"
+                                            [innerHTML]="fl.description.slice(0, 440) | sanitizeHtml"></div>
+                                        <div class="text-base font-normal pl-3 dark: text-gray-300 mb-3" *ngIf="fl.expanded"
+                                            [innerHTML]="fl.description | sanitizeHtml"></div>
                                         <div class="text-base font-medium text-[#234977] dark:text-blue-300 cursor-pointer pl-3"
                                             (click)="toggleContent(fl)">
                                             Read {{ fl.expanded ? 'Less...' : 'More...'}}
@@ -304,7 +309,8 @@
                             <span class="flex py-[2px] text-lg">
                                 <mat-icon class="icon-size-4 mt-[3px] text-green-500"
                                     svgIcon="heroicons_solid:check"></mat-icon>
-                                <span class="text-gray dark:text-gray-300 pl-2 text-base text-[#1C1C1C]">{{ ex.inclusion }}</span></span>
+                                <span class="text-gray dark:text-gray-300 pl-2 text-base text-[#1C1C1C]" [innerHTML]="ex?.inclusion | sanitizeHtml"></span>
+                            </span>
                         </div>
                     </div>
                     <div class="w-full relative pb-4">
@@ -333,7 +339,7 @@
                         <span class="flex py-[2px] text-lg">
                             <mat-icon class="icon-size-4 mt-[3px] text-red-500"
                                 svgIcon="heroicons_outline:x-mark"></mat-icon>
-                            <span class="text-gray dark:text-gray-300 pl-2 text-base text-[#1C1C1C]">{{ ex.exclusion }}</span></span>
+                            <span class="text-gray dark:text-gray-300 pl-2 text-base text-[#1C1C1C]" [innerHTML]="ex?.exclusion | sanitizeHtml"></span></span>
                     </div>
                 </div>
 
@@ -345,8 +351,8 @@
                     </div>
                     <div *ngFor="let te of DisplayDetails.SpecialNoteList">
                         <span class="flex py-[2px] text-lg"><span
-                                class="min-h-[7px] min-w-[7px] max-h-[7px] max-w-[7px] block rounded-full bg-[#707070] dark:bg-gray-300 mx-2 mt-[5px]"></span><span
-                                class="text-gray dark:text-gray-300 pl-2 text-base">{{ te.description }}</span></span>
+                                class="min-h-[7px] min-w-[7px] max-h-[7px] max-w-[7px] block rounded-full bg-[#707070] dark:bg-gray-300 mx-2 mt-[8px]"></span><span
+                                class="text-gray dark:text-gray-300 pl-2 text-base" [innerHTML]="te?.description | sanitizeHtml"></span></span>
                     </div>
                 </div>
 
@@ -360,7 +366,7 @@
                         <span class="flex py-[2px] text-lg">
                             <mat-icon class="text-[#9D9D9D] icon-size-4 mt-[3px]"
                                 svgIcon="heroicons_solid:check-circle"></mat-icon>
-                            <span class="text-gray pl-2 text-base">{{ te.description }}</span>
+                            <span class="text-gray pl-2 text-base" [innerHTML]="te?.description | sanitizeHtml"></span>
                         </span>
                     </div>
                 </div>
@@ -375,7 +381,7 @@
                         <span class="flex py-[2px] text-lg">
                             <mat-icon class="text-[#9D9D9D] dark:text-gray-300 icon-size-4 mt-[3px]"
                                 svgIcon="heroicons_solid:check-circle"></mat-icon>
-                            <span class="text-gray dark:text-gray-400 pl-2 text-base">{{ te.description }}</span>
+                            <span class="text-gray dark:text-gray-400 pl-2 text-base" [innerHTML]="te?.description | sanitizeHtml"></span>
                         </span>
                     </div>
                 </div>
