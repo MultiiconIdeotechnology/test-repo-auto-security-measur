@@ -63,8 +63,8 @@ export class SaleRegisterDmccComponent extends BaseListingComponent
   @Input() supplierList: any = [];
   @Input() lastSearchString = '';
   @ViewChild('op') overlayPanel!: OverlayPanel;
-  // module_name = module_name.products_collection;
-  filter_table_name = filter_module_name.purchase_register_bonton_dmcc;
+  module_name = module_name.sale_register_2;
+  filter_table_name = filter_module_name.sale_register_bonton_dmcc;
   private settingsUpdatedSubscription: Subscription;
   isLoading = false;
   dataList = [];

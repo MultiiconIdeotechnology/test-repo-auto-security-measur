@@ -111,7 +111,7 @@ export class BontonComponent extends BaseListingComponent implements OnDestroy {
     private entityService: EntityService,
     private router: Router,
   ) {
-    super(module_name.products_collection);
+    super(module_name.purchase_register_2);
 
     this.sortColumn = 'date';
     this._filterService.applyDefaultFilter(this.filter_table_name);

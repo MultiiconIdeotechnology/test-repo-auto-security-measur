@@ -86,8 +86,8 @@ export class SaleRegisterComponent extends BaseListingComponent
   }
 
   moduleMap = [
-    { module_name: 'Bonton', filter_table_name: 'purchase_register_bonton', isFiltershow: false },
-    { module_name: 'Bonton DMCC', filter_table_name: 'purchase_register_bonton_dmcc', isFiltershow: false },
+    { module_name: 'sale_register_2', filter_table_name: 'sale_register_bonton', isFiltershow: false },
+    { module_name: 'sale_register_2', filter_table_name: 'sale_register_dmcc', isFiltershow: false },
   ];
 
   currentModule: any = module_name[this.moduleMap[0].module_name];

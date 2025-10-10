@@ -61,8 +61,8 @@ export class SaleRegisterBontonComponent extends BaseListingComponent implements
   @Input() supplierList: any = [];
   @Input() lastSearchString = '';
   @ViewChild('op') overlayPanel!: OverlayPanel;
-  // module_name = module_name.products_collection;
-  filter_table_name = filter_module_name.purchase_register_bonton;
+   module_name = module_name.sale_register_2;
+  filter_table_name = filter_module_name.sale_register_bonton;
   private settingsUpdatedSubscription: Subscription;
   isLoading = false;
   dataList = [];
@@ -135,7 +135,7 @@ export class SaleRegisterBontonComponent extends BaseListingComponent implements
     private currencyService: CurrencyService,
     private router: Router,
   ) {
-    super(module_name.products_collection);
+    super(module_name.sale_register_2);
 
     this.sortColumn = 'invoice_date';
     this._filterService.applyDefaultFilter(this.filter_table_name);
