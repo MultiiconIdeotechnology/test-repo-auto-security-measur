@@ -87,7 +87,9 @@ export class MasterAgentComponent {
     let formData = this.formGroup.getRawValue()
     const json = {
       id: this.record.id,
-      AgentId : formData.AgentId
+      AgentId : this.record.agentId,
+      NewAgentId : formData.AgentId,
+
     }
     this.crmService.shiftProduct(json).subscribe({
       next: (res) => {
