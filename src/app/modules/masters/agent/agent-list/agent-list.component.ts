@@ -46,6 +46,7 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
 import { SetDisplayCurrencyComponent } from '../set-display-currency/set-display-currency.component';
 import { cloneDeep } from 'lodash';
 import { BulkAssignDialogComponent } from 'app/modules/settings/psp-setup/bulk-assign-dialog/bulk-assign-dialog.component';
+import { TransferB2CDialogComponent } from './transfer-b2c-customer-dialog/transfer-b2c-customer-dialog.component';
 
 @Component({
     selector: 'app-agent-list',
@@ -972,6 +973,18 @@ export class AgentListComponent extends BaseListingComponent {
         this.matDialog.open(BulkAssignDialogComponent,
             {
                 data: { record: record, key: 'customer-agent', title: 'Profile Assign' },
+                disableClose: true,
+                panelClass: ['zero-dialog'],
+                maxWidth: '600px',
+                minWidth: '470px'
+            }
+        )
+    }
+
+    transferB2cCustomer(record: any) {
+        this.matDialog.open(TransferB2CDialogComponent,
+            {
+                data: { record: record, key: 'customer-agent', title: 'Transfer B2C Customer' },
                 disableClose: true,
                 panelClass: ['zero-dialog'],
                 maxWidth: '600px',
