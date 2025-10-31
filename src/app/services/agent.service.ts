@@ -208,4 +208,11 @@ export class AgentService {
     setCreditcardActiveDeactive(id: string): Observable<any> {
         return this.http.post<any>(this.baseUrl + 'paymentlink/setCC_Active', { id });
     }
+
+    //Transfer B2C Customer
+    transferB2Customer(model: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'b2cCustomer/transferB2Customer', model);
+    }
+
+
 }

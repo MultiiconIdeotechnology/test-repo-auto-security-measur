@@ -42,9 +42,6 @@ export class TransferB2CDialogComponent implements OnInit {
   toAgentList: any[] = [];
   record: any;
 
-
-
-
   constructor(
     public matDialogRef: MatDialogRef<TransferB2CDialogComponent>,
     private builder: FormBuilder,
@@ -55,16 +52,11 @@ export class TransferB2CDialogComponent implements OnInit {
     private conformationService: FuseConfirmationService,
     @Inject(MAT_DIALOG_DATA) public data: any = {}
   ) {
-
     this.record = data.record;
     this.title = data.title;
-
-
   }
 
   ngOnInit(): void {
-
-
     this.formGroup = this.builder.group({
       id: [''],
       from_agent_id: ['', Validators.required],
@@ -74,33 +66,69 @@ export class TransferB2CDialogComponent implements OnInit {
     });
 
     /** FROM Agent Search */
-    this.formGroup.get('fromAgentfilter')!.valueChanges
-      .pipe(
-        startWith(''),
-        debounceTime(200),
-        distinctUntilChanged(),
-        switchMap((value: string) => this.agentService.getAgentComboMaster(value, true))
-      )
+    this.formGroup.get('fromAgentfilter')!.valueChanges.pipe(
+      filter(x => !!x),
+      startWith(''),
+      debounceTime(400),
+      distinctUntilChanged(),
+      switchMap((value: string) => this.agentService.getAgentComboMaster(value, true))
+    )
       .subscribe({
         next: (data) => {
           this.fromAgentList = data || [];
+          this.updateFromAgentList(this.formGroup.get('to_agent_id')?.value);
         }
       });
 
     /** TO Agent Search */
-    this.formGroup.get('toAgentfilter')!.valueChanges
-      .pipe(
-        startWith(''),
-        debounceTime(200),
-        distinctUntilChanged(),
-        switchMap((value: string) => this.agentService.getAgentComboMaster(value, true))
-      )
+    this.formGroup.get('toAgentfilter')!.valueChanges.pipe(
+      filter(x => !!x),
+      startWith(''),
+      debounceTime(400),
+      distinctUntilChanged(),
+      switchMap((value: string) => this.agentService.getAgentComboMaster(value, true))
+    )
       .subscribe({
         next: (data) => {
           this.toAgentList = data || [];
+          this.updateToAgentList(this.formGroup.get('from_agent_id')?.value);
         }
       });
 
+    /** When FROM agent changes */
+    this.formGroup.get('from_agent_id')!.valueChanges.subscribe((fromId) => {
+      const toId = this.formGroup.get('to_agent_id')!.value;
+      if (fromId && fromId === toId) {
+        this.formGroup.get('to_agent_id')!.setValue(null);
+      }
+      this.updateToAgentList(fromId);
+    });
+
+    /** When TO agent changes */
+    this.formGroup.get('to_agent_id')!.valueChanges.subscribe((toId) => {
+      const fromId = this.formGroup.get('from_agent_id')!.value;
+      if (toId && toId === fromId) {
+        this.formGroup.get('from_agent_id')!.setValue(null);
+      }
+      this.updateFromAgentList(toId);
+    });
+
+  }
+
+  /** Disable same agent ID in TO list */
+  updateToAgentList(selectedFromId?: number) {
+    this.toAgentList = this.toAgentList.map(agent => ({
+      ...agent,
+      disabled: selectedFromId === agent.id
+    }));
+  }
+
+  /** Disable same agent ID in FROM list */
+  updateFromAgentList(selectedToId?: number) {
+    this.fromAgentList = this.fromAgentList.map(agent => ({
+      ...agent,
+      disabled: selectedToId === agent.id
+    }));
   }
 
   public compareWith(v1: any, v2: any) {
@@ -128,42 +156,30 @@ export class TransferB2CDialogComponent implements OnInit {
           new_agent_id: toAgent.id,
           is_b2c_user: true
         };
-        // 🔹 Simulate API delay (2 seconds)
-        this.alertService.showToast('warn', 'Processing transfer, please wait...', 'top-right', true);
 
-        setTimeout(() => {
-          console.log('Dummy Transfer Payload:', requestDto);
-
-          // Simulated successful response
-          this.alertService.showToast(
-            'success',
-            'All B2C customers transferred successfully! (Dummy Response)',
-            'top-right',
-            true
-          );
-
-          this.formGroup.reset();
-        }, 2000);
+        this.agentService.transferB2Customer(requestDto).subscribe({
+          next: () => {
+            this.alertService.showToast('success', 'All B2C customers transferred successfully!', 'top-right', true);
+            this.formGroup.reset();
+      
+          // Refresh both lists after success
+          this.reloadAgentLists();
+          },
+          error: (err) => {
+            this.alertService.showToast('error', 'Failed to transfer B2C customers: ' + err.message, 'top-right', true);
+          }
+        });
       }
     });
-
-    // this.agentService.transferB2Customer(requestDto).subscribe({
-    //   next: () => {
-    //     this.alertService.showToast('success', 'All B2C customers transferred successfully!', 'top-right', true);
-    //     this.formGroup.reset();
-    //   },
-    //   error: (err) => {
-    //     this.alertService.showToast('error', 'Failed to transfer B2C customers: ' + err.message, 'top-right', true);
-    //   }
-    // });
-    // }
-    // });
   }
 
-  // common submit api for customer > agent (single profile assingn) and  Bulk assign from psp Setup
-  submit() {
-
-
+  /**  Reload both dropdown lists after successful transfer */
+  private reloadAgentLists() {
+    // Fetch both agent lists fresh (empty search by default)
+    this.agentService.getAgentComboMaster('', true).subscribe((data) => {
+      this.fromAgentList = data || [];
+      this.toAgentList = data || [];
+    });
   }
 
 }
