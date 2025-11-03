@@ -32,6 +32,19 @@
         <span>Change Password</span>
     </button>
 
+<!-- Reset Columns button
+  Logic:
+  1. Trigger restoreDefaultColumns() when clicked.
+  2. restoreDefaultColumns():
+     a. Opens a confirmation dialog asking the user to confirm resetting saved columns.
+     b. If the user confirms, removes the 'globalSelectedColumns' key from localStorage.
+     c. Shows a success toast to inform the user the reset succeeded.
+     d. Reloads the page after a short delay so the app applies the default column configuration.  -->
+    <button mat-menu-item (click)="restoreDefaultColumns()">
+        <mat-icon svgIcon="heroicons_outline:arrow-path-rounded-square" class="icon-size-6"></mat-icon>
+        <span>Reset Columns</span>
+    </button>
+
     <!-- <mat-slide-toggle (click)="$event.stopPropagation()" [formControl]="isDarkTheme" >
         <span class="pl-1">Is Dark Theme</span>
     </mat-slide-toggle> -->
