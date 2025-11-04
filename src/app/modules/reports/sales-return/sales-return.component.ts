@@ -74,6 +74,7 @@ export class SalesReturnComponent extends BaseListingComponent implements OnDest
         'supplier',
         'complete_date_time',
         'amendment_ref_no',
+        'credit_note_no',
         'amendment_type',
         'air_ref_no',
         'pan_numner',
@@ -82,7 +83,9 @@ export class SalesReturnComponent extends BaseListingComponent implements OnDest
         'bonton_service_charge',
         'refunded_amount',
         'service_charge',
-        'tax',
+        'cgst',
+        'sgst',
+        'igst',
         'net_refund',
         'commission',
         'tds',
@@ -158,6 +161,7 @@ export class SalesReturnComponent extends BaseListingComponent implements OnDest
             { field: 'supplier', header: 'Supplier', type: Types.select },
             { field: 'complete_date_time', header: 'Return Date Time', type: Types.date, dateFormat: 'dd-MM-yyyy' },
             { field: 'amendment_ref_no', header: 'Amendment Ref No', type: Types.text },
+            { field: 'credit_note_no', header: 'Credit Note No', type: Types.text },
             { field: 'amendment_type', header: 'Amendment Type', type: Types.text },
             { field: 'air_ref_no', header: 'Air Ref No', type: Types.text },
             { field: 'pan_numner', header: 'Pan Number', type: Types.text },
@@ -166,7 +170,9 @@ export class SalesReturnComponent extends BaseListingComponent implements OnDest
             { field: 'bonton_service_charge', header: 'Bonton Service Charge', type: Types.number, fixVal: 2, class: 'text-right' },
             { field: 'refunded_amount', header: 'Refunded Amount', type: Types.number, fixVal: 2, class: 'text-right' },
             { field: 'service_charge', header: 'Service Charge', type: Types.number, fixVal: 2, class: 'text-right' },
-            { field: 'tax', header: 'TAX', type: Types.number, fixVal: 2, class: 'text-right' },
+            { field: 'cgst', header: 'CGST', type: Types.number, fixVal: 2, class: 'text-right' },
+            { field: 'sgst', header: 'SGST', type: Types.number, fixVal: 2, class: 'text-right' },
+            { field: 'igst', header: 'IGST', type: Types.number, fixVal: 2, class: 'text-right' },
             { field: 'net_refund', header: 'Net Refund', type: Types.number, fixVal: 2, class: 'text-right' },
             { field: 'commission', header: 'Commission', type: Types.number, fixVal: 2, class: 'text-right' },
             { field: 'tds', header: 'TDS', type: Types.number, fixVal: 2, class: 'text-right' },
@@ -255,16 +261,18 @@ export class SalesReturnComponent extends BaseListingComponent implements OnDest
         this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
     }
 
-    checkSelectedColumn(col: any[], oldCol: Column[]): any[] {
-        if (col.length) return col;
-        else {
-            var Col = this._filterService.getSelectedColumns({ name: this.filter_table_name })?.columns || [];
-            if (!Col.length)
-                return oldCol;
-            else
-                return Col;
-        }
+    checkSelectedColumn(col: any[], oldCol: Column[]): any[] {  
+    console.log("selected columns = ", col);
+    console.log("old selected columns = ", oldCol);
+    if (col.length) return col;
+    else {
+        var Col = this._filterService.getSelectedColumns({ name: this.filter_table_name })?.columns || [];
+        if (!Col.length)
+            return oldCol;
+        else
+            return Col;
     }
+}
 
     isDisplayHashCol(): boolean {
         return this.selectedColumns.length > 0;
@@ -351,6 +359,7 @@ export class SalesReturnComponent extends BaseListingComponent implements OnDest
                 }
                 this.totalRecords = res?.total;
                 this.loading = false;
+                console.log("data list = ",this.dataList);
             }, error: err => {
                 this.alertService.showToast('error', err);
                 this.loading = false;
@@ -411,6 +420,7 @@ export class SalesReturnComponent extends BaseListingComponent implements OnDest
                 { header: 'Supplier', property: 'supplier' },
                 { header: 'Return Date Time', property: 'complete_date_time' },
                 { header: 'Amendment Ref No', property: 'amendment_ref_no' },
+                { header: 'Credit Note No', property: 'credit_note_no' },
                 { header: 'Air Ref No', property: 'air_ref_no' },
                 { header: 'Amendment Type', property: 'amendment_type' },
                 { header: 'Pan Number', property: 'pan_numner' },
@@ -419,7 +429,9 @@ export class SalesReturnComponent extends BaseListingComponent implements OnDest
                 { header: 'Bonton Service Charge', property: 'bonton_service_charge' },
                 { header: 'Refunded Amount', property: 'refunded_amount' },
                 { header: 'Service Charge', property: 'service_charge' },
-                { header: 'TAX', property: 'tax' },
+                { header: 'CGST', property: 'cgst' },
+                { header: 'SGST', property: 'sgst' },
+                { header: 'IGST', property: 'igst' },
                 { header: 'Net Refund', property: 'net_refund' },
                 { header: 'Commission', property: 'commission' },
                 { header: 'TDS', property: 'tds' },
