@@ -166,7 +166,7 @@ export class TransferB2CDialogComponent implements OnInit {
           this.reloadAgentLists();
           },
           error: (err) => {
-            this.alertService.showToast('error', 'Failed to transfer B2C customers: ' + err.message, 'top-right', true);
+            this.alertService.showToast('error', 'Failed to transfer B2C customers: ' + err, 'top-right', true);
           }
         });
       }
