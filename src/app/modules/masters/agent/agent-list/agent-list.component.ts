@@ -984,7 +984,7 @@ export class AgentListComponent extends BaseListingComponent {
     transferB2cCustomer(record: any) {
         this.matDialog.open(TransferB2CDialogComponent,
             {
-                data: { record: record, key: 'customer-agent', title: 'Transfer B2C Customer' },
+                data: { record: record, key: 'transfer-b2c', title: 'Transfer B2C Customer' },
                 disableClose: true,
                 panelClass: ['zero-dialog'],
                 maxWidth: '600px',
