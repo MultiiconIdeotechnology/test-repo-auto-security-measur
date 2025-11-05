@@ -300,30 +300,30 @@ export class AgentKycComponent extends BaseListingComponent implements OnDestroy
     })
   }
 
-  leadConverter(record): void {
-    if (!Security.hasPermission(kycDashboardPermissions.agentConvertToTAPermissions)) {
-      return this.alertService.showToast('error', messages.permissionDenied);
-    }
+  // Hide as per instruction... 
+  // leadConverter(record): void {
+  //   if (!Security.hasPermission(kycDashboardPermissions.agentConvertToTAPermissions)) {
+  //     return this.alertService.showToast('error', messages.permissionDenied);
+  //   }
 
-    const label: string = 'Convert to Travel Agent'
-    this.conformationService.open({
-      title: label,
-      message: 'Are you sure to ' + label.toLowerCase() + ' ?'
-    }).afterClosed().subscribe(res => {
-      if (res === 'confirmed') {
-        this.kycDashboardService.leadConvert(record.id).subscribe({
-          next: (res) => {
-            // record.is_blocked = !record.is_blocked;
-            this.alertService.showToast('success', "Lead has been Converted to travel agent!", "top-right", true);
-            this.refreshItems();
-          }, error: (err) => {
-            this.alertService.showToast('error', err, "top-right", true);
+  //   const label: string = 'Convert to Travel Agent'
+  //   this.conformationService.open({
+  //     title: label,
+  //     message: 'Are you sure to ' + label.toLowerCase() + ' ?'
+  //   }).afterClosed().subscribe(res => {
+  //     if (res === 'confirmed') {
+  //       this.kycDashboardService.leadConvert(record.id).subscribe({
+  //         next: (res) => {
+  //           this.alertService.showToast('success', "Lead has been Converted to travel agent!", "top-right", true);
+  //           this.refreshItems();
+  //         }, error: (err) => {
+  //           this.alertService.showToast('error', err, "top-right", true);
 
-          },
-        })
-      }
-    })
-  }
+  //         },
+  //       })
+  //     }
+  //   })
+  // }
 
   getNodataText(): string {
     if (this.isLoading)
