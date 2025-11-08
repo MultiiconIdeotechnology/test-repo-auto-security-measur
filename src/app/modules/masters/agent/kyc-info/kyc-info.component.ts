@@ -83,6 +83,7 @@ export class KycInfoComponent {
   ) {
     // this.convertAgent = this.datas.send
     this.data = datas.record;
+    
     if (this.datas?.send)
       this.convertAgent = (this.datas.send == "agentKYC");
 
@@ -225,17 +226,20 @@ export class KycInfoComponent {
 
   // Get Duplicate Agent Name finding
   getKYCIsDuplicateAgentAllow(): void {
-    this.isLoading = true;
-    this.kycdocService.getKYCIsDuplicateAgentAllow(this.data.id).subscribe({
-      next: (response) => {
-        this.kycDupAgentName = response;   
-        this.isLoading = false;
-      },
-      error: (error) => {
-        this.alertService.showToast('error', error, "top-right", true);
-        this.isLoading = false;
-      }
-    });
+
+    if(this.datas?.isAgencyDuplicateName){
+      this.isLoading = true;
+      this.kycdocService.getKYCIsDuplicateAgentAllow(this.data.id).subscribe({
+        next: (response) => {
+          this.kycDupAgentName = response;   
+          this.isLoading = false;
+        },
+        error: (error) => {
+          this.alertService.showToast('error', error, "top-right", true);
+          this.isLoading = false;
+        }
+      });
+    }
 
   }
 

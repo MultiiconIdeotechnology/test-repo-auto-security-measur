@@ -284,7 +284,7 @@ export class AgentKycComponent extends BaseListingComponent implements OnDestroy
     }
 
     this.matDialog.open(KycInfoComponent, {
-      data: { record: record, agent: true, isLead: 'Lead', isMaster: record.is_master_agent, send: 'agentKYC' },
+      data: { record: record, agent: true, isLead: 'Lead', isMaster: record.is_master_agent, send: 'agentKYC', isAgencyDuplicateName: true },
       disableClose: true
     }).afterClosed().subscribe(res => {
       if (res == 'confirmed') {
