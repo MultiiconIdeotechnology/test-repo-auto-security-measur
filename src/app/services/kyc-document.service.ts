@@ -70,5 +70,9 @@ export class KycDocumentService {
   }
 
 
+  //AgentLead/IsDuplicateAgentAllow
+   getKYCIsDuplicateAgentAllow(id: any): Observable<any> {
+    return this.http.post<any>(this.baseUrl + 'AgentLead/IsDuplicateAgentAllow', { agentLeadId: id });
+  }
 
 }

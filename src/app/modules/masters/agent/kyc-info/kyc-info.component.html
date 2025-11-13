@@ -1,22 +1,44 @@
 <div class="flex flex-col max-w-240 md:min-w-140 max-h-screen -m-6 dark:bg-[#0f172a]">
 
     <!-- Header -->
-    <div class="flex flex-0 items-center justify-between h-11 px-6 bg-primary">
+    <!-- <div class="flex flex-0 items-center justify-between h-11 px-6 bg-primary">
         <div class="text-lg font-medium max-w-80 truncate text-white" [matTooltip]="title">KYC - {{title}}</div>
-
         <button mat-icon-button (click)="matDialogRef.close(closeDialog)" [tabIndex]="-1">
             <mat-icon class="text-current text-white" [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
         </button>
+    </div> -->
+    <!-- Header wrapper -->
+        <div class="flex flex-col bg-primary">
+            <!-- Title + Close button -->
+            <div class="flex items-center justify-between h-11 px-6">
+                <div class="text-lg font-medium max-w-80 truncate text-white" [matTooltip]="title">
+                    KYC - {{ title }}
+                </div>
 
-    </div>
+                <button mat-icon-button (click)="matDialogRef.close(closeDialog)" [tabIndex]="-1">
+                    <mat-icon class="text-current text-white" [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
+                </button>
+            </div>
+
+            <!-- Error message just below title dark:bg-[#0f172a] -->
+            <div *ngIf="kycDupAgentName?.status" class="px-5 pb-2 -mt-2">
+                <p class="text-lg text-red-600 font-semibold">
+                   (Agency name is duplicate)
+                </p>
+            </div>
+        </div>
+
+
+  
 
     <mat-divider class="mb-2"></mat-divider>
 
 
 
-    <div  *ngIf="dataList.length > 0" class="flex flex-col w-full max-h-[480px] overflow-y-auto px-4 relative">
+    <div *ngIf="dataList.length > 0" class="flex flex-col w-full max-h-[480px] overflow-y-auto px-4 relative">
 
-        <button class="w-36 absolute right-4" mat-flat-button [disabled]="isLoading" [color]="'primary'" *ngIf="convertAgent && !isLeadeConvert" (click)="leadConverter(ListItem)">
+        <button class="w-36 absolute right-4" mat-flat-button [disabled]="isLoading" [color]="'primary'"
+            *ngIf="convertAgent && !isLeadeConvert" (click)="leadConverter(ListItem)">
             Convert To TA
         </button>
 
@@ -25,14 +47,14 @@
                 <div class="text-lg leading-none">{{dataRecords.key}}
                 </div>
 
-                <span  class="text-secondary leading-none text-sm pb-[2px] opacity-80">
+                <span class="text-secondary leading-none text-sm pb-[2px] opacity-80">
                     At least one document is required.
                 </span>
 
             </div>
             <div *ngFor="let dataRecord of dataRecords.value">
                 <div class="flex flex-col dark:bg-[#1e293b] bg-gray-200 px-4 mb-3 second-color justify-between  shadow rounded-xl overflow-hidden border-l-4"
-                [ngClass]="getColor(dataRecord)">
+                    [ngClass]="getColor(dataRecord)">
                     <div class="flex flex-row items-center  justify-between overflow-hidden">
                         <div class="py-4 flex flex-row items-center justify-between second-color  overflow-hidden">
                             <div class="flex flex-col font-medium tracking-tight leading-6 truncate">
@@ -48,9 +70,12 @@
                                 </div>
                                 <div *ngIf="dataRecord.is_rejected" class="flex-row space-x-2 max-w-80 truncate">
                                     <span class="text-sm dark:text-white text-black whitespace-nowrap ">Reason :</span>
-                                    <span class="text-sm text-secondary truncate" [matTooltip]="dataRecord.rejection_note">{{dataRecord.rejection_note}}</span>
+                                    <span class="text-sm text-secondary truncate"
+                                        [matTooltip]="dataRecord.rejection_note">{{dataRecord.rejection_note}}</span>
                                 </div>
-                                <p class="text-sm text-secondary" *ngIf="dataRecord.is_remark_required && dataRecord.remarks">{{dataRecord.document_name}} : {{dataRecord.remarks}} </p>
+                                <p class="text-sm text-secondary"
+                                    *ngIf="dataRecord.is_remark_required && dataRecord.remarks">
+                                    {{dataRecord.document_name}} : {{dataRecord.remarks}} </p>
                                 <!-- <div class="leading-5">
                                     <p class="text-secondary text-xs ">(Max size {{dataRecord.maximum_size}} KB)</p>
                                     <p class="text-sm text-secondary">Support for {{dataRecord.file_extentions}} only </p>
@@ -73,19 +98,20 @@
                                 <input type="file" name="documentUpload" #document
                                     (change)="uploadDocument(dataRecord, $event)">
                             </div>
-                                <button [disabled]="dataRecord.is_audited || isKycViewDetailFlag" (click)="document.click()" [matTooltip]="'Upload'"
-                                mat-icon-button>
+                            <button [disabled]="dataRecord.is_audited || isKycViewDetailFlag" (click)="document.click()"
+                                [matTooltip]="'Upload'" mat-icon-button>
                                 <mat-icon class="icon-size-6" [svgIcon]="'heroicons_outline:upload'"></mat-icon>
                             </button>
 
-                            <button mat-icon-button [disabled]="!dataRecord.file_url || isKycViewDetailFlag" *ngIf="isAuditAvalable" (click)="$event.stopPropagation()"
+                            <button mat-icon-button [disabled]="!dataRecord.file_url || isKycViewDetailFlag"
+                                *ngIf="isAuditAvalable" (click)="$event.stopPropagation()"
                                 [matMenuTriggerFor]="optionMenu" class="sticky left-0 bg-text"
                                 style="border-radius: 0%;width: 100%;">
                                 <mat-icon>
                                     more_vert
                                 </mat-icon>
                             </button>
-                            <mat-menu #optionMenu >
+                            <mat-menu #optionMenu>
                                 <button *ngIf="!dataRecord.is_audited" mat-menu-item (click)="Audit(dataRecord)">
                                     <mat-icon class="mat-18">check_circle</mat-icon>
                                     <span style="font-weight: 600;">Audit</span>
@@ -102,7 +128,7 @@
             </div>
         </div>
     </div>
-    <div  *ngIf="dataList.length > 0" class="flex flex-row items-center justify-center space-x-5 max-sm:space-x-0 p-4">
+    <div *ngIf="dataList.length > 0" class="flex flex-row items-center justify-center space-x-5 max-sm:space-x-0 p-4">
         <div class="flex flex-row items-center space-x-2">
             <div class="h-[10px] w-[10px] bg-gray-500 rounded-full"></div>
             <div>Upload Pending</div>
