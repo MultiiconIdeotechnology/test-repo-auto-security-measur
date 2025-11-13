@@ -16,8 +16,8 @@ export class KycDashboardService {
     return this.http.post<any>(this.baseUrl + 'AgentLead/getAgentLeadKycList', model);
   }
 
-  leadConvert(id: any): Observable<any> {
-    return this.http.post<any>(this.baseUrl + 'AgentLead/leadConvert', { id: id });
+  leadConvert(model: any): Observable<any> {
+    return this.http.post<any>(this.baseUrl + 'AgentLead/leadConvert', model);
   }
 
 }

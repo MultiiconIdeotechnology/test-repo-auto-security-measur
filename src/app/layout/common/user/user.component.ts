@@ -15,6 +15,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { ChangePasswordComponent } from './change-password/change-password.component';
 import { GlobalSearchComponent } from '../global_search/global-search.component';
 import { TwoFactorAuthComponent } from './two-factor/two-factor-auth/two-factor-auth.component';
+import { FuseConfirmationService } from '@fuse/services/confirmation';
+import { ToasterService } from 'app/services/toaster.service';
 
 @Component({
     selector: 'user',
@@ -47,6 +49,8 @@ export class UserComponent implements OnInit, OnDestroy {
         private _fuseConfigService: FuseConfigService,
         private _matdialog: MatDialog,
         private _userService: UserService,
+        private conformationService: FuseConfirmationService,
+        private alertService: ToasterService,
         @Inject(DOCUMENT) private document: Document
     ) {
         let theme = localStorage.getItem('theam');
@@ -147,14 +151,14 @@ export class UserComponent implements OnInit, OnDestroy {
  * @param scheme
  */
     setScheme(scheme: Scheme): void {
-        localStorage.setItem('theam',scheme);
+        localStorage.setItem('theam', scheme);
         // this.applyScheme(scheme);
 
         this._fuseConfigService.config = { scheme };
 
         // Update PrimeNg Themes
         let themeLink = this.document.getElementById('primeng-theme-css') as HTMLLinkElement;
-        if (themeLink){
+        if (themeLink) {
             let themeName = scheme == 'light' ? "lara-light-blue" : "md-dark-indigo";
             themeLink.href = `assets/primeng-themes/${themeName}/theme.css`;
         }
@@ -162,7 +166,7 @@ export class UserComponent implements OnInit, OnDestroy {
     }
 
     // Change Password
-    changePassword(){
+    changePassword() {
         this._matdialog.open(ChangePasswordComponent, {
             disableClose: true,
             data: {}
@@ -170,9 +174,9 @@ export class UserComponent implements OnInit, OnDestroy {
     }
 
     // Two FactorAuth Dialog
-    openTF2AuthModal(){
+    openTF2AuthModal() {
         this._matdialog.open(TwoFactorAuthComponent, {
-            width:'900px',
+            width: '900px',
             autoFocus: false,
             disableClose: true,
             closeOnNavigation: false,
@@ -180,4 +184,47 @@ export class UserComponent implements OnInit, OnDestroy {
         })
     }
 
+    /**
+     * Restore Default Columns
+     *
+     * Logic:
+     * 1. Open a confirmation dialog asking the user to confirm resetting saved columns.
+     * 2. Wait for the dialog to close and inspect the result.
+     * 3. If the user confirmed:
+     *    a. Remove the stored column preferences from localStorage (key: 'globalSelectedColumns').
+     *    b. Show a success toast to inform the user the reset succeeded.
+     *    c. Reload the page after a short delay so the app can apply the default column configuration.
+     */
+    restoreDefaultColumns() {
+        const label: string = 'Reset Columns';
+
+        this.conformationService.open({
+            title: label,
+            message: 'Are you sure you want to reset your saved columns?',
+            actions: {
+                confirm: {
+                    label: 'Ok',
+
+                },
+                cancel: {
+                    label: 'Cancel',
+                },
+            },
+        }).afterClosed().subscribe({
+            next: (res) => {
+                if (res === 'confirmed') {
+                    // Clear stored column preferences
+                    localStorage.removeItem('globalSelectedColumns');
+
+                    // Optional: show a toast or message before reload
+                    this.alertService.showToast('success', 'Your saved columns have been reset successfully.', 'top-right', true);
+
+                    // Reload the page to apply default columns
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1500);
+                }
+            }
+        });
+    }
 }

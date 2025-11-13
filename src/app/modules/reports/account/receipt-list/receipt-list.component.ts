@@ -21,7 +21,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router, RouterOutlet } from '@angular/router';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { AppConfig } from 'app/config/app-config';
-import { BaseListingComponent } from 'app/form-models/base-listing';
+import { BaseListingComponent, Column, Types } from 'app/form-models/base-listing';
 import {
     Security,
     filter_module_name,
@@ -49,6 +49,8 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
 import { WalletService } from 'app/services/wallet.service';
 import { UserService } from 'app/core/user/user.service';
 import { InfoWalletComponent } from 'app/modules/account/wallet/info-wallet/info-wallet.component';
+import { cloneDeep } from 'lodash';
+import { EntityService } from 'app/services/entity.service';
 
 @Component({
     selector: 'app-receipt-list',
@@ -98,6 +100,12 @@ export class ReceiptListComponent extends BaseListingComponent implements OnDest
     currentFilter: any;
     isFilterShow: boolean = false;
 
+    types = Types;
+    cols: Column[] = [];
+    selectedColumns: Column[] = [];
+    exportCol: Column[] = [];
+    activeFiltData: any = {};
+
     constructor(
         private accountService: AccountService,
         private confirmService: FuseConfirmationService,
@@ -111,6 +119,7 @@ export class ReceiptListComponent extends BaseListingComponent implements OnDest
         public _filterService: CommonFilterService,
         private walletService: WalletService,
         private _userService: UserService,
+        private entityService : EntityService
     ) {
         super(module_name.receipts);
 
@@ -130,11 +139,29 @@ export class ReceiptListComponent extends BaseListingComponent implements OnDest
         this.currentFilter.fromDate.setMonth(
             this.currentFilter.fromDate.getMonth()
         );
+
+        this.selectedColumns = [
+            { field: 'receipt_ref_no', header: 'Reference No.', type: Types.text },
+            { field: 'receipt_status', header: 'Status', type: Types.select, isCustomColor: true },
+            { field: 'service_for', header: 'Receipt For', type: Types.text },
+            { field: 'transaction_ref_no', header: 'Booking Ref. No', type: Types.link },
+            { field: 'payment_currency', header: 'Currency', type: Types.text },
+            { field: 'payment_amount', header: 'Amount', type: Types.number, fixVal: 0, class: 'text-right' },
+            { field: 'roe', header: 'ROE', type: Types.number, fixVal: 0, class: 'text-right' },
+            { field: 'mode_of_payment', header: 'MOP', type: Types.text },
+            { field: 'receipt_request_date', header: 'Request', type: Types.dateTime, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
+            { field: 'audit_date_time', header: 'Audit', type: Types.date, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
+            { field: 'agent_name', header: 'Agent', type: Types.select },
+            { field: 'pg_name', header: 'PG', type: Types.text },
+            { field: 'pg_payment_ref_no', header: 'PG Ref.No.', type: Types.text },
+            { field: 'is_paymentlink', header: 'Payment Link', type: Types.text}
+        ];
+        this.cols.unshift(...this.selectedColumns);
+        this.exportCol = cloneDeep(this.cols);
     }
 
     selectedAgent: any;
     agentList: any[] = [];
-    cols = [];
     selectedStatus: string;
 
     statusList: any[] = [
@@ -168,6 +195,7 @@ export class ReceiptListComponent extends BaseListingComponent implements OnDest
             }
             this.primengTable['filters'] = resp['table_config'];
             this.isFilterShow = true;
+            this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
             this.primengTable._filter();
         });
     }
@@ -195,7 +223,35 @@ export class ReceiptListComponent extends BaseListingComponent implements OnDest
             // this.primengTable['_sortField'] = filterData['sortColumn'];
             // this.sortColumn = filterData['sortColumn'];
             this.primengTable['filters'] = filterData['table_config'];
+            this.selectedColumns = this.checkSelectedColumn(filterData['selectedColumns'] || [], this.selectedColumns);
+            this.onColumnsChange();
+        } else {
+            this.selectedColumns = this.checkSelectedColumn([], this.selectedColumns);
+            this.onColumnsChange();
         }
+    }
+
+    onColumnsChange(): void {
+        this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
+    }
+
+    checkSelectedColumn(col: any[], oldCol: Column[]): any[] {
+        if (col.length) return col;
+        else {
+            var Col = this._filterService.getSelectedColumns({ name: this.filter_table_name })?.columns || [];
+            if (!Col.length)
+                return oldCol;
+            else
+                return Col;
+        }
+    }
+
+    isDisplayHashCol(): boolean {
+        return this.selectedColumns.length > 0;
+    }
+
+    onSelectedColumnsChange(): void {
+        this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
     }
 
     // function to get the Agent list from api
@@ -358,15 +414,15 @@ export class ReceiptListComponent extends BaseListingComponent implements OnDest
 
     getStatusIndicatorClass(status: string): string {
         if (status == 'Pending') {
-            return 'bg-yellow-600';
+            return 'text-yellow-600';
         } else if (status == 'Audited') {
-            return 'bg-green-600';
+            return 'text-green-600';
         } else if (status == 'Rejected') {
-            return 'bg-red-600';
+            return 'text-red-600';
         } else if (status == 'Confirmed') {
-            return 'bg-green-600';
+            return 'text-green-600';
         } else {
-            return 'bg-blue-600';
+            return 'text-blue-600';
         }
     }
 
@@ -410,6 +466,17 @@ export class ReceiptListComponent extends BaseListingComponent implements OnDest
         } else if (record?.transaction_ref_no?.substring(0, 3) == 'OSB') {
             Linq.recirect('/booking/offline-service/entry/' + record.product_id + '/readonly');
         }
+       else if (record?.transaction_ref_no?.substring(0, 3) == 'AIR') {
+                        // if (!Security.hasViewDetailPermission(module_name.wallet)) {
+                        //     return this.alertService.showToast('error', messages.permissionDenied);
+                        // }
+                        //this.formGroup.get('searchfilter').patchValue("");
+                        this.router.navigate(['/booking/amendment-requests'])
+                        setTimeout(() => {
+                            this.entityService.raiseAmendmentInfoCall({ data: {id:record.product_id}, global_withdraw: true })
+                        }, 1000);
+                        this.matDialog.closeAll();
+                    }
     }
 
     viewAgentData(data): void {
@@ -623,4 +690,15 @@ export class ReceiptListComponent extends BaseListingComponent implements OnDest
             this._filterService.activeFiltData = {};
         }
     }
+
+    displayColCount(): number {
+        return this.selectedColumns.length + 1;
+    }
+
+
+    isValidDate(value: any): boolean {
+        const date = new Date(value);
+        return value && !isNaN(date.getTime());
+    }
+
 }

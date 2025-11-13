@@ -12,6 +12,8 @@
         "y:start": "ng serve --port 1333",
         "o:start": "ng serve --port 4100",
         "g:start": "ng serve --port 4800",
+        "r:start": "ng serve --port 4750",
+        "t:start": "ng serve --port 55936",
         "build:developer": "ng build --configuration=developer",
         "build:uat": "ng build --configuration=uat",
         "build:production": "ng build --configuration=production",

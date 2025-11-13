@@ -1,6 +1,6 @@
 import { Component, OnDestroy } from '@angular/core';
 import { CommonModule, DatePipe, NgClass, NgFor, NgIf } from '@angular/common';
-import { BaseListingComponent, Column } from 'app/form-models/base-listing';
+import { BaseListingComponent, Column, Types } from 'app/form-models/base-listing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatNativeDateModule } from '@angular/material/core';
@@ -28,6 +28,7 @@ import { Subscription } from 'rxjs';
 import { EntityService } from 'app/services/entity.service';
 import { SupplierKycInfoComponent } from './supplier-kyc-info/supplier-kyc-info.component';
 import { KycInfoComponent } from 'app/modules/masters/agent/kyc-info/kyc-info.component';
+import { cloneDeep } from 'lodash';
 
 @Component({
   selector: 'app-supplier-kyc',
@@ -60,22 +61,27 @@ import { KycInfoComponent } from 'app/modules/masters/agent/kyc-info/kyc-info.co
   templateUrl: './supplier-kyc.component.html',
   styleUrls: ['./supplier-kyc.component.scss']
 })
-export class SupplierKycComponent extends BaseListingComponent implements OnDestroy{
-  
+export class SupplierKycComponent extends BaseListingComponent implements OnDestroy {
+
   module_name = module_name.supplier_kyc;
   total = 0;
   dataList = [];
   kycProfileList: any[] = [];
+
+  types = Types;
+  cols: Column[] = [
+    { field: 'contact_person_name', header: 'Contact Person', type: Types.text },
+  ];
+  selectedColumns: Column[] = [];
+  exportCol: Column[] = [];
+  activeFiltData: any = {};
 
 
   statusList = [
     { label: 'Rejected', value: true },
     { label: 'Pending', value: false }
   ];
-  cols: Column[] = [
-    { field: 'contact_person_name', header: 'Contact Person' },
-  ];
-  _selectedColumns: Column[];
+
 
   private settingsUpdatedSubscription: Subscription;
   isFilterShow: boolean = false;
@@ -95,17 +101,74 @@ export class SupplierKycComponent extends BaseListingComponent implements OnDest
     this.sortColumn = 'entry_date_time';
     this.sortDirection = 'desc';
     this.Mainmodule = this;
+
+    this.selectedColumns = [
+      { field: 'company_name', header: 'Supplier', type:Types.text },
+      { field: 'profile_name', header: 'KYC Profile', type:Types.select },
+      { field: 'email_address', header: 'Email', type:Types.text },
+      { field: 'mobile_number', header: 'Mobile', type:Types.text },
+      { field: 'city_name', header: 'City', type:Types.text },
+      { field: 'entry_date_time', header: 'Date', type: Types.date, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
+      { field: 'update_date_time', header: 'Update Date', type: Types.date, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
+      { field: 'is_rejected', header: 'Status', type:Types.select }
+    ];
+    this.cols.unshift(...this.selectedColumns);
+    this.exportCol = cloneDeep(this.cols);
   }
 
   ngOnInit(): void {
     this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
       this.primengTable['filters'] = resp['table_config'];
       this.isFilterShow = true;
+      this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
       this.primengTable._filter();
     });
 
     this.getKycCombo();
   }
+
+  ngAfterViewInit() {
+    // Defult Active filter show
+    if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+      let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+
+
+      this.primengTable['filters'] = filterData['table_config'];
+      this.selectedColumns = filterData['selectedColumns'] || [];
+      // this.primengTable['_sortField'] = filterData['sortColumn'];
+      // this.sortColumn = filterData['sortColumn'];
+      this.isFilterShow = true;
+      this.selectedColumns = this.checkSelectedColumn(filterData['selectedColumns'] || [], this.selectedColumns);
+      this.onColumnsChange();
+    } else {
+      this.selectedColumns = this.checkSelectedColumn([], this.selectedColumns);
+      this.onColumnsChange();
+    }
+  }
+
+  onColumnsChange(): void {
+    this._filterService.setSelectedColumns({ name: this.module_name, columns: this.selectedColumns });
+  }
+
+  checkSelectedColumn(col: any[], oldCol: Column[]): any[] {
+    if (col.length) return col;
+    else {
+      var Col = this._filterService.getSelectedColumns({ name: this.module_name })?.columns || [];
+      if (!Col.length)
+        return oldCol;
+      else
+        return Col;
+    }
+  }
+
+  isDisplayHashCol(): boolean {
+    return this.selectedColumns.length > 0;
+  }
+
+  onSelectedColumnsChange(): void {
+    this._filterService.setSelectedColumns({ name: this.module_name, columns: this.selectedColumns });
+  }
+
 
   refreshItems(event?: any): void {
     this.isLoading = true;
@@ -125,7 +188,7 @@ export class SupplierKycComponent extends BaseListingComponent implements OnDest
     })
   }
 
-  view(record){
+  view(record) {
     this.entityService.raisesupplierKycInfo({ data: record })
   }
 
@@ -133,12 +196,12 @@ export class SupplierKycComponent extends BaseListingComponent implements OnDest
     // if (!Security.hasPermission(supplierPermissions.viewKYCPermissions)) {
     //     return this.alertService.showToast('error', messages.permissionDenied);
     // }
-    
+
     this.matDialog.open(KycInfoComponent, {
-      data: {record:record,supplier:true,isLead : 'Supplier'},
+      data: { record: record, supplier: true, isLead: 'Supplier' },
       disableClose: true
     }).afterClosed().subscribe(res => {
-     
+
     })
   }
 
@@ -156,21 +219,29 @@ export class SupplierKycComponent extends BaseListingComponent implements OnDest
     else return 'No data to display';
   }
 
-  
-  get selectedColumns(): Column[] {
-    return this._selectedColumns;
+
+  // get selectedColumns(): Column[] {
+  //   return this._selectedColumns;
+  // }
+
+  // set selectedColumns(val: Column[]) {
+  //   if (Array.isArray(val)) {
+  //     this._selectedColumns = this.cols.filter(col =>
+  //       val.some(selectedCol => selectedCol.field === col.field)
+  //     );
+  //   } else {
+  //     this._selectedColumns = [];
+  //   }
+  // }
+
+  displayColCount(): number {
+    return this.selectedColumns.length + 1;
   }
 
-  set selectedColumns(val: Column[]) {
-    if (Array.isArray(val)) {
-      this._selectedColumns = this.cols.filter(col =>
-        val.some(selectedCol => selectedCol.field === col.field)
-      );
-    } else {
-      this._selectedColumns = [];
-    }
+
+  isValidDate(value: any): boolean {
+    const date = new Date(value);
+    return value && !isNaN(date.getTime());
   }
-
-
 
 }

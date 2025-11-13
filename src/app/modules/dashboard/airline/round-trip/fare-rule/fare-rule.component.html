@@ -1,0 +1,54 @@
+<div class="flex flex-col max-w-180 min-w-180 max-h-screen mobile:max-w-full mobile:min-w-full mobile:w-full">
+    <!-- Header -->
+    <div class="flex flex-0 items-center justify-between h-16 px-4 border-b border-gray-border mobile:max-w-full mobile:min-w-full mobile:w-full">
+        <div class="text-lg font-semibold">Fare Rules</div>
+        <button mat-icon-button (click)="matDialogRef.close()" [tabIndex]="-1">
+            <mat-icon class="text-current relative top-1" [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
+        </button>
+    </div>
+
+    <!-- <div *ngIf="!fareRules" class="flex flex-row h-full w-full justify-center items-center py-5">
+        <div class="flex flex-col items-center">
+            <span class="font-medium">Fare Rules not available</span>
+            <div class="flex flex-row space-x-1 items-center primary-text text-sm">
+                <span>Try Again</span>
+                <mat-icon class="cursor-pointer icon-size-4" (click)="loadFareRules()">refresh</mat-icon>
+            </div>
+        </div>
+    </div>
+    <div class="p-5 max-h-80 overflow-y-auto" *ngIf="fareRules" [innerHTML]="fareRules"></div> -->
+    <div class="p-5 max-h-80 overflow-y-auto mobile:max-w-full mobile:min-w-full mobile:w-full">
+        <!-- <div [innerHTML]="fareRules" *ngIf="!isFareRuleLoading">
+        </div> -->
+        <div [innerHTML]="fareRuleData" *ngIf="fareRuleData" class="mobile:text-base"></div>
+
+        <span class="text-blue text-lg  underline cursor-pointer" (click)="loadFareRules(false);" *ngIf="isMoreShowFare">more details</span>
+        <div class="p-4 border rounded-lg mt-4" *ngIf="fareRuleData">
+            <div class="flex items-center mb-[10px]">
+                <mat-icon class="text-2xl mr-1 icon-size-4 bonton-red-text" svgIcon="mat_outline:report_problem"></mat-icon>
+                <span class="bonton-red-text text-[17px] font-semibold">Important :</span>
+            </div>
+            <div>
+                <ul class="list-[circle] mx-4">
+                    <li class="mb-[5px] text-gray font-semibold">*MENTIONED FEE ARE INDICATIVE PER PAX AND PER SECTOR.</li>
+                    <li class="mb-[5px]">APART FROM AIRLINE CHARGES,GST+RAF+ APPLICABLE CHARGES IF ANY, WILL BE CHARGED.</li>
+                    <li class="mb-[5px]">FOR DOMESTIC BOOKINGS, PASSENGERS ARE REQUIRED TO SUBMIT REISSUE REQUEST AT LEAST 4 HOURS BEFORE THE AIRLINES REISSUE POLICY.</li>
+                    <li>FOR INTERNATIONAL BOOKINGS, PASSENGERS ARE REQUIRED TO SUBMIT THE REISSUE REQUEST AT LEAST 6 HOURS BEFORE THE REISSUE POLICY.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div [innerHTML]="newFare" *ngIf="newFare" class="mobile:text-base mt-3" id="newFareId"></div>
+
+        <div *ngIf="isFareRuleLoading" class="py-7 font-semibold text-center text-lg">Loading...</div>
+        <div *ngIf="!fareRules && !isFareRuleLoading" class="flex flex-row h-full w-full justify-center items-center p-5">
+            <div class="flex flex-col items-center">
+                <span class="font-medium">Fare Rules not available</span>
+                <div class="flex flex-row space-x-1 items-center primary-text text-sm">
+                    <span>Try Again</span>
+                    <mat-icon class="cursor-pointer icon-size-4" (click)="loadFareRules()">refresh</mat-icon>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 

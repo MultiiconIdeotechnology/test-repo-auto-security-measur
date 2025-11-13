@@ -2,7 +2,7 @@ import { filter_module_name, messages, module_name, Security } from 'app/securit
 import { Component, OnDestroy } from '@angular/core';
 import { CommonModule, DatePipe, NgFor, NgIf } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { BaseListingComponent, Column } from 'app/form-models/base-listing';
+import { BaseListingComponent, Column, Types } from 'app/form-models/base-listing';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatMenuModule } from '@angular/material/menu';
@@ -21,6 +21,7 @@ import { KycDocumentService } from 'app/services/kyc-document.service';
 import { Subscription } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { cloneDeep } from 'lodash';
 
 @Component({
     selector: 'app-commission-income',
@@ -63,9 +64,20 @@ export class CommissionIncomeComponent
     appConfig = AppConfig;
     settings: any;
     supplierList: any[] = [];
-    selectedSupplier:any;
-    cols: Column[];
+    selectedSupplier: any;
     isFilterShow: boolean = false;
+
+    index = {
+        commission: -1,
+        tds: -1,
+        net_commission: -1,
+    };
+
+    types = Types;
+    selectedColumns: Column[] = [];
+    exportCol: Column[] = [];
+    activeFiltData: any = {};
+    cols: Column[] = [];
 
     constructor(
         private accountService: AccountService,
@@ -78,14 +90,27 @@ export class CommissionIncomeComponent
         this.sortDirection = 'desc';
         this.Mainmodule = this;
         this._filterService.applyDefaultFilter(this.filter_table_name);
+        this.selectedColumns = [
+            { field: 'booking_date', header: 'Booking Date', type: Types.dateTime, dateFormat: 'dd-MM-yyyy HH:mm:ss', isFrozen: false },
+            { field: 'booking_ref_no', header: 'Booking Ref. No.', type: Types.link },
+            { field: 'pnr', header: 'PNR', type: Types.text },
+            { field: 'gds_pnr', header: 'GSD PNR', type: Types.text },
+            { field: 'purchase_commission', header: 'Commission', type: Types.number, fixVal: 2, class: 'text-right' },
+            { field: 'tds', header: 'TDS', type: Types.number, fixVal: 2, class: 'text-right' },
+            { field: 'net_commission', header: 'Net Commission', type: Types.number, fixVal: 2, class: 'text-right' },
+            { field: 'supplier', header: 'Supplier', type: Types.select }
+        ];
+
+        this.cols.unshift(...this.selectedColumns);
+        this.exportCol = cloneDeep(this.cols);
     }
 
     ngOnInit() {
         this.getSupplier("", true);
 
-         // common filter
-         this._filterService.updateSelectedOption('');
-         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
+        // common filter
+        this._filterService.updateSelectedOption('');
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
             this._filterService.updateSelectedOption('');
             this.selectedSupplier = resp['table_config']['supplier']?.value;
 
@@ -97,8 +122,10 @@ export class CommissionIncomeComponent
             }
             this.primengTable['filters'] = resp['table_config'];
             this.isFilterShow = true;
+            this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns); //  add new
             this.primengTable._filter();
         });
+
     }
 
     ngAfterViewInit() {
@@ -114,10 +141,58 @@ export class CommissionIncomeComponent
             // this.primengTable['_sortField'] = filterData['sortColumn'];
             // this.sortColumn = filterData['sortColumn'];
             this.primengTable['filters'] = filterData['table_config'];
+            this.selectedColumns = this.checkSelectedColumn(filterData['selectedColumns'] || [], this.selectedColumns); //  add new
+            this.onColumnsChange(); //  add new
+        } else { //  add new
+            this.selectedColumns = this.checkSelectedColumn([], this.selectedColumns); //  add new
+            this.onColumnsChange(); //  add new
+        }
+        this.getColIndex();
+    }
+    getColIndex(): void { //  add new
+        this.index.commission = this.selectedColumns.findIndex((item: any) => item.field == 'purchase_commission');
+        this.index.tds = this.selectedColumns.findIndex((item: any) => item.field == 'tds');
+        this.index.net_commission = this.selectedColumns.findIndex((item: any) => item.field == 'net_commission');
+    }
+
+    onColumnsChange(): void {
+        this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
+    }
+
+    checkSelectedColumn(col: any[], oldCol: Column[]): any[] {
+        if (col.length) return col;
+        else {
+            var Col = this._filterService.getSelectedColumns({ name: this.filter_table_name })?.columns || [];
+            if (!Col.length)
+                return oldCol;
+            else
+                return Col;
         }
     }
 
-    refreshItems(event?:any): void {
+    isDisplayHashCol(): boolean {
+        return this.selectedColumns.length > 0;
+    }
+
+    onSelectedColumnsChange(): void {
+        this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
+        this.getColIndex(); //  add new
+    }
+
+    isAnyIndexMatch(): boolean { //  add new
+        const len = this.selectedColumns?.length - 1;
+        return len == this.index.commission || len == this.index.tds || len == this.index.net_commission;
+    }
+
+    isDisplayFooter(): boolean { //  add new
+        return this.selectedColumns.some(x => x.field == 'purchase_commission' || x.field == 'tds' || x.field == 'net_commission');
+    }
+
+    isNotDisplay(field: string): boolean { //  add new
+        return field != "purchase_commission" && field != "tds" && field != "net_commission"
+    }
+
+    refreshItems(event?: any): void {
         this.accountService.getcommissionIncome(this.getNewFilterReq(event)).subscribe({
             next: (data) => {
                 this.dataList = data.data;
@@ -165,9 +240,9 @@ export class CommissionIncomeComponent
         this.kycDocumentService.getSupplierCombo(value, '').subscribe((data) => {
             this.supplierList = data;
 
-            for(let i in this.supplierList){
+            for (let i in this.supplierList) {
                 this.supplierList[i].id_by_value = this.supplierList[i].company_name;
-             }
+            }
         });
     }
 
@@ -197,7 +272,7 @@ export class CommissionIncomeComponent
             Excel.export(
                 'Commission Income',
                 [
-                    { header: 'Booking Date', property: 'booking_date'},
+                    { header: 'Booking Date', property: 'booking_date' },
                     { header: 'Booking Ref. No.', property: 'booking_ref_no' },
                     { header: 'PNR', property: 'pnr' },
                     { header: 'GSD PNR', property: 'gds_pnr' },
@@ -220,5 +295,15 @@ export class CommissionIncomeComponent
             this.settingsUpdatedSubscription.unsubscribe();
             this._filterService.activeFiltData = {};
         }
+    }
+
+    displayColCount(): number {
+        return this.selectedColumns.length + 1;
+    }
+
+    isValidDate(value: any): boolean {
+        const date = new Date(value);
+        return value && !isNaN(date.getTime());
+
     }
 }

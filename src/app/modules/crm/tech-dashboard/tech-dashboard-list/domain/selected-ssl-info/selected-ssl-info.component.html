@@ -1,0 +1,42 @@
+<fuse-drawer class="min-w-[450px] z-999" fixed [mode]="'over'" [name]="'settingsDrawer'" [position]="'right'"
+	#settingsDrawer>
+	<div class="w-full">
+		<div class="flex justify-between border-b-2 border-gray-border px-5 py-4 h-15">
+			<span class="text-lg font-semibold">Selected Domains</span>
+
+			<!-- close modal -->
+			<button mat-icon-button (click)="settingsDrawer.close()" [tabIndex]="-1">
+				<mat-icon class="text-current dark:text-white" [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
+			</button>
+		</div>
+
+		<div class="px-5 py-2 h-[calc(100vh-120px)] overflow-auto">
+			<!-- <div class="flex flex-col gap-2 px-5 py-2 h-[calc(100vh-60px)] overflow-y-auto"> -->
+			<div *ngIf="selectedSslList && selectedSslList?.length">
+				<ng-container *ngFor="let item of selectedSslList; let isLast=last; let i = index">
+					<div class="flex items-center gap-2 py-2" [ngClass]="{'border-b': !isLast}">
+						<div class="text-md break-words w-[90%]">{{item.DomainName}}</div>
+						<i class="material-icons text-lg text-[#dc3545] cursor-pointer bg-transparent p-2 rounded-full  dark:hover:bg-[#603c3e85] hover:bg-[#b775787a] "
+							matTooltip="Delete" (click)="deleteSsl(item, i)">delete</i>
+					</div>
+				</ng-container>
+			</div>
+
+			<div *ngIf="selectedSslList && !selectedSslList?.length" class="text-center py-6 flex flex-col gap-2">
+				<span>
+					No Domain selected yet!
+				</span>
+				<span>
+					Please Select a domain to proceed.
+				</span>
+			</div>
+		</div>
+
+		<div class="flex items-center justify-end border-t px-5 py-4 gap-3 h-15 sticky bottom-0">
+			<button mat-stroked-button (click)="settingsDrawer.close(null)">Close</button>
+			<button mat-flat-button [color]="'primary'" (click)="submit()" [disabled]="isLoading">
+				Generate SSL
+			</button>
+		</div>
+	</div>
+</fuse-drawer>

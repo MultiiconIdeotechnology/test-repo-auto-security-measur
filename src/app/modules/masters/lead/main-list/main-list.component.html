@@ -17,8 +17,10 @@
                 <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" />
             </mat-form-field> -->
             <div class="flex ctm_search">
-                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="refreshItems()" />
-                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="refreshItems()"></mat-icon>
+                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'"
+                    (keyup.enter)="refreshItems()" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"
+                    (click)="refreshItems()"></mat-icon>
             </div>
 
             <!-- Column Filter -->
@@ -30,9 +32,9 @@
 
             <!------Common Filter------->
             <button class="ml-4" mat-flat-button [color]="'primary'"
-                 (click)="_filterService.openDrawer(filter_table_name, primengTable,_selectedColumns)"
-                 matTooltip="Saved Filter">
-                 <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
+                (click)="_filterService.openDrawer(filter_table_name, primengTable,selectedColumns)"
+                matTooltip="Saved Filter">
+                <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
             </button>
 
             <!-- Select Columns Button and Select Box Code -->
@@ -42,7 +44,8 @@
             </button>
             <p-overlayPanel #op>
                 <p-multiSelect [options]="cols" [(ngModel)]="selectedColumns" optionLabel="header" class="overlay-panel"
-                    [style]="{'max-width': '220px'}" display="chip" placeholder="Choose Columns" />
+                    [style]="{'max-width': '220px'}" display="chip" placeholder="Choose Columns"
+                    (onChange)="onSelectedColumnsChange()" />
             </p-overlayPanel>
 
             <!-- Refresh -->
@@ -51,8 +54,8 @@
                 <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
             </button>
 
-             <!-- Add -->
-             <!-- <button class="ml-4" mat-flat-button [color]="'primary'" (click)="create()">
+            <!-- Add -->
+            <!-- <button class="ml-4" mat-flat-button [color]="'primary'" (click)="create()">
                 <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
                 <span class="ml-2 mr-1">Add</span>
             </button> -->
@@ -76,136 +79,93 @@
 
     <!-- Table -->
     <div class="table-container paginator-bottom">
-        <p-table #datatable [columns]="selectedColumns" [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1" [resizableColumns]="true" columnResizeMode="expand"
-            [tableStyle]="{'min-width': '50rem'}" [loading]="isLoading" [paginator]="true" [rows]="appConfig.pageSize"
-            [totalRecords]="totalRecords" [rowsPerPageOptions]="appConfig.pageSizeOptions"
-            [lazy]="true" (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="scrollHeight"
-            [showCurrentPageReport]="true" [showPageLinks]="false" [showJumpToPageDropdown]="false"
-            currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
+        <p-table #datatable [columns]="selectedColumns" [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1"
+            [resizableColumns]="true" columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}"
+            [loading]="isLoading" [paginator]="true" [rows]="appConfig.pageSize" [totalRecords]="totalRecords"
+            [rowsPerPageOptions]="appConfig.pageSizeOptions" [lazy]="true" (onLazyLoad)="refreshItems($event)"
+            [scrollable]="true" [scrollHeight]="scrollHeight" [showCurrentPageReport]="true" [showPageLinks]="false"
+            [showJumpToPageDropdown]="false" currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
             [globalFilterFields]="['agency_name', 'lead_status', 'entry_date_time', 'relation_manager', 'email_address', 'mobile_number', 'city_name']"
             styleClass="p-datatable-gridlines p-datatable-sm">
 
             <ng-template pTemplate="header" let-columns>
                 <tr>
-                    <th class="  text-center left-[-1px]" pFrozenColumn>#</th>
-                    <th class="min-w-[150px] dark:bg-[#1e293b]" pSortableColumn="agency_name" pResizableColumn alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.agency_name"
-                    [ngClass]="{'left-0': !frozenObj?.agency_name}">
-                        Agent <p-sortIcon field="agency_name" />
-                        <span class="float-right" (click)="isFrozenColumn('agency_name');$event.stopPropagation()">
-                            <i *ngIf="!frozenObj?.agency_name" class="pi pi-lock-open icon-size-3"></i>
-                            <i *ngIf="frozenObj?.agency_name" class="pi pi-lock icon-size-3"></i>
-                        </span>
+                    <th class="left-[-1px] text-center w-1 dark:bg-gray-800" *ngIf="isDisplayHashCol()" pFrozenColumn>#
                     </th>
-                    <th class="min-w-28 dark:bg-[#1e293b]" pSortableColumn="lead_status" pResizableColumn alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.lead_status"
-                    [ngClass]="{'left-0': !frozenObj?.lead_status}">
-                        Status <p-sortIcon field="lead_status" />
-                        <span class="float-right" (click)="isFrozenColumn('lead_status');$event.stopPropagation()">
-                            <i *ngIf="!frozenObj?.lead_status" class="pi pi-lock-open icon-size-3"></i>
-                            <i *ngIf="frozenObj?.lead_status" class="pi pi-lock icon-size-3"></i>
-                        </span>
+
+                    <th *ngFor="let col of columns; let isLast = last" [pSortableColumn]="col.field" pResizableColumn
+                        [ngClass]="{ 'w-full': isLast  && (selectedColumns[selectedColumns?.length-1]?.field !='is_read_by_supplier')}"
+                        [class]="col.class">
+                        {{ col.header }}
+                        <p-sortIcon [field]="col?.field" />
                     </th>
-                    <th pSortableColumn="entry_date_time" pResizableColumn>
-                        Date <p-sortIcon field="entry_date_time" />
-                    </th>
-                    <th pSortableColumn="relation_manager" pResizableColumn>
-                        RM <p-sortIcon field="relation_manager" />
-                    </th>
-                    <th pSortableColumn="email_address" pResizableColumn>
-                        Email <p-sortIcon field="email_address" />
-                    </th>
-                    <th pSortableColumn="mobile_number" pResizableColumn>
-                        Mobile <p-sortIcon field="mobile_number" />
-                    </th>
-                    <th pSortableColumn="city_name" pResizableColumn
-                        [ngClass]="{'w-full': !columns || (columns && !columns.length) }">
-                        City <p-sortIcon field="city_name" />
-                    </th>
-                    <th [pSortableColumn]="col.field" pResizableColumn *ngFor="let col of columns; let isLast = last"
-                        [ngClass]="{'w-full': isLast }">
-                        {{col.header}} <p-sortIcon [field]="col.field" />
-                    </th>
+                    <th class="w-full"
+                        *ngIf="(selectedColumns[selectedColumns?.length-1]?.field =='is_read_by_supplier')">
+                    </th>                
                 </tr>
 
                 <tr *ngIf="isFilterShow">
-                    <th class="left-[-1px]" pFrozenColumn></th>
-                    <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.agency_name">
-                        <p-columnFilter type="text" matchMode="contains" field="agency_name" placeholder="Search by Agency"
-                            ariaLabel="Filter Agency" />
-                    </th>
-                    <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.lead_status">
-                        <!-- <p-columnFilter type="text" matchMode="contains" field="lead_status" placeholder="Search by Status"
-                            ariaLabel="Filter Status" /> -->
-                        <p-columnFilter field="lead_status" matchMode="equals" [showMenu]="false">
-                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="statusList"
-                                    (onChange)="filter($event.value)" placeholder="Select Status" [showClear]="true" appendTo="body">
-                                    <ng-template let-option pTemplate="item">
-                                        <div>{{ option }}</div>
-                                    </ng-template>
-                                </p-dropdown>
-                            </ng-template>
-                        </p-columnFilter>
-                    </th>
-                    <th>
-                        <p-columnFilter field="entry_date_time" type="date">
-                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-calendar (onSelect)="filter($event)" dateFormat="dd-mm-yy" appendTo="body" [ngModel]="value"
-                                    placeholder="Search by Entry">
-                                </p-calendar>
-                            </ng-template>
-                        </p-columnFilter>
-                    </th>
-                    <th>
-                        <!-- <p-columnFilter type="text" matchMode="contains" field="relation_manager" placeholder="Search by RM"
-                            ariaLabel="Filter RM" /> -->
-                        <p-columnFilter class="searchableDropdown"  field="relation_manager" matchMode="contains" [showMenu]="false">
-                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-dropdown class="filter-dropdown"
-                                    [options]="employeeList"
-                                    optionLabel="employee_name"
-                                    [(ngModel)]="selectedRm"
-                                    [filter]="true"
-                                    filterBy="employee_name"
-                                    (onChange)="filter($event.value)"
-                                    [showClear]="true"
-                                    appendTo="body"
-                                    placeholder="Select RM">
-                                    <ng-template let-employee pTemplate="item">
-                                        <div>{{employee.employee_name}}</div>
-                                    </ng-template>
-                                </p-dropdown>
-                            </ng-template>
-                        </p-columnFilter>
-                    </th>
-                    <th>
-                        <p-columnFilter type="text" matchMode="contains" field="email_address" placeholder="Search by Email"
-                            ariaLabel="Filter Email" />
-                    </th>
-                    <th>
-                        <p-columnFilter type="text" matchMode="contains" field="mobile_no" placeholder="Search by Mobile"
-                            ariaLabel="Filter Mobile" />
-                    </th>
-                    <th>
-                        <p-columnFilter type="text" matchMode="contains" field="city_name" placeholder="Search by City"
-                            ariaLabel="Filter city_name" />
-                    </th>
+                    <th class="left-[-1px] bg-gray-50 dark:bg-gray-800" pFrozenColumn></th>
                     <th *ngFor="let col of columns">
-                        <p-columnFilter [type]="col.type" [field]="col.field" [placeholder]="'Search by '+ col.header"
-                            [ariaLabel]="'Filter '+ col.header" />
-                    </th>
+                        <ng-container *ngIf="!col?.isHideFilter">
+                            <!-- Text -->
+                            <p-columnFilter *ngIf="(col.type == types.text  || col.type == types.link)" [type]="'text'"
+                                [field]="col.field" [placeholder]="'Search by '+ col.header"
+                                [ariaLabel]="'Filter '+ col.header" matchMode="contains" />
+
+
+                            <p-columnFilter *ngIf="col.type == types.select && col.field == 'lead_status'"
+                                [field]="col.field" matchMode="equals" [showMenu]="false">
+                                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                    <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="statusList"
+                                        (onChange)="filter($event.value)" placeholder="Select Status" [showClear]="true"
+                                        appendTo="body">
+                                        <ng-template let-option pTemplate="item">
+                                            <div>{{ option }}</div>
+                                        </ng-template>
+                                    </p-dropdown>
+                                </ng-template>
+                            </p-columnFilter>
+
+                            <p-columnFilter *ngIf="col.type == types.select && col.field == 'relation_manager'"
+                                class="searchableDropdown" [field]="col.field" matchMode="contains" [showMenu]="false">
+                                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                    <p-dropdown class="filter-dropdown" [options]="employeeList"
+                                        optionLabel="employee_name" [(ngModel)]="selectedRm" [filter]="true"
+                                        filterBy="employee_name" (onChange)="filter($event.value)" [showClear]="true"
+                                        appendTo="body" placeholder="Select RM">
+                                        <ng-template let-employee pTemplate="item">
+                                            <div>{{employee.employee_name}}</div>
+                                        </ng-template>
+                                    </p-dropdown>
+                                </ng-template>
+                            </p-columnFilter>
+
+                            <!--date picker-->
+                            <p-columnFilter *ngIf="col.type == types.date" type="date" [field]="col.field">
+                                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                    <p-calendar (onSelect)="filter($event)" dateFormat="dd-mm-yy" [ngModel]="value"
+                                        appendTo="body" placeholder="Search by Signup">
+                                    </p-calendar>
+                                </ng-template>
+                            </p-columnFilter>
+
+
+                        </ng-container>
+                    </th>              
                 </tr>
             </ng-template>
 
             <ng-template pTemplate="body" let-element let-columns="columns">
                 <tr>
-                    <td class="bg-gray-50 dark:bg-gray-900 left-[-1px]" alignFrozen="left" pFrozenColumn>
+                    <td class="bg-gray-50 dark:bg-gray-900 left-[-1px]" alignFrozen="left" pFrozenColumn  *ngIf="isDisplayHashCol()">
                         <span [matMenuTriggerFor]="optionMenu" class="flex align-middle cursor-pointer">
                             <mat-icon> more_vert </mat-icon>
                         </span>
 
                         <mat-menu #optionMenu>
                             <button mat-menu-item (click)="view(element)">
-                                <mat-icon class="mat-18" >info</mat-icon>
+                                <mat-icon class="mat-18">info</mat-icon>
                                 <span style="font-weight: 600;">Info</span>
                             </button>
                             <button mat-menu-item (click)="setKYCVerify(element)">
@@ -230,8 +190,7 @@
                             </button> -->
                             <mat-divider
                                 *ngIf="!element.is_email_verified || !element.is_mobile_verified"></mat-divider>
-                            <button *ngIf="!element.is_email_verified" mat-menu-item
-                                (click)="setEmailVerify(element)">
+                            <button *ngIf="!element.is_email_verified" mat-menu-item (click)="setEmailVerify(element)">
                                 <mat-icon class="mat-18">verified</mat-icon>
                                 <span style="font-weight: 600">Verify Email</span>
                             </button>
@@ -242,32 +201,29 @@
                             </button>
                         </mat-menu>
                     </td>
-                    <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.agency_name">{{element.agency_name || "-"}}</td>
-                    <!-- <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.lead_status">{{element.lead_status || "-"}}</td> -->
+                    <td *ngFor="let col of columns" [ngClass]="col.class">
+                        <ng-container *ngIf="(col.type === types.text || col.type === types.select)">
+                            <span [ngClass]="col.isCustomColor ? getStatusColor(element[col.field]) : ''">
+                                {{ element[col.field] || '-' }}
+                            </span>
+                        </ng-container>
 
-                    <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.lead_status"><span [ngClass]="getStatusColor(element.lead_status)">{{(element.lead_status) || '-'}}</span></td>
-
-                    <td>
-                        {{(element.entry_date_time | date: "dd-MM-yyyy") || "-"}}
-                    </td>
-                    <td>{{element.relation_manager || "-"}}</td>
-                    <td>{{element.email_address || "-"}}</td>
-                    <td>{{element.mobile_number || "-"}}</td>
-                    <td>{{element.city_name || "-"}}</td>
-                    <td *ngFor="let col of columns">
-                        {{element[col.field] || "-"}}
+                        <ng-container *ngIf="col.type == types.date">
+                            {{isValidDate(element[col.field])? (element[col.field] | date: col.dateFormat): "-"}}
+                        </ng-container>
                     </td>
                 </tr>
             </ng-template>
 
             <ng-template pTemplate="emptymessage">
-                <tr class="h-14">
-                    <td colspan="10" class="text-center font-semibold text-lg">
-                        {{getNodataText()}}
+                <tr class="h-14" *ngIf="selectedColumns?.length">
+                    <td [attr.colspan]="displayColCount()" class="text-center font-semibold text-lg">{{getNodataText()}}
                     </td>
                 </tr>
             </ng-template>
         </p-table>
     </div>
-
+    <div class="text-center mt-5" *ngIf="selectedColumns && !selectedColumns?.length"> No column to display! Please
+        Select a column
+    </div>
 </div>

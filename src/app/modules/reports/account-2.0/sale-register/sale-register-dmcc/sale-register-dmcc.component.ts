@@ -1,8 +1,8 @@
 import { filter_module_name, messages, module_name, Security } from 'app/security';
-import { Component, EventEmitter, HostListener, Input, OnDestroy, Output } from '@angular/core';
+import { Component, EventEmitter, HostListener, Input, OnDestroy, Output, ViewChild } from '@angular/core';
 import { CommonModule, DatePipe, NgFor, NgIf } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { BaseListingComponent, Column } from 'app/form-models/base-listing';
+import { BaseListingComponent, Column, Types } from 'app/form-models/base-listing';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatMenuModule } from '@angular/material/menu';
@@ -27,6 +27,8 @@ import { EntityService } from 'app/services/entity.service';
 import { Router } from '@angular/router';
 import { CurrencyService } from 'app/services/currency.service';
 import { AgentService } from 'app/services/agent.service';
+import { OverlayPanel } from 'primeng/overlaypanel';
+import { cloneDeep } from 'lodash';
 
 @Component({
   selector: 'app-sale-register-dmcc',
@@ -60,8 +62,9 @@ export class SaleRegisterDmccComponent extends BaseListingComponent
   @Input() endDate: any;
   @Input() supplierList: any = [];
   @Input() lastSearchString = '';
-  // module_name = module_name.products_collection;
-  filter_table_name = filter_module_name.purchase_register_bonton_dmcc;
+  @ViewChild('op') overlayPanel!: OverlayPanel;
+  module_name = module_name.sale_register_2;
+  filter_table_name = filter_module_name.sale_register_bonton_dmcc;
   private settingsUpdatedSubscription: Subscription;
   isLoading = false;
   dataList = [];
@@ -92,6 +95,12 @@ export class SaleRegisterDmccComponent extends BaseListingComponent
     { field: 'discount', header: 'Discount', type: 'numeric', matchMode: 'equals' }
   ];
 
+  types = Types;
+  selectedColumns: Column[] = [];
+  exportCol: Column[] = [];
+  activeFiltData: any = {};
+  cols: Column[] = [];
+
   constructor(
     private accountService: AccountService,
     private supplierService: SupplierService,
@@ -106,6 +115,27 @@ export class SaleRegisterDmccComponent extends BaseListingComponent
     this.sortColumn = 'invoice_date';
     this._filterService.applyDefaultFilter(this.filter_table_name);
 
+    this.selectedColumns = [
+      { field: 'invoice_date', header: 'Date', type: Types.dateTime, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
+      { field: 'code', header: 'Agent ID', type: Types.number, fixVal: 0, },
+      { field: 'name', header: 'Agent Name', type: Types.select },
+      { field: 'vaT_No', header: 'VAT No', type: Types.text, class: 'text-right' },
+      { field: 'invoice_No', header: 'Invoice No', type: Types.text },
+      { field: 'ref_No', header: 'Ref. No', type: Types.link },
+      { field: 'pnr', header: 'PNR', type: Types.text },
+      { field: 'gdS_PNR', header: 'GDS PNR', type: Types.text },
+      { field: 'currency', header: 'Currency', type: Types.select },
+      { field: 'roe', header: 'ROE', type: Types.number, class: 'text-right', isNotFixed: true },
+      { field: 'base_Fare', header: 'Base Fare', type: Types.number, fixVal: 2, class: 'text-right' },
+      { field: 'service_Charge', header: 'Service charge', type: Types.number, fixVal: 2, class: 'text-right' },
+      { field: 'tax', header: 'TAX', type: Types.number, fixVal: 2, class: 'text-right' },
+      { field: 'total_Sale', header: 'Total Purchase', type: Types.number, fixVal: 2, class: 'text-right' },
+      { field: 'discount', header: 'Discount', type: Types.number, fixVal: 2, class: 'text-right' }
+    ];
+
+    this.cols.unshift(...this.selectedColumns);
+    this.exportCol = cloneDeep(this.cols);
+
   }
 
   ngOnInit(): void {
@@ -119,6 +149,18 @@ export class SaleRegisterDmccComponent extends BaseListingComponent
 
     // common filter
     this.startSubscription();
+
+    this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+      if (resp['gridName'] != this.filter_table_name) return;
+      this.activeFiltData = resp;
+      this.sortColumn = resp['sortColumn'];
+      // this.selectDateRanges(resp['table_config']);
+      this.primengTable['_sortField'] = resp['sortColumn'];
+      this.isFilterShow = true;
+      this.primengTable['filters'] = resp['table_config'];
+      this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
+      this.primengTable._filter();
+    });
 
   }
 
@@ -138,8 +180,38 @@ export class SaleRegisterDmccComponent extends BaseListingComponent
       this.restoreDateFilter('invoice_date', filterData['table_config']);
       this.isFilterShowEvent.emit(true);
       this.primengTable['filters'] = filterData['table_config'];
+      this.selectedColumns = this.checkSelectedColumn(filterData['selectedColumns'] || [], this.selectedColumns);
+      this.onColumnsChange();
+    } else {
+      this.selectedColumns = this.checkSelectedColumn([], this.selectedColumns);
+      this.onColumnsChange();
     }
   }
+
+  onColumnsChange(): void {
+    this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
+  }
+
+  checkSelectedColumn(col: any[], oldCol: Column[]): any[] {
+    if (col.length) return col
+    else {
+      var Col = this._filterService.getSelectedColumns({ name: this.filter_table_name })?.columns || [];
+      if (!Col.length)
+        return oldCol;
+      else
+        return Col;
+    }
+  }
+
+  isDisplayHashCol(): boolean {
+    return this.selectedColumns.length > 0;
+  }
+
+
+  toggleOverlayPanel(event: MouseEvent) {
+    this.overlayPanel.toggle(event);
+  }
+
 
   getCustomHeight() {
     this.customScrollH = (window.innerHeight - 208) + 'px';
@@ -287,21 +359,21 @@ export class SaleRegisterDmccComponent extends BaseListingComponent
       Excel.export(
         'Sale Register (DMCC)',
         [
-          { header: 'Date', property: 'invoice_date'},
-          { header: 'Agent ID', property: 'code'},
-          { header: 'Agent Name', property: 'name'},
-          { header: 'VAT No', property: 'vaT_No'},
-          { header: 'Invoice No', property: 'invoice_No'},
-          { header: 'Ref. No', property: 'ref_No'},
-          { header: 'PNR', property: 'pnr'},
-          { header: 'GDS PNR', property: 'gdS_PNR'},
-          { header: 'Currency', property: 'currency'},
-          { header: 'ROE', property: 'roe'},
-          { header: 'Base Fare', property: 'base_Fare'},
-          { header: 'Service charge', property: 'service_Charge'},
-          { header: 'TAX', property: 'tax'},
-          { header: 'Total Purchase', property: 'total_Sale'},
-          { header: 'Discount', property: 'discount'}
+          { header: 'Date', property: 'invoice_date' },
+          { header: 'Agent ID', property: 'code' },
+          { header: 'Agent Name', property: 'name' },
+          { header: 'VAT No', property: 'vaT_No' },
+          { header: 'Invoice No', property: 'invoice_No' },
+          { header: 'Ref. No', property: 'ref_No' },
+          { header: 'PNR', property: 'pnr' },
+          { header: 'GDS PNR', property: 'gdS_PNR' },
+          { header: 'Currency', property: 'currency' },
+          { header: 'ROE', property: 'roe' },
+          { header: 'Base Fare', property: 'base_Fare' },
+          { header: 'Service charge', property: 'service_Charge' },
+          { header: 'TAX', property: 'tax' },
+          { header: 'Total Purchase', property: 'total_Sale' },
+          { header: 'Discount', property: 'discount' }
         ],
         data.data,
         'Sale Register (DMCC)',
@@ -370,5 +442,15 @@ export class SaleRegisterDmccComponent extends BaseListingComponent
 
     this.destroy$.next(null);
     this.destroy$.complete();
+  }
+
+  displayColCount(): number {
+    return this.selectedColumns.length + 1;
+  }
+
+  isValidDate(value: any): boolean {
+    const date = new Date(value);
+    return value && !isNaN(date.getTime());
+
   }
 }

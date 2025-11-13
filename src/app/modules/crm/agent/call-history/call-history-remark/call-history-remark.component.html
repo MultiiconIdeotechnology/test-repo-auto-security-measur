@@ -9,7 +9,7 @@
         </div>
     </div>
     <mat-divider></mat-divider>
-    <div class="px-5 py-4 break-words" *ngIf="record">
+    <div class="px-5 py-4 break-words overflow-y-auto max-h-[60vh]" *ngIf="record">
         {{record?.rm_remark ? record.rm_remark : "-"}}
         <ng-container *ngIf="record && record.reactive_reason">    
             <div class="py-2">

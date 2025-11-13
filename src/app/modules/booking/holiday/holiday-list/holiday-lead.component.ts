@@ -19,7 +19,7 @@ import { RouterOutlet } from '@angular/router';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
-import { BaseListingComponent } from 'app/form-models/base-listing';
+import { BaseListingComponent, Column, Types } from 'app/form-models/base-listing';
 import { filter_module_name, messages, module_name, Security } from 'app/security';
 import { AgentService } from 'app/services/agent.service';
 import { EntityService } from 'app/services/entity.service';
@@ -30,6 +30,7 @@ import { SupplierService } from 'app/services/supplier.service';
 import { ToasterService } from 'app/services/toaster.service';
 import { Excel } from 'app/utils/export/excel';
 import { Linq } from 'app/utils/linq';
+import { cloneDeep } from 'lodash';
 import { DateTime } from 'luxon';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { Subscription } from 'rxjs';
@@ -73,14 +74,18 @@ export class HolidayLeadComponent extends BaseListingComponent {
   dataList = [];
   total = 0;
   isFilterShow: boolean;
-  cols: any;
   agentList: any[];
   selectedAgent: any;
-  _selectedColumns: any;
   statusList = ['New', 'Completed', 'Confirmed', 'Rejected', 'Cancelled', 'Waiting for Token Payment', 'Token Payment Success', 'Token Payment Failed'];
   supplierList: any[] = [];
   // leadFromList = ['WEB', 'android', 'ios'];
-  bookingByList = ['B2B', 'B2C']
+  bookingByList = ['B2B', 'B2C'];
+
+  types = Types;
+  selectedColumns: Column[] = [];
+  exportCol: Column[] = [];
+  activeFiltData: any = {};
+  cols: Column[] = [];
 
 
   constructor(
@@ -96,9 +101,27 @@ export class HolidayLeadComponent extends BaseListingComponent {
     this.sortDirection = 'desc';
     this.Mainmodule = this;
     this._filterService.applyDefaultFilter(this.filter_table_name);
+
+    this.selectedColumns = [
+      { field: 'reference_no', header: 'Ref. No.', type: Types.link },
+      { field: 'lead_status', header: 'Status', type: Types.select, isCustomColor: true },
+      { field: 'product_name', header: 'Product Name', type: Types.text },
+      { field: 'supplier_name', header: 'Supplier', type: Types.select },
+      { field: 'agent_name', header: 'Agent', type: Types.select },
+      { field: 'start_date', header: 'Start Date', type: Types.date, dateFormat: 'dd-MM-yyyy' },
+      { field: 'end_date', header: 'End Date', type: Types.date, dateFormat: 'dd-MM-yyyy' },
+      { field: 'no_of_nights', header: 'No of Nights', type: Types.number, fixVal: 0 },
+      { field: 'entry_date_time', header: 'Created', type: Types.date, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
+      { field: 'lead_from', header: 'Lead From', type: Types.text },
+      { field: 'booking_by', header: 'Booking By', type: Types.select }
+    ];
+
+    this.cols.unshift(...this.selectedColumns);
+    this.exportCol = cloneDeep(this.cols);
   }
 
   ngOnInit() {
+
     this.getSupplierList('');
 
     this.agentList = this._filterService.agentListById;
@@ -121,10 +144,12 @@ export class HolidayLeadComponent extends BaseListingComponent {
       }
 
       this.primengTable['filters'] = resp['table_config'];
-      this._selectedColumns = resp['selectedColumns'] || [];
+      this.selectedColumns = resp['selectedColumns'] || [];
       this.isFilterShow = true;
+      this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
       this.primengTable._filter();
     });
+
   }
 
   ngAfterViewInit() {
@@ -145,9 +170,38 @@ export class HolidayLeadComponent extends BaseListingComponent {
       }
 
       this.primengTable['filters'] = filterData['table_config'];
-      this._selectedColumns = filterData['selectedColumns'] || [];
+      this.selectedColumns = this.checkSelectedColumn(filterData['selectedColumns'] || [], this.selectedColumns);
+      this.onColumnsChange();
+      //this.selectedColumns = filterData['selectedColumns'] || [];
       this.isFilterShow = true;
+    } else {
+      this.selectedColumns = this.checkSelectedColumn([], this.selectedColumns);
+      this.onColumnsChange();
     }
+
+  }
+
+  onColumnsChange(): void {
+    this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
+  }
+
+  checkSelectedColumn(col: any[], oldCol: Column[]): any[] {
+    if (col.length) return col;
+    else {
+      var Col = this._filterService.getSelectedColumns({ name: this.filter_table_name })?.columns || [];
+      if (!Col.length)
+        return oldCol;
+      else
+        return Col;
+    }
+  }
+
+  isDisplayHashCol(): boolean {
+    return this.selectedColumns.length > 0;
+  }
+
+  onSelectedColumnsChange(): void {
+    this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
   }
 
   view(record): void {
@@ -258,6 +312,16 @@ export class HolidayLeadComponent extends BaseListingComponent {
         ],
         data.data, "Holiday Lead", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 19 } }]);
     });
+  }
+
+  displayColCount(): number {
+    return this.selectedColumns.length + 1;
+  }
+
+
+  isValidDate(value: any): boolean {
+    const date = new Date(value);
+    return value && !isNaN(date.getTime());
   }
 
 }

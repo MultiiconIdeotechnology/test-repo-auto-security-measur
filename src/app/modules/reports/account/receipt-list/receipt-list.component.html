@@ -11,6 +11,7 @@
         <!-- <div class="text-4xl font-extrabold tracking-tight">Currency Master</div> -->
         <div class=" xl:font-extrabold font-bold tracking-tight max-sm:flex max-sm:w-full max-sm:justify-between">
             <span class="text-3xl">{{module_name}}</span>
+
             <span class="hidden max-sm:flex">
                 <!-- <button class="ml-4" mat-flat-button style="background-color: #5046E5;" (click)="create()">
                     <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
@@ -43,19 +44,22 @@
 
             <!------Common Filter------->
             <button class="ml-4" mat-flat-button [color]="'primary'"
-                (click)="_filterService.openDrawer(filter_table_name, primengTable)" matTooltip="Saved Filter" [disabled]="isLoading">
+                (click)="_filterService.openDrawer(filter_table_name, primengTable)" matTooltip="Saved Filter"
+                [disabled]="isLoading">
                 <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
             </button>
 
             <!-- Select Columns Button and Select Box Code -->
-            <!-- <button class="ml-4 rounded-full" mat-flat-button [color]="'primary'" matTooltip="Select more columns"
+            <button class="ml-4 rounded-full" mat-flat-button [color]="'primary'" matTooltip="Select more columns"
                 [disabled]="isLoading" (click)="op.toggle($event)">
                 <img class="w-5 cursor-pointer ml-1 pt-1" src="assets/icons/column.svg" alt="c">
             </button>
             <p-overlayPanel #op>
                 <p-multiSelect [options]="cols" [(ngModel)]="selectedColumns" optionLabel="header" class="overlay-panel"
-                    [style]="{'max-width': '220px'}" display="chip" placeholder="Choose Columns" />
-            </p-overlayPanel> -->
+                    [style]="{'max-width': '220px'}" display="chip" placeholder="Choose Columns"
+                    (onChange)="onSelectedColumnsChange()" />
+            </p-overlayPanel>
+
 
             <!------Refresh------>
             <button class="ml-4" mat-flat-button [color]="'primary'" matTooltip="Refresh" [disabled]="isLoading"
@@ -85,211 +89,139 @@
     <!----------------Table----------------->
     <div class="table-container paginator-bottom">
         <p-table #datatable [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1" [resizableColumns]="true"
-            columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}" [loading]="isLoading" [paginator]="true"
-            [rows]="appConfig.pageSize" [totalRecords]="totalRecords" [rowsPerPageOptions]="appConfig.pageSizeOptions"
-            [lazy]="true" (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="scrollHeight"
-            [showCurrentPageReport]="true" [showPageLinks]="false" [showJumpToPageDropdown]="false"
-            currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
+            [columns]="selectedColumns" columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}"
+            [loading]="isLoading" [paginator]="true" [rows]="appConfig.pageSize" [totalRecords]="totalRecords"
+            [rowsPerPageOptions]="appConfig.pageSizeOptions" [lazy]="true" (onLazyLoad)="refreshItems($event)"
+            [scrollable]="true" [scrollHeight]="scrollHeight" [showCurrentPageReport]="true" [showPageLinks]="false"
+            [showJumpToPageDropdown]="false" currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
             [globalFilterFields]="['index', 'payment_attachment', 'receipt_ref_no', 'receipt_status', 'service_for', 'transaction_ref_no', 'payment_currency', 'payment_amount', 'roe', 'mode_of_payment', 'receipt_request_date', 'audit_date_time', 'agent_name', 'pg_name', 'pg_payment_ref_no']"
             styleClass="p-datatable-gridlines p-datatable-sm">
 
             <ng-template pTemplate="header" let-columns>
                 <tr>
-                    <th class="  text-center left-[-1px]" pFrozenColumn>#</th>
-                    <!-- <th class="min-w-[110px] text-center dark:bg-[#1e293b]" pResizableColumn alignFrozen="left"
-                        pFrozenColumn [frozen]="frozenObj?.index" [ngClass]="{'left-0': !frozenObj?.index}">
-                        Invoice
-                        <span class="float-right" (click)="isFrozenColumn('index');$event.stopPropagation()">
-                            <i *ngIf="!frozenObj?.index" class="pi pi-lock-open icon-size-3"></i>
-                            <i *ngIf="frozenObj?.index" class="pi pi-lock icon-size-3"></i>
-                        </span>
-                    </th> -->
-                    <!-- <th class="min-w-[145px]" pResizableColumn alignFrozen="left" pFrozenColumn
-                        [frozen]="frozenObj?.payment_attachment" [ngClass]="{'left-0': !frozenObj?.payment_attachment}">
-                        Attachments
-                        <span class="float-right"
-                            (click)="isFrozenColumn('payment_attachment');$event.stopPropagation()">
-                            <i *ngIf="!frozenObj?.payment_attachment" class="pi pi-lock-open icon-size-3"></i>
-                            <i *ngIf="frozenObj?.payment_attachment" class="pi pi-lock icon-size-3"></i>
-                        </span>
-                    </th> -->
-                    <th class="min-w-[145px]" pSortableColumn="receipt_ref_no" pResizableColumn alignFrozen="left"
-                        pFrozenColumn [frozen]="frozenObj?.receipt_ref_no"
-                        [ngClass]="{'left-0': !frozenObj?.receipt_ref_no}">
-                        Reference No. <p-sortIcon field="receipt_ref_no" />
-                        <span class="float-right" (click)="isFrozenColumn('receipt_ref_no');$event.stopPropagation()">
-                            <i *ngIf="!frozenObj?.receipt_ref_no" class="pi pi-lock-open icon-size-3"></i>
-                            <i *ngIf="frozenObj?.receipt_ref_no" class="pi pi-lock icon-size-3"></i>
-                        </span>
+                    <th class="left-[-1px] text-center w-1 dark:bg-gray-800" *ngIf="isDisplayHashCol()" pFrozenColumn>#
                     </th>
-                    <th pSortableColumn="receipt_status" pResizableColumn>
-                        Status <p-sortIcon field="receipt_status" />
+
+                    <th *ngFor="let col of columns; let isLast = last" [pSortableColumn]="col.field" pResizableColumn
+                        [ngClass]="{ 'w-full': isLast && (selectedColumns[selectedColumns?.length-1]?.field !='payment_amount') && (selectedColumns[selectedColumns?.length-1]?.field !='roe' ) }"
+                        [class]="col.class">
+                        {{ col.header }}
+                        <p-sortIcon [field]="col?.field" />
                     </th>
-                    <th pSortableColumn="service_for" pResizableColumn>
-                        Receipt For <p-sortIcon field="service_for" />
+                    <th class="w-full"
+                        *ngIf="(selectedColumns[selectedColumns?.length-1]?.field =='payment_amount') || (selectedColumns[selectedColumns?.length-1]?.field =='roe')">
                     </th>
-                    <th pSortableColumn="transaction_ref_no" pResizableColumn>
-                        Booking Ref. No <p-sortIcon field="transaction_ref_no" />
-                    </th>
-                    <th pSortableColumn="payment_currency" pResizableColumn>
-                        Currency <p-sortIcon field="payment_currency" />
-                    </th>
-                    <th class="text-right" pSortableColumn="payment_amount" pResizableColumn>
-                        Amount <p-sortIcon field="payment_amount" />
-                    </th>
-                    <th class="text-right" pSortableColumn="roe" pResizableColumn>
-                        ROE <p-sortIcon field="roe" />
-                    </th>
-                    <th pSortableColumn="mode_of_payment" pResizableColumn>
-                        MOP <p-sortIcon field="mode_of_payment" />
-                    </th>
-                    <th [ngClass]="_filterService.selectionDateDropdown == 'Custom Date Range' ? 'min-max-width': 'min-w-[200px]'" pSortableColumn="receipt_request_date" pResizableColumn>
-                        Request <p-sortIcon field="receipt_request_date" />
-                    </th>
-                    <th pSortableColumn="audit_date_time" pResizableColumn>
-                        Audit <p-sortIcon field="audit_date_time" />
-                    </th>
-                    <th pSortableColumn="agent_name" pResizableColumn>
-                        Agent <p-sortIcon field="agent_name" />
-                    </th>
-                    <th pSortableColumn="pg_name" pResizableColumn>
-                        PG <p-sortIcon field="pg_name" />
-                    </th>
-                    <th pSortableColumn="pg_payment_ref_no" pResizableColumn>
-                        PG Ref.No. <p-sortIcon field="pg_payment_ref_no" />
-                    </th>
-                    <th class="w-[200px]" pSortableColumn="is_paymentlink" pResizableColumn>
-                        Payment Link <p-sortIcon field="is_paymentlink" />
-                    </th>
-                    <!-- <th [pSortableColumn]="col.field" pResizableColumn *ngFor="let col of columns">
-                        {{col.header}} <p-sortIcon [field]="col.field" />
-                    </th> -->
                 </tr>
 
                 <tr *ngIf="isFilterShow">
-                    <th class="left-[-1px]" pFrozenColumn></th>
-                    <!-- <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.index"></th>
-                    <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.payment_attachment"></th> -->
-                    <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.receipt_ref_no">
-                        <p-columnFilter type="text" matchMode="contains" field="receipt_ref_no"
-                            placeholder="Search by Reference No." ariaLabel="Filter Reference No." />
-                    </th>
-                    <th>
-                        <p-columnFilter field="receipt_status" matchMode="equals" [showMenu]="false">
-                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="statusList"
-                                    (onChange)="filter($event.value)" placeholder="Select Receipt Status"
-                                    [showClear]="true" appendTo="body">
-                                    <ng-template let-option pTemplate="item">
-                                        <p [value]="option.value">{{option.value}}</p>
-                                    </ng-template>
-                                </p-dropdown>
-                            </ng-template>
-                        </p-columnFilter>
-                    </th>
-                    <th>
-                        <p-columnFilter type="text" matchMode="contains" field="service_for"
-                            placeholder="Search by Receipt For" ariaLabel="Filter Receipt For" />
-                    </th>
-                    <th>
-                        <p-columnFilter type="text" matchMode="contains" field="transaction_ref_no"
-                            placeholder="Search by Booking Ref. No" ariaLabel="Filter Booking Ref. No" />
-                    </th>
-                    <th>
-                        <p-columnFilter type="text" matchMode="contains" field="payment_currency"
-                            placeholder="Search by Currency" ariaLabel="Filter Currency" />
-                    </th>
-                    <th>
-                        <p-columnFilter type="numeric" field="payment_amount" placeholder="Search by Amount"
-                            ariaLabel="Filter Amount" />
-                    </th>
-                    <th>
-                        <p-columnFilter type="numeric" field="roe" placeholder="Search by ROE" ariaLabel="Filter ROE" />
-                    </th>
-                    <th>
-                        <p-columnFilter type="text" matchMode="contains" field="mode_of_payment"
-                            placeholder="Search by MOP" ariaLabel="Filter MOP" />
-                    </th>
-                    <th>
-                        <p-columnFilter *ngIf="(_filterService.selectionDateDropdown$ | async) != 'custom_date_range'" field="receipt_request_date" matchMode="custom" [showMenu]="false">
-                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-dropdown #dateRangeDropdown class="filter-dropdown" [ngModel]="value" [options]="_filterService.dateRangeList"
-                                    optionLabel="label" placeholder="Select Option"
-                                    appendTo="body">
-                                    <ng-template let-option pTemplate="item">
-                                        <div (click)="_filterService.onOptionClick(option, primengTable, 'receipt_request_date')">
-                                            <div>{{option.label}}</div>
-                                        </div>
-                                    </ng-template>
-                                </p-dropdown>
-                            </ng-template>
-                        </p-columnFilter>
+                    <th class="left-[-1px] bg-gray-50 dark:bg-gray-800" pFrozenColumn></th>
+                    <th *ngFor="let col of columns">
+                        <ng-container *ngIf="!col?.isHideFilter">
+                            <!-- Text -->
+                            <p-columnFilter *ngIf="(col.type == types.text  || col.type == types.link)" [type]="'text'"
+                                [field]="col.field" [placeholder]="'Search by '+ col.header"
+                                [ariaLabel]="'Filter '+ col.header" matchMode="contains" />
 
-                        <ng-container *ngIf="(_filterService.selectionDateDropdown$ | async) == 'custom_date_range'" >
-                            <div class="relative inline-block">
-                                <p-columnFilter field="receipt_request_date" matchMode="custom" [showMenu]="false">
+                            <!--2 digit point number-->
+                            <p-columnFilter *ngIf="col.type == types.number" [type]="'numeric'" [field]="col.field"
+                                [matchMode]="'equals'" [placeholder]="'Search by '+ col.header"
+                                [ariaLabel]="'Filter '+ col.header" locale="en-US" minFractionDigits="2"
+                                maxFractionDigits="2">
+                            </p-columnFilter>
+
+                            <p-columnFilter *ngIf="col.type == types.select && col.field == 'receipt_status'"
+                                [field]="col.field" matchMode="equals" [showMenu]="false">
+                                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                    <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="statusList"
+                                        (onChange)="filter($event.value)" placeholder="Select Receipt Status"
+                                        [showClear]="true" appendTo="body">
+                                        <ng-template let-option pTemplate="item">
+                                            <p [value]="option.value">{{option.value}}</p>
+                                        </ng-template>
+                                    </p-dropdown>
+                                </ng-template>
+                            </p-columnFilter>
+
+                            <!--date range picker-->
+                            <ng-container *ngIf="col.type == types.dateTime">
+                                <p-columnFilter
+                                    *ngIf="(_filterService.selectionDateDropdown$ | async) != 'custom_date_range'"
+                                    [field]="col.field" matchMode="custom" [showMenu]="false">
                                     <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                        <p-calendar selectionMode="range" [ngModel]="value"
-                                            (ngModelChange)="onDateRangeChange($event, filter)" [readonlyInput]="true"
-                                            dateFormat="dd-mm-yy" appendTo="body" placeholder="📅 Search by Date Range">
-                                        </p-calendar>
+                                        <p-dropdown #dateRangeDropdown class="filter-dropdown" [ngModel]="value"
+                                            [options]="_filterService.dateRangeList" optionLabel="label"
+                                            placeholder="Select Option" appendTo="body">
+                                            <ng-template let-option pTemplate="item">
+                                                <div
+                                                    (click)="_filterService.onOptionClick(option, primengTable, col.field)">
+                                                    <div>{{option.label}}</div>
+                                                </div>
+                                            </ng-template>
+                                        </p-dropdown>
                                     </ng-template>
                                 </p-columnFilter>
-                                <mat-icon class="icon-size-4 cursor-pointer absolute" style="top:50%; transform: translatey(-50%); right: 25px;"  (click)="_filterService.onOptionClick('', '', '')">cancel</mat-icon>
-                            </div>
+
+                                <ng-container
+                                    *ngIf="(_filterService.selectionDateDropdown$ | async) == 'custom_date_range'">
+                                    <div class="relative inline-block">
+                                        <p-columnFilter [field]="col.field" matchMode="custom" [showMenu]="false">
+                                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                                <p-calendar selectionMode="range" [ngModel]="value"
+                                                    (ngModelChange)="onDateRangeChange($event, filter)"
+                                                    [readonlyInput]="true" dateFormat="dd-mm-yy" appendTo="body"
+                                                    placeholder="📅 Search by Date Range">
+                                                </p-calendar>
+                                            </ng-template>
+                                        </p-columnFilter>
+                                        <mat-icon class="icon-size-4 cursor-pointer absolute"
+                                            style="top:50%; transform: translatey(-50%); right: 25px;"
+                                            (click)="_filterService.onOptionClick('', '', '')">cancel</mat-icon>
+                                    </div>
+                                </ng-container>
+                            </ng-container>
+
+                            <!--date picker-->
+                            <p-columnFilter *ngIf="col.type == types.date" type="date" [field]="col.field">
+                                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                    <p-calendar (onSelect)="filter($event)" dateFormat="dd-mm-yy" [ngModel]="value"
+                                        appendTo="body" placeholder="Search by Signup">
+                                    </p-calendar>
+                                </ng-template>
+                            </p-columnFilter>
+
+                            <p-columnFilter class="searchableDropdown"
+                                *ngIf="col.type == types.select && col.field == 'agent_name'" [field]="col.field"
+                                matchMode="equals" [showMenu]="false">
+                                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                    <p-dropdown class="filter-dropdown" [options]="agentList" optionLabel="agent_info"
+                                        [filter]="true" filterBy="agent_info" [(ngModel)]="selectedAgent"
+                                        (onFilter)="getAgent($event?.filter)" (onChange)="filter($event.value)"
+                                        [showClear]="true" appendTo="body" placeholder="Select Agent">
+                                        <ng-template let-agent pTemplate="item">
+                                            <div class="flex align-items-center gap-1">
+                                                <div class="m-0">
+                                                    {{agent.code}} - {{agent.agency_name}}
+                                                    <div class="text-sm text-slate-500">{{agent.email_address}}</div>
+                                                </div>
+                                            </div>
+                                        </ng-template>
+                                    </p-dropdown>
+                                </ng-template>
+                            </p-columnFilter>
+
+
                         </ng-container>
                     </th>
-                    <th>
-                        <p-columnFilter field="audit_date_time" type="date">
-                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy"
-                                    appendTo="body" placeholder="Search by Audited">
-                                </p-calendar>
-                            </ng-template>
-                        </p-columnFilter>
+                    <th class="w-full"
+                        *ngIf="(selectedColumns[selectedColumns?.length-1]?.field =='payment_amount') || (selectedColumns[selectedColumns?.length-1]?.field =='roe')">
                     </th>
-                    <th>
-                        <!-- <p-columnFilter type="text" matchMode="contains" field="agent_name" placeholder="Search by Agent"
-                            ariaLabel="Filter Agent" /> -->
-                        <p-columnFilter class="searchableDropdown" field="agent_name" matchMode="equals"
-                            [showMenu]="false">
-                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-dropdown class="filter-dropdown" [options]="agentList" optionLabel="agent_info"
-                                    [filter]="true" filterBy="agent_info" [(ngModel)]="selectedAgent"
-                                    (onFilter)="getAgent($event?.filter)" (onChange)="filter($event.value)"
-                                    [showClear]="true" appendTo="body" placeholder="Select Agent">
-                                    <ng-template let-agent pTemplate="item">
-                                        <div class="flex align-items-center gap-1">
-                                            <div class="m-0">
-                                                {{agent.code}} - {{agent.agency_name}}
-                                                <div class="text-sm text-slate-500">{{agent.email_address}}</div>
-                                            </div>
-                                        </div>
-                                    </ng-template>
-                                </p-dropdown>
-                            </ng-template>
-                        </p-columnFilter>
-                    </th>
-                    <th>
-                        <p-columnFilter type="text" matchMode="contains" field="pg_name" placeholder="Search by PG"
-                            ariaLabel="Filter PG" />
-                    </th>
-                    <th>
-                        <p-columnFilter type="text" matchMode="contains" field="pg_payment_ref_no"
-                            placeholder="Search by PG Ref. No" ariaLabel="Filter PG Ref. No" />
-                    </th>
-                    <th>
-                        <p-columnFilter type="text" matchMode="contains" field="is_paymentlink" placeholder="Search Payment Link"
-                            ariaLabel="Filter Payment Link" />
-                    </th>
-                    <!-- <th *ngFor="let col of columns">
-                    </th> -->
                 </tr>
             </ng-template>
 
             <ng-template pTemplate="body" let-element let-columns="columns">
                 <tr>
-                    <td class="bg-gray-50 dark:bg-gray-900 left-[-1px]" alignFrozen="left" pFrozenColumn>
+                    <td class="bg-gray-50 dark:bg-gray-900 left-[-1px]" alignFrozen="left" pFrozenColumn
+                        *ngIf="isDisplayHashCol()">
                         <span [matMenuTriggerFor]="optionMenu" class="flex align-middle cursor-pointer">
                             <mat-icon> more_vert </mat-icon>
                         </span>
@@ -317,7 +249,7 @@
                                 <mat-icon class="mat-18">close</mat-icon>
                                 <span style="font-weight: 600">Reject</span>
                             </button>
-                            
+
                             <!-- Generate Payment Link -->
                             <ng-container *ngIf="element['receipt_status'] == 'Pending'">
                                 <button mat-menu-item *ngIf="!element.paymentLink"
@@ -325,13 +257,12 @@
                                     <mat-icon svgIcon="heroicons_outline:link"></mat-icon>
                                     <span style="font-weight: 600;">Generate Payment Link</span>
                                 </button>
-                                <button mat-menu-item *ngIf="element.paymentLink"
-                                    (click)="copyLink(element)">
+                                <button mat-menu-item *ngIf="element.paymentLink" (click)="copyLink(element)">
                                     <mat-icon svgIcon="heroicons_outline:link"></mat-icon>
                                     <span style="font-weight: 600;">Copy Payment Link</span>
                                 </button>
                             </ng-container>
-                            
+
                             <ng-container *ngIf="element['service_for'] == 'Product purchase'">
                                 <button mat-menu-item (click)="product(element)">
                                     <mat-icon svgIcon="heroicons_outline:circle-stack" class="mat-18"></mat-icon>
@@ -348,7 +279,7 @@
                                 <span style="font-weight: 600">Invoice</span>
                             </button>
 
-                            <button mat-menu-item  [ngClass]="{'cursor-pointer text-blue-600': element['proof_attachment'],
+                            <button mat-menu-item [ngClass]="{'cursor-pointer text-blue-600': element['proof_attachment'],
                                 'cursor-not-allowed text-blue-400 opacity-20': !element['proof_attachment']}"
                                 (click)="!element['proof_attachment'] ? null : downloadProoffile(element['proof_attachment'])">
                                 <mat-icon [svgIcon]="'attach_file'" class=" mat-18 min-h-[20px] h-[20px] rounded-full"
@@ -358,8 +289,7 @@
                                 <span style="font-weight: 600">Proof Attachment</span>
                             </button>
 
-                            <button mat-menu-item
-                                [ngClass]="{'cursor-pointer text-yellow-600': element['payment_attachment'],
+                            <button mat-menu-item [ngClass]="{'cursor-pointer text-yellow-600': element['payment_attachment'],
                                  'cursor-not-allowed text-yellow-400 opacity-20': !element['payment_attachment']}"
                                 (click)="!element['payment_attachment'] ? null : downloadProoffile(element['payment_attachment'])">
                                 <mat-icon [svgIcon]="'attach_file'" class="mat-18 min-h-[20px] h-[20px] rounded-full"
@@ -370,100 +300,75 @@
                             </button>
                         </mat-menu>
                     </td>
-                    <!-- <td class="text-center" alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.index">
-                        <mat-icon svgIcon="heroicons_outline:arrow-down-tray"
-                            class="rounded-full cursor-pointer text-blue-600 p-0.5"
-                            [ngClass]="{'text-blue-600 cursor-pointer': element['isInvoice'] && element['receipt_status'] === 'Confirmed',
-                                        'text-blue-500 cursor-not-allowed opacity-20': (!element['isInvoice'] || element['isInvoice'] && element['receipt_status'] !== 'Confirmed')}"
-                            [matTooltip]="'Download'"
-                            (click)="element['isInvoice'] && element['receipt_status'] === 'Confirmed' ? downloadInvoice(element['id']) : null">
-                        </mat-icon>
-                    </td> -->
-                    <!-- <td class="text-center" alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.payment_attachment">
-                        <mat-icon [svgIcon]="'attach_file'"
-                            [ngClass]="{'cursor-pointer text-blue-600': element['proof_attachment'], 'cursor-not-allowed text-blue-400': !element['proof_attachment']}"
-                            (click)="!element['proof_attachment'] ? null : downloadProoffile(element['proof_attachment'])"
-                            class="w-[6px] h-[6px] rounded-full icon-size-4" [matTooltip]="'Proof Attachment'"
-                            [attr.disabled]="!element['proof_attachment'] ? true : null">
-                        </mat-icon>
+                    <td *ngFor="let col of columns" [ngClass]="col.class">
 
-                        <mat-icon [svgIcon]="'attach_file'"
-                            [ngClass]="{'cursor-pointer text-yellow-600': element['payment_attachment'], 'cursor-not-allowed text-yellow-400': !element['payment_attachment']}"
-                            (click)="!element['payment_attachment'] ? null : downloadProoffile(element['payment_attachment'])"
-                            class="w-[6px] h-[6px] rounded-full icon-size-4" [matTooltip]="'Receipt Attachment'"
-                            [attr.disabled]="!element['payment_attachment'] ? true : null">
-                        </mat-icon>
-                    </td> -->
-                    <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.receipt_ref_no">
-                        <span [matTooltip]="element['receipt_status']"
-                            class="w-2 h-2 inline-block rounded-full mr-[6px]"
-                            [ngClass]="getStatusIndicatorClass(element['receipt_status'])"></span>
-                        <span>
-                            {{element.receipt_ref_no || "-"}}
-                        </span>
+                        <ng-container
+                            *ngIf="(col.type === types.text || col.type === types.select) && col.field != 'agent_name' && col.field != 'receipt_ref_no'">
+                            <span [ngClass]="col.isCustomColor ? getStatusIndicatorClass(element[col.field]) : ''">
+                                {{ element[col.field] || '-' }}
+                            </span>
+                        </ng-container>
+
+                        <ng-container *ngIf="col.type == types.link">
+                            <span class="cursor-pointer border-b border-gray-500" (click)="viewData(element)">
+                                {{element[col.field] || "-"}}
+                            </span>
+                        </ng-container>
+
+                        <ng-container *ngIf="col.type == types.dateTime || col.type == types.date">
+                            {{isValidDate(element[col.field])? (element[col.field] | date: col.dateFormat): "-"}}
+                        </ng-container>
+
+                        <ng-container
+                            *ngIf="col.type == types.number && col.field === 'payment_amount'; else defaultNumber">
+                            {{
+                            (element.payment_amount?.toFixed(col?.fixVal) || 0) | currency: element.payment_currency :
+                            'symbol' :
+                            ''
+                            }}
+                        </ng-container>
+
+                        <ng-template #defaultNumber>
+                            <ng-container *ngIf="col.type === types.number">
+                                {{ (element[col.field] || 0).toFixed(col.fixVal || 0) }}
+                            </ng-container>
+                        </ng-template>
+
+                        <ng-container *ngIf="col.type === types.select && col.field === 'agent_name'">
+                            <a target="_blank" class="cursor-pointer border-b border-gray-500 truncate"
+                                (click)="viewAgentData(element)">
+                                {{ element.agent_Code }}<span *ngIf="element.agent_name"> - </span>{{ element.agent_name
+                                }}
+                            </a>
+                        </ng-container>
+
+                        <ng-container *ngIf="col.type === types.text && col.field === 'receipt_ref_no'">
+                            <span [matTooltip]="element['receipt_status']"
+                                class="w-2 h-2 inline-block rounded-full mr-[6px]" [ngClass]="
+                                element['receipt_status'] === 'Pending' ? 'bg-yellow-500' :
+                                element['receipt_status'] === 'Audited' || element['receipt_status'] === 'Confirmed' ? 'bg-green-500' :
+                                element['receipt_status'] === 'Rejected' ? 'bg-red-500' :'bg-blue-500'">
+                            </span>
+                            <span>
+                                {{ element.receipt_ref_no || '-' }}
+                            </span>
+                        </ng-container>
                     </td>
-                    <td>
-                        <span class="text-center justify-left"
-                            [ngClass]="element.receipt_status == 'Confirmed' ? 'text-green-600' : element.receipt_status == 'Pending' ? 'text-blue-600' :'text-red-600'">
-                            {{element.receipt_status || "-"}}
-                        </span>
+                     <td class="w-full"
+                        *ngIf="(selectedColumns[selectedColumns?.length-1]?.field =='payment_amount') || (selectedColumns[selectedColumns?.length-1]?.field =='roe')">
                     </td>
-                    <td>
-                        {{element.service_for || "-"}}
-                    </td>
-                    <td>
-                        <span class="cursor-pointer border-b border-gray-500 " (click)="viewData(element)">
-                            {{element.transaction_ref_no || "-"}}
-                        </span>
-                    </td>
-                    <td>
-                        {{element.payment_currency || "-"}}
-                    </td>
-                    <td class="text-right">
-                        {{(element.payment_amount.toFixed(2) || 0) | currency: element.payment_currency : 'symbol' :
-                        '1.2-2'}}
-                    </td>
-                    <td class="text-right">
-                        {{element.roe.toFixed(2) || "-"}}
-                    </td>
-                    <td>
-                        {{element.mode_of_payment || "-"}}
-                    </td>
-                    <td>
-                        {{(element.receipt_request_date | date: 'dd-MM-yyyy HH:mm:ss') || "-"}}
-                    </td>
-                    <td>
-                        {{(element.audit_date_time | date: 'dd-MM-yyyy HH:mm:ss') || "-"}}
-                    </td>
-                    <td>
-                        <a target="_blank" class="cursor-pointer border-b border-gray-500 truncate"
-                            (click)="viewAgentData(element)">
-                            {{element.agent_Code}} <span *ngIf="element.agent_name">-</span> {{element.agent_name}}
-                        </a>
-                    </td>
-                    <td>
-                        {{element.pg_name || "-"}}
-                    </td>
-                    <td>
-                        {{element.pg_payment_ref_no || "-"}}
-                    </td>
-                    <td>
-                        {{element.is_paymentlink || "-"}}
-                    </td>
-                    <!-- <td *ngFor="let col of columns">
-                        {{element[col.field]}}
-                    </td> -->
                 </tr>
             </ng-template>
 
             <ng-template pTemplate="emptymessage">
-                <tr class="h-14">
-                    <td colspan="17" class="text-center font-semibold text-lg">
-                        {{getNodataText()}}
+                <tr class="h-14" *ngIf="selectedColumns?.length">
+                    <td [attr.colspan]="displayColCount()" class="text-center font-semibold text-lg">{{getNodataText()}}
                     </td>
                 </tr>
             </ng-template>
         </p-table>
     </div>
-
+    <div class="text-center mt-5" *ngIf="selectedColumns && !selectedColumns?.length"> No column to display! Please
+        Select a column
+    </div>
 </div>

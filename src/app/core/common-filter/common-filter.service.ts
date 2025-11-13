@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { ThinLayoutComponent } from 'app/layout/layouts/vertical/thin/thin.component';
 import { AgentService } from 'app/services/agent.service';
 import { KycDocumentService } from 'app/services/kyc-document.service';
 import { RefferralService } from 'app/services/referral.service';
@@ -112,6 +113,11 @@ export class CommonFilterService {
         return JSON.parse(localStorage.getItem('filterData') || '[]');
     }
 
+    //getFilterData
+    getDefaultFilterByGridName(params: { gridName: string }) {
+        return JSON.parse(localStorage.getItem('filterData') || '[]').find(x => x.grid_name == params.gridName)?.filters?.find(x => x.is_default);
+    }
+
     // Update LocalStorage Data setFilterData
     setLocalFilterData(data: any) {
         localStorage.setItem('filterData', JSON.stringify(data || []));
@@ -130,9 +136,20 @@ export class CommonFilterService {
         this.drawersUpdated.next(data);
     }
 
-    setActiveData(filerData: any) {
+    // setActiveData(filerData: any) {
+    //     if (filerData && filerData.filters) {
+    //         this.activeFiltData = filerData.filters.find((element: any) => element.is_default);
+    //     } else {
+    //         this.activeFiltData = {};
+    //     }
+    // }
+     setActiveData(filerData: any) {
         if (filerData && filerData.filters) {
             this.activeFiltData = filerData.filters.find((element: any) => element.is_default);
+            this.activeFiltData = {
+                ...this.activeFiltData,
+                gridName: filerData.gridName
+            }
         } else {
             this.activeFiltData = {};
         }
@@ -256,19 +273,20 @@ export class CommonFilterService {
         });
     }
 
-     private getAllSelectedColumns(): any[] {
+    //Dynamic column
+    private getAllSelectedColumns(): any[] {
         const data = localStorage.getItem(this.key);
         if (data && data?.trim() != '' && data != undefined) {
             return JSON.parse(data);
         } else return [];
     }
 
-    getSelectedColumns(params: { name?: string }): any {
-        const data = this.getAllSelectedColumns()
+    getSelectedColumns(params: { name?: string; }): any {
+        const data = this.getAllSelectedColumns();
         return data.find(x => x.name == params.name);
     }
 
-    setSelectedColumns(params: { name?: string, columns?: any[] }): void {
+    setSelectedColumns(params: { name?: string, columns?: any[]; }): void {
         var colList = this.getAllSelectedColumns();
         if (colList?.length) {
             var colVal = colList.find(x => x.name == params.name);
@@ -288,6 +306,5 @@ export class CommonFilterService {
     clearSelectedColumns(): void {
         localStorage.removeItem(this.key);
     }
-
 
 }

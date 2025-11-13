@@ -1,10 +1,13 @@
 <div class="flex flex-col flex-auto overflow-hidden -m-6">
     <div class="flex flex-0 justify-between h-13 pr-0 sm:pr-0 pl-0 sm:pl-0">
-        <div class="text-xl font-bold tracking-tight pt-[15px] pl-6 cursor-pointer" *ngIf="sales_product_reg?.sales_product" (click)="agentDetail(dataList?.agentid)">{{dataList?.agent_code}} - {{dataList?.agent_name}}</div>
+        <!-- <div class="text-xl font-bold tracking-tight pt-[15px] pl-6 cursor-pointer" *ngIf="sales_product_reg?.sales_product" (click)="agentDetail(dataList?.agentid)">{{dataList?.agent_code}} - {{dataList?.agent_name}}</div>
         <div class="text-xl font-bold tracking-tight pt-[15px] pl-6 cursor-pointer" *ngIf="purchase_reg?.purchase_product" (click)="agentDetail(dataList?.agentid)">{{dataList?.agent_code}} - {{dataList?.agent_name}}</div>
         <div class="text-xl font-bold tracking-tight pt-[15px] pl-6 cursor-pointer" *ngIf="receipt_reg?.receipt_register" (click)="agentDetail(dataList?.agentid)">{{dataList?.agent_code}} - {{dataList?.agent_name }}</div>
         <div class="text-xl font-bold tracking-tight pt-[15px] pl-6 cursor-pointer" *ngIf="account_reg?.account_receipt" (click)="agentDetail(dataList?.agentid)">{{dataList?.agent_code}} - {{dataList?.agent_name }} </div>
-        <div class="text-xl font-bold tracking-tight pt-[15px] pl-6 cursor-pointer" *ngIf="agent_info_reg?.agentInfo" (click)="agentDetail(dataList?.agentid)">{{dataList?.agent_code}} - {{dataList?.agent_name }}</div>
+        <div class="text-xl font-bold tracking-tight pt-[15px] pl-6 cursor-pointer" *ngIf="agent_info_reg?.agentInfo" (click)="agentDetail(dataList?.agentid)">{{dataList?.agent_code}} - {{dataList?.agent_name }}</div> -->
+
+        <div class="text-xl font-bold tracking-tight pt-[15px] pl-6 cursor-pointer"
+            (click)="agentDetail(dataList?.agentId)">{{dataList?.agentCode}} - {{dataList?.agentName }} </div>
 
         <div class="mt-2 mr-5">
             <!-- <div class="flex text-right justify-end items-end m-auto mt-[-14px]" *ngIf="tabName == 'Receipts'">
@@ -13,8 +16,8 @@
                     <span class="ml-1 mr-1">Add</span>
                 </button>
             </div> -->
-            <button class="mx-3 min-h-8 max-h-8 pt-[0px] mb-[16px]" mat-flat-button [color]="'primary'" *ngIf="tabName == 'Receipts'"
-                (click)="createReceipt()">
+            <button class="mx-3 min-h-8 max-h-8 pt-[0px] mb-[16px]" mat-flat-button [color]="'primary'"
+                *ngIf="tabName == 'Receipts'" (click)="createReceipt()">
                 <span class="mr-1 text-base font-medium text-white">Add</span>
             </button>
             <button mat-icon-button (click)="matDialogRef.close()" [tabIndex]="-1">
@@ -24,7 +27,8 @@
         </div>
     </div>
     <mat-divider></mat-divider>
-    <div class="flex flex-col flex-auto overflow-hidden overflow-y-auto overflow-x-auto lg:min-w-[900px] lg:max-w-[900px] xl:max-w-[900px] mt-[-10px]">
+    <div
+        class="flex flex-col flex-auto overflow-hidden overflow-y-auto overflow-x-auto lg:min-w-[960px] lg:max-w-[960px] xl:max-w-[960px] mt-[-10px]">
         <!-- <div class="flex flex-raw overflow-hidden overflow-x-auto border rounded-[10px] m-4">
             <div class="w-full pb-2 field-blue-bg dark:bg-[#2A374A] bg-gray-200">
                 <div class="pl-3 pt-3 overflow-hidden w-full flex-row flex">
@@ -93,7 +97,68 @@
 
         <mat-tab-group class="mt-2 lead_tab" [animationDuration]="'0'" (selectedTabChange)="tabChanged($event)">
             <mat-tab label="Product" [aria-label]="'Product'" class="">
-                <div class="flex flex-raw overflow-hidden overflow-x-auto mt-[-10px]">
+                <div class="grid grid-cols-3 gap-4">
+                    <div>
+                        <div class="text-base font-medium text-secondary dark:text-[#687798]">Product</div>
+                        <div class="text-base truncate dark:text-white text-black">{{dataList?.productName || '-'}}
+                        </div>
+                    </div>
+                    <div>
+                        <div class="text-base font-medium text-secondary dark:text-[#687798]">Original Price</div>
+                        <div class="text-base truncate dark:text-white text-black">{{dataList?.currencySymbol}} {{dataList?.originalPrice || '0'}}
+                        </div>
+                    </div>
+                    <div>
+                        <div class="text-base font-medium text-secondary dark:text-[#687798]">Product Price</div>
+                        <div class="text-base truncate dark:text-white text-black">{{dataList?.currencySymbol}} {{dataList?.purchasePrice || '0'}}
+                        </div>
+                    </div>
+                    <div>
+                        <div class="text-base font-medium text-secondary dark:text-[#687798]">Status</div>
+                        <div class="text-base truncate " [ngClass]="getStatusColor(dataList?.status)">
+                            {{dataList?.status}}</div>
+                    </div>
+                    <div>
+                        <div class="text-base font-medium text-secondary dark:text-[#687798]">Payment Due</div>
+                        <div class="text-base truncate "
+                            [ngClass]="{'text-red-500': !dataList?.paymentDue, 'text-green-500': dataList?.paymentDue}">
+                            {{dataList?.paymentDue ? 'Yes' : 'No'}}</div>
+                    </div>
+                    <div>
+                        <div class="text-base font-medium text-secondary dark:text-[#687798]">Start Integration</div>
+                        <div class="text-base truncate "
+                            [ngClass]="{'text-red-500': !dataList?.startIntegration, 'text-green-500': dataList?.startIntegration}">
+                            {{dataList?.startIntegration? 'Yes' : 'No'}}</div>
+                    </div>
+                    <div>
+                        <div class="text-base font-medium text-secondary dark:text-[#687798]">Entry Date</div>
+                        <div class="text-base truncate dark:text-white text-black">{{dataList?.entryDate || '-'}}</div>
+                    </div>
+                    <div>
+                        <div class="text-base font-medium text-secondary dark:text-[#687798]">Activation Date</div>
+                        <div class="text-base truncate dark:text-white text-black">{{dataList?.activationDate || '-'}}
+                        </div>
+                    </div>
+                    <div>
+                        <div class="text-base font-medium text-secondary dark:text-[#687798]">Expiry Date</div>
+                        <div class="text-base truncate dark:text-white text-black">{{dataList?.expiryDate || '-'}}</div>
+                    </div>
+                    <div>
+                        <div class="text-base font-medium text-secondary dark:text-[#687798]">Proof Attachment</div>
+                        <div class="text-base dark:text-white text-black">
+                            <mat-icon svgIcon="heroicons_outline:arrow-down-tray"
+                                class="rounded-full cursor-pointer text-blue-600 p-0.5"
+                                [attr.disabled]="!dataList?.proofAttachment ? true : null"
+                                (click)="downloadfile(dataList?.proofAttachment)" [matTooltip]="'Download'">
+                            </mat-icon>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="text-base font-medium text-secondary dark:text-[#687798]">Remark</div>
+                    <div class="text-base word-break dark:text-white text-black">{{record?.rmRemark || " -"}}</div>
+                </div>
+                <!-- <div class="flex flex-raw overflow-hidden overflow-x-auto mt-[-10px]">
                     <div class="w-full pb-0 field-blue-bg">
                         <div class="overflow-hidden w-full flex-row flex">
                             <div class="flex flex-col w-[40%] pt-1">
@@ -109,7 +174,6 @@
                                 <span class="text-base font-medium text-secondary dark:text-[#687798]">Original
                                     Price</span>
                                 <span class="text-base truncate dark:text-white text-black" *ngIf="purchase_reg?.purchase_product">
-                                    <!-- {{dataList?.one_time_cost ? '₹ ' + dataList?.one_time_cost : " -"}}</span> -->
                                     {{ dataList?.one_time_cost != null ?
                                         (dataList.one_time_cost | currency: dataList.currency : 'symbol' : '1.2-2') :  '-' }}
                                 </span>
@@ -135,7 +199,6 @@
                                 <span class="text-base font-medium text-secondary dark:text-[#687798]">Product
                                     Price</span>
                                 <span class="text-base truncate dark:text-white text-black" *ngIf="purchase_reg?.purchase_product">
-                                    <!-- {{record?.purchase_amount ? '₹ ' + record?.purchase_amount : " -"}} -->
                                     {{ dataList?.purchase_amount != null ?
                                         (dataList.purchase_amount | currency: (dataList.currency || 'INR') : 'symbol' : '1.2-2') :  '-' }}
                                 </span>
@@ -177,7 +240,6 @@
                                 </span>
 
                                 <span *ngIf="agent_info_reg?.agentInfo" class="text-base truncate" [ngClass]="getStatusColor(dataList?.product_status)">
-                                    <!-- {{dataList && dataList?.product_status ? dataList && dataList?.product_status : " -"}} -->
                                     {{ dataList?.product_status || '-' }}
                                 </span>
                             </div>
@@ -366,25 +428,35 @@
                         </div>
 
                     </div>
-                </div>
+                </div> -->
             </mat-tab>
             <mat-tab label="Services" [aria-label]="'Services'" *ngIf="getTabsPermission('items')">
-                <app-payment-info-items #items [servicesDetail]="dataList"></app-payment-info-items>
+                <app-payment-info-items #items [servicesDetail]="dataList.services"></app-payment-info-items>
             </mat-tab>
             <mat-tab label="Installments" [aria-label]="'Installments'" *ngIf="getTabsPermission('installments')">
-                <app-installments-info-items [installmentDetail]="dataList" #installments></app-installments-info-items>
+                <app-installments-info-items [installmentDetail]="dataList.installments" [recordId]="record.id" #installments></app-installments-info-items>
             </mat-tab>
             <mat-tab label="Receipts" [aria-label]="'Receipts'" *ngIf="getTabsPermission('receipts')">
                 <!-- <ng-container *ngIf="tabName == 'Receipts'"> -->
-                    <app-receipts-info-items #receipts [receiptDetail]="dataList"></app-receipts-info-items>
+                <app-receipts-info-items #receipts [receiptDetail]="dataList.receipts" [recordId]="record.id"></app-receipts-info-items>
                 <!-- </ng-container> -->
             </mat-tab>
             <mat-tab label="WL-Setting Links" [aria-label]="'WL-Setting Links'">
-                <app-payment-info-wl-settings-link #receipts [wlSetting]="getWLSettingList"></app-payment-info-wl-settings-link>
+                <app-payment-info-wl-settings-link #receipts
+                    [wlSetting]="getWLSettingList"></app-payment-info-wl-settings-link>
             </mat-tab>
 
             <mat-tab label="Sales Return" [aria-label]="'Sales Return'" *ngIf="dataList?.is_sales_return">
-                <app-payment-info-sales-return #salesreturn [salesReturnDetail]="dataList"></app-payment-info-sales-return>
+                <app-payment-info-sales-return #salesreturn
+                    [salesReturnDetail]="dataList"></app-payment-info-sales-return>
+            </mat-tab>
+
+            <mat-tab label="Logs" [aria-label]="'Logs'" *ngIf="getTabsPermission('logs')">
+                <app-product-logs #logs [logsDetail]="dataList.productLogs"></app-product-logs>
+            </mat-tab>
+
+            <mat-tab label="Status Change Logs" [aria-label]="'Status Change Logs'" *ngIf="getTabsPermission('statusChangeLogs')">
+                <app-status-change-logs #statusChangeLogs [statusChangelogsDetail]="dataList.statusChangeLogs"></app-status-change-logs>
             </mat-tab>
         </mat-tab-group>
     </div>

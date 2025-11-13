@@ -66,7 +66,12 @@
                     </mat-form-field>
 
                     <mat-form-field class="flex-grow">
-                        <mat-label>Total Amount</mat-label>
+                        <mat-label>GST</mat-label>
+                        <input matInput required formControlName="gst" />
+                    </mat-form-field>
+
+                    <mat-form-field class="flex-grow">
+                        <mat-label>Service Charge (Without GST)</mat-label>
                         <input matInput required (keypress)="numberOnly($event)" formControlName="total_amount" />
                     </mat-form-field>
 
@@ -93,7 +98,7 @@
 
         <div class="gap-2 px-5 py-4 overflow-auto" style="height: calc(100vh - 60px)"
             *ngIf="title == 'Proforman Invoice Info'">
-            <div class="flex gap-2 border-b border-gray-600 py-[10px] items-center w-full"
+            <div class="flex gap-4 border-b border-gray-600 py-[10px] items-center w-full"
                 *ngFor="let filed of fieldList">
                 <div class="flex flex-row w-[45%] space-x-2">
                     <span class=" text-md font-semibold text-secondary">{{filed.name}} :</span>

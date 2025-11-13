@@ -29,6 +29,7 @@ import { HolidayVersionTwoService } from 'app/services/holidayversion2.service '
 import { ImageCarouselComponent } from '../image-carousel/image-carousel.component';
 import { CommonUtils } from 'app/utils/commonutils';
 import { AuthService } from 'app/core/auth/auth.service';
+import { SafePipe } from 'app/common/dom-sanitizer.pipe';
 
 
 @Component({
@@ -62,6 +63,7 @@ import { AuthService } from 'app/core/auth/auth.service';
     NgxMatSelectSearchModule,
     CurrencyPipe,
     CommonModule,
+    SafePipe
   ]
 })
 export class ViewHolidayDetailsComponent {

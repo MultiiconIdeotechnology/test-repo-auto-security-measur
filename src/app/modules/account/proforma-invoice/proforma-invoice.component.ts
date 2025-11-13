@@ -20,7 +20,7 @@ import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
-import { BaseListingComponent, Column } from 'app/form-models/base-listing';
+import { BaseListingComponent, Column, Types } from 'app/form-models/base-listing';
 import { filter_module_name, messages, module_name, Security } from 'app/security';
 import { AccountService } from 'app/services/account.service';
 import { AgentService } from 'app/services/agent.service';
@@ -32,6 +32,7 @@ import { SidebarCustomModalService } from 'app/services/sidebar-custom-modal.ser
 import { CommonUtils } from 'app/utils/commonutils';
 import { DateTime } from 'luxon';
 import { Excel } from 'app/utils/export/excel';
+import { cloneDeep } from 'lodash';
 
 @Component({
   selector: 'app-proforma-invoice',
@@ -76,12 +77,17 @@ export class ProformaInvoiceComponent extends BaseListingComponent implements On
   total = 0;
   dataList = [];
   appConfig = AppConfig;
-  cols = [];
-  _selectedColumns: Column[];
+
   isFilterShow: boolean = false;
   selectedAgent: any;
   isLoading = false;
   private destroy$: Subject<any> = new Subject<any>();
+
+  types = Types;
+  cols: Column[] = [];
+  selectedColumns: Column[] = [];
+  exportCol: Column[] = [];
+  activeFiltData: any = {};
 
   constructor(
     private accountService: AccountService,
@@ -107,6 +113,18 @@ export class ProformaInvoiceComponent extends BaseListingComponent implements On
     //     }
     //   }
     // })
+    this.selectedColumns = [
+      { field: 'invoice_date', header: 'Invoice Date', type: Types.date, dateFormat: 'dd-MM-yyyy' },
+      { field: 'invoice_no', header: 'Invoice No.', type: Types.text },
+      { field: 'customer_name', header: 'Customer Name', type: Types.text },
+      { field: 'taxable_amount', header: 'Taxable Amount',type: Types.number, fixVal: 2, class: 'text-right' },
+      { field: 'tax', header: 'Tax', type: Types.number, fixVal: 2, class: 'text-right' },
+      { field: 'total_amount', header: 'Service Charge', type: Types.number, fixVal: 2, class: 'text-right' },
+      { field: 'currency', header: 'Currency', type: Types.text },
+      { field: 'gst', header: 'GST', type: Types.text }
+    ];
+    this.cols.unshift(...this.selectedColumns);
+    this.exportCol = cloneDeep(this.cols);
   }
 
   ngOnInit() {
@@ -147,6 +165,7 @@ export class ProformaInvoiceComponent extends BaseListingComponent implements On
 
       this.primengTable['filters'] = resp['table_config'];
       this.isFilterShow = true;
+      this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
       this.primengTable._filter();
     });
 
@@ -164,9 +183,35 @@ export class ProformaInvoiceComponent extends BaseListingComponent implements On
         filterData['table_config']['invoice_date'].value = new Date(filterData['table_config']['invoice_date'].value);
       }
       this.primengTable['filters'] = filterData['table_config'];
-      // this.primengTable['_sortField'] = filterData['sortColumn'];
-      // this.sortColumn = filterData['sortColumn'];
+      this.selectedColumns = this.checkSelectedColumn(filterData['selectedColumns'] || [], this.selectedColumns);
+      this.onColumnsChange();
+    } else {
+      this.selectedColumns = this.checkSelectedColumn([], this.selectedColumns);
+      this.onColumnsChange();
     }
+  }
+
+  onColumnsChange(): void {
+    this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
+  }
+
+  checkSelectedColumn(col: any[], oldCol: Column[]): any[] {
+    if (col.length) return col;
+    else {
+      var Col = this._filterService.getSelectedColumns({ name: this.filter_table_name })?.columns || [];
+      if (!Col.length)
+        return oldCol;
+      else
+        return Col;
+    }
+  }
+
+  isDisplayHashCol(): boolean {
+    return this.selectedColumns.length > 0;
+  }
+
+  onSelectedColumnsChange(): void {
+    this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
   }
 
   refreshItems(event?: any): void {
@@ -211,7 +256,7 @@ export class ProformaInvoiceComponent extends BaseListingComponent implements On
 
   exportExcel(): void {
     if (!Security.hasExportDataPermission(this.module_name)) {
-      return this.alertService.showToast('error',messages.permissionDenied);
+      return this.alertService.showToast('error', messages.permissionDenied);
     }
 
     const filterReq = this.getNewFilterReq({});
@@ -230,7 +275,7 @@ export class ProformaInvoiceComponent extends BaseListingComponent implements On
           { header: 'Customer Name', property: 'customer_name' },
           { header: 'Taxable Amount', property: 'taxable_amount' },
           { header: 'Tax', property: 'tax' },
-          { header: 'Total Amount', property: 'total_amount' },
+          { header: 'Service Charge', property: 'total_amount' },
           { header: 'Currency', property: 'currency' },
         ],
         data.data,
@@ -246,5 +291,15 @@ export class ProformaInvoiceComponent extends BaseListingComponent implements On
     else if (this.searchInputControl.value)
       return `no search results found for \'${this.searchInputControl.value}\'.`;
     else return 'No data to display';
+  }
+
+  displayColCount(): number {
+    return this.selectedColumns.length + 1;
+  }
+
+
+  isValidDate(value: any): boolean {
+    const date = new Date(value);
+    return value && !isNaN(date.getTime());
   }
 }

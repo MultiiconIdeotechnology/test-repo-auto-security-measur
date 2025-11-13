@@ -153,6 +153,7 @@ export const category_name = {
     export: 'Export',
     import: 'Import',
     block_unblock: 'Block/Unblock',
+    shift_product: 'Shift Product',
     enable_disable: 'Enable/Disable',
     copy: 'Copy',
     is_most: 'IsMost',
@@ -191,6 +192,7 @@ export const category_name = {
     action: 'Action',
     dail_call: 'Dail Call',
     re_shuffle: 'Reshuffle',
+    bulk_assign: 'Bulk Assign'
 };
 
 export const module_name = {
@@ -226,7 +228,7 @@ export const module_name = {
     hotel: 'Hotel',
     forex: 'Forex',
     holiday_lead: 'Holiday',
-    cab_lead: 'Cab',
+    cab_lead: 'Bookings - Cab',
     sent_mail: 'Sent Mail',
     hotelroom: 'Hotel Room',
     hoteltariff: 'Hotel Tariff',
@@ -246,12 +248,14 @@ export const module_name = {
     markupProfile: 'Markup Profile',
     amendmentRequests: 'Amendment Requests',
     groupInquiry: 'Group Inquiry',
+    booking_airline_block: 'Bookings - Airline Block',
     ledger: 'Agent Ledger',
     payment: 'Payments',
     paymentLink: 'Payment Link',
     proformaInvoice: 'Proforma Invoice',
     receipt: 'Receipt',
     flight: 'Flight',
+    airlineBlock:'Airline Block',
     bus: 'Bus',
     agentkyc: 'Agent KYC Dashboard',
     wallet: 'Wallet Recharge',
@@ -276,7 +280,6 @@ export const module_name = {
     bookingsBus: 'Bookings - BUS',
     bookingsHotel: 'Bookings - Hotel',
     bookingsForex: 'Bookings - Forex',
-    bookingsCab: 'Bookings - Cab',
     bookingsHoliday: 'Bookings - Holiday',
     bookingsVisa: 'Bookings - Visa',
     bookingsInsurance: 'Bookings - Visa',
@@ -284,6 +287,7 @@ export const module_name = {
     inventoryHotel: 'Inventory - Hotel',
     inventoryVisa: 'Inventory - Visa',
     inventoryCab: 'Inventory - Cab',
+    inventoryAirlineBlock: 'Inventory - Airline Block',
     ERPSettings: 'ERP Settings',
     SaleBook: 'Sale Book',
     SalesReturn: 'Sales Return',
@@ -333,6 +337,11 @@ export const module_name = {
     purchase_register_2: 'Purchase Register-2',
     supplier_inventory_profile: 'Supplier Inventory Profile',
 
+    psp_setup: 'PSP Setup',
+
+    // account2.0
+   // purchase_register_2: 'Purchase Register-2',
+    sale_register_2: 'Sale Register-2',
 
 };
 
@@ -349,6 +358,8 @@ export const filter_module_name = {
     tech_dashboard_completed: "tech_dashboard_completed",
     tech_dashboard_blocked: "tech_dashboard_blocked",
     tech_dashboard_expired: "tech_dashboard_expired",
+    tech_dashboard_cancelled: "tech_dashboard_cancelled",
+    tech_dashboard_domain: "tech_dashboard_domain",
     referral_link: "referral_link",
 
 
@@ -405,7 +416,7 @@ export const filter_module_name = {
     offline_service_booking: "offline_service_booking",
     holiday_lead_service_booking: "holiday_lead",
     cab_lead_service_booking: "cab_lead",
-
+    airline_booking_booking: "airline_booking_booking",
 
     //Report
     agent_balance_register: "agent_balance_register",
@@ -448,6 +459,9 @@ export const filter_module_name = {
     purchase_register_bonton: 'purchase_register_bonton',
     purchase_register_bonton_dmcc: 'purchase_register_bonton_dmcc',
 
+    sale_register_bonton: 'sale_register_bonton',
+    sale_register_bonton_dmcc: 'sale_register_bonton_dmcc',
+
     //Inventory
     activity: "activity",
     transfers: "transfers",
@@ -456,6 +470,7 @@ export const filter_module_name = {
     hotel: "hotel",
     visa: "visa",
     cab: "cab",
+    airline_block: "airline_block",
 
     //Hr
     permission_profile: "permission_profile",
@@ -466,6 +481,7 @@ export const filter_module_name = {
 
     //Settings
     psp: "psp",
+    psp_setup: 'psp_setup',
     supplier_api: "supplier_api",
     message_templates: "message_templates",
     message_events: "message_events",
@@ -529,11 +545,15 @@ export const techDashPermissions = {
     completedTabPermissions: { module_name: module_name.techDashboard, group_name: group_name.listingPage, operation_type: 'Completed Tab', category_name: category_name.view },
     expiredTabPermissions: { module_name: module_name.techDashboard, group_name: group_name.listingPage, operation_type: 'Expired Tab', category_name: category_name.view },
     blockedTabPermissions: { module_name: module_name.techDashboard, group_name: group_name.listingPage, operation_type: 'Blocked Tab', category_name: category_name.view },
+    cancelledTabPermissions: { module_name: module_name.techDashboard, group_name: group_name.listingPage, operation_type: 'Cancelled Tab', category_name: category_name.view },
+    domainTabPermissions: { module_name: module_name.techDashboard, group_name: group_name.listingPage, operation_type: 'Domain Tab', category_name: category_name.view },
     updateStatusPermissions: { module_name: module_name.techDashboard, group_name: group_name.listingPage, operation_type: 'Update Status', category_name: category_name.operation },
     statusChangedLogPermissions: { module_name: module_name.techDashboard, group_name: group_name.listingPage, operation_type: 'Status Changed Log', category_name: category_name.operation },
     wlSettingPermissions: { module_name: module_name.techDashboard, group_name: group_name.listingPage, operation_type: 'WL Setting', category_name: category_name.operation },
     linkPermissions: { module_name: module_name.techDashboard, group_name: group_name.listingPage, operation_type: 'Link', category_name: category_name.operation },
     updateExpiryDatePermissions: { module_name: module_name.techDashboard, group_name: group_name.listingPage, operation_type: 'Update Expiry Date', category_name: category_name.operation },
+    viewOnlyAssignedPermissions: { module_name: module_name.techDashboard, group_name: group_name.listingPage, operation_type: 'View Only Assigned', category_name: category_name.view }
+    
 }
 
 export const agentPermissions = {
@@ -548,6 +568,9 @@ export const agentPermissions = {
     expiryProductPermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Expiry Product', category_name: category_name.operation },
     salesReturnProductPermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Sales Return', category_name: category_name.operation },
     deleteProductPermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Delete', category_name: category_name.operation },
+    blockUnblockPermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Block Unblock', category_name: category_name.block_unblock },
+    shiftProductPermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Shift Product', category_name: category_name.shift_product },
+    
     // techServicePermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Tech Service', category_name: category_name.operation },
     // techCallHistoryPermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Timeline Call History', category_name: category_name.operation }
     viewOnlyAssignedPermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'View Only Assigned', category_name: category_name.view }
@@ -639,7 +662,9 @@ export const partnerPurchaseProductPermissions = {
     dormantsPermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Partner Dormant', category_name: category_name.operation },
     itemsTabPermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Items Tab', category_name: category_name.view },
     installmentsTabPermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Installments Tab', category_name: category_name.view },
-    receiptsTabPermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Receipts Tab', category_name: category_name.view }
+    receiptsTabPermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Receipts Tab', category_name: category_name.view },
+    logsTabPermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Logs Tab', category_name: category_name.view },
+    statusChangeLogsTabPermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Status Change Logs Tab', category_name: category_name.view }
 }
 
 export const crmLeadPermissions = {
@@ -684,9 +709,19 @@ export const documentPermissions = {
     rejectPermissions: { module_name: module_name.kycdocument, group_name: group_name.listingPage, operation_type: 'Reject', category_name: category_name.audit_unaudit },
 }
 
+export const bookingsCabPermissions = {
+    rejectedPermissions: { module_name: module_name.cab_lead, group_name: group_name.detailPage, operation_type: 'Reject', category_name: category_name.rejected },
+    statusPermissions: { module_name: module_name.cab_lead, group_name: group_name.detailPage, operation_type: 'Status', category_name: category_name.status },
+}
+
 export const forexPermissions = {
     rejectedPermissions: { module_name: module_name.forex, group_name: group_name.listingPage, operation_type: 'Reject', category_name: category_name.rejected },
     statusPermissions: { module_name: module_name.forex, group_name: group_name.listingPage, operation_type: 'Status', category_name: category_name.status },
+}
+
+export const bookingAirlineBlockPermissions = {
+    rejectedPermissions: { module_name: module_name.booking_airline_block, group_name: group_name.detailPage, operation_type: 'Reject', category_name: category_name.rejected },
+    statusPermissions: { module_name: module_name.booking_airline_block, group_name: group_name.detailPage, operation_type: 'Status', category_name: category_name.status },
 }
 
 export const bookingsFlightPermissions = {
@@ -768,7 +803,8 @@ export const inventoryHolidayPermissions = {
 export const inventoryCabPermissions = {
     publishUnpublishPermissions: { module_name: module_name.inventoryCab, group_name: group_name.listingPage, operation_type: 'Publish Unpublish', category_name: category_name.publish_unpublish },
     setasPopularPermissions: { module_name: module_name.inventoryCab, group_name: group_name.listingPage, operation_type: 'Set as Popular', category_name: category_name.operation },
-    copyProductPermissions: { module_name: module_name.inventoryCab, group_name: group_name.listingPage, operation_type: 'Copy Product', category_name: category_name.copy },
+    auditUnauditPermissions: { module_name: module_name.inventoryCab, group_name: group_name.listingPage, operation_type: 'Audit Unaudit', category_name: category_name.audit_unaudit },
+    deletePermissions: { module_name: module_name.inventoryCab, group_name: group_name.listingPage, operation_type: 'Delete Cab', category_name: category_name.delete },
     viewCabPermissions: { module_name: module_name.inventoryCab, group_name: group_name.listingPage, operation_type: 'View Cab', category_name: category_name.view },
 }
 
@@ -787,6 +823,13 @@ export const inventoryVisaPermissions = {
     visaDocumentsPermissions: { module_name: module_name.inventoryVisa, group_name: group_name.listingPage, operation_type: 'Visa Documents', category_name: category_name.view },
     visaChargesPermissions: { module_name: module_name.inventoryVisa, group_name: group_name.listingPage, operation_type: 'Visa Charges', category_name: category_name.view },
     specialNotesPermissions: { module_name: module_name.inventoryVisa, group_name: group_name.listingPage, operation_type: 'Special Notes', category_name: category_name.entry },
+}
+
+export const inventoryAirlineBlockPermissions = {
+    publishUnpublishPermissions: { module_name: module_name.inventoryAirlineBlock, group_name: group_name.listingPage, operation_type: 'Publish Unpublish', category_name: category_name.publish_unpublish },
+    viewAirlineBlockPermissions: { module_name: module_name.inventoryAirlineBlock, group_name: group_name.listingPage, operation_type: 'View Airline Block', category_name: category_name.view },
+    deletePermissions: { module_name: module_name.inventoryAirlineBlock, group_name: group_name.listingPage, operation_type: 'Delete Airline Block', category_name: category_name.delete },
+    auditUnauditPermissions: { module_name: module_name.inventoryAirlineBlock, group_name: group_name.listingPage, operation_type: 'Audit Unaudit', category_name: category_name.audit_unaudit },
 }
 
 export const employeePermissions = {
@@ -844,3 +887,8 @@ export const supplierInventoryProfilePermissions = {
     setasDefaultPermissions: { module_name: module_name.supplier_inventory_profile, group_name: group_name.listingPage, operation_type: 'Set as Default', category_name: category_name.action },
 }
 
+export const PSPSetupPermissions = {
+    bulkAssignPermissions: { module_name: module_name.psp_setup, group_name: group_name.listingPage, operation_type: 'Bulk Assign', category_name: category_name.bulk_assign },
+    setDefaultPermissions: { module_name: module_name.psp_setup, group_name: group_name.listingPage, operation_type: 'Set Default', category_name: category_name.action },
+    enableDisablePermissions: { module_name: module_name.psp_setup, group_name: group_name.listingPage, operation_type: 'Enable Disable', category_name: category_name.enableDisable },
+}

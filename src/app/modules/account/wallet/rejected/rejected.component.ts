@@ -25,10 +25,12 @@ import { DateTime } from 'luxon';
 import { EntityService } from 'app/services/entity.service';
 import { Excel } from 'app/utils/export/excel';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
-import { BaseListingComponent } from 'app/form-models/base-listing';
+import { BaseListingComponent, Column, Types } from 'app/form-models/base-listing';
 import { AgentService } from 'app/services/agent.service';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { IndianNumberPipe } from '@fuse/pipes/indianNumberFormat.pipe';
+import { cloneDeep } from 'lodash';
+import { OverlayPanel } from 'primeng/overlaypanel';
 
 @Component({
 	selector: 'app-rejected',
@@ -60,7 +62,7 @@ import { IndianNumberPipe } from '@fuse/pipes/indianNumberFormat.pipe';
 	],
 })
 export class RejectedComponent extends BaseListingComponent {
-
+	@ViewChild('op') overlayPanel!: OverlayPanel;
 	@Input() isFilterShowReject: boolean;
 	@Output() isFilterShowAuditedChange = new EventEmitter<boolean>();
 	@Input() filterApiData: any;
@@ -91,7 +93,11 @@ export class RejectedComponent extends BaseListingComponent {
 	selectedPsp: any;
 	public settingsRejectSubscription: Subscription;
 
-	cols = [];
+	types = Types;
+	selectedColumns: Column[] = [];
+	exportCol: Column[] = [];
+	activeFiltData: any = {};
+	cols: Column[] = [];
 	protected masterService: MasterService;
 
 	constructor(
@@ -107,6 +113,25 @@ export class RejectedComponent extends BaseListingComponent {
 		this.sortDirection = 'desc';
 		this.Mainmodule = this;
 		this._filterService.applyDefaultFilter(this.filter_table_name);
+
+		this.selectedColumns = [
+			{ field: 'reference_number', header: 'Ref. No', type: Types.text },
+			{ field: 'request_date_time', header: 'Request', type: Types.dateTime, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
+			{ field: 'agent_code', header: 'Agent Code', type: Types.number, fixVal: 0 },
+			{ field: 'recharge_for_name', header: 'Agent', type: Types.select },
+			{ field: 'currency', header: 'Currency', type: Types.text },
+			{ field: 'recharge_amount', header: 'Amount', type: Types.number, fixVal: 0, class: 'text-right' },
+			{ field: 'mop', header: 'MOP', type: Types.select },
+			{ field: 'psp_name', header: 'PSP', type: Types.select },
+			{ field: 'filename', header: 'Attachment', type: Types.link, isHideFilter: true , class:'text-center'},
+			{ field: 'rejected_by_name', header: 'Rejected By', type: Types.text },
+			{ field: 'rejected_date_time', header: 'Reject Time', type: Types.dateTime, dateFormat: 'dd-MM-yyyy' },
+			{ field: 'user_remark', header: 'Remark', type: Types.text },
+		];
+
+		this.cols.unshift(...this.selectedColumns);
+		this.exportCol = cloneDeep(this.cols);
+
 	}
 
 	ngOnInit(): void {
@@ -154,6 +179,7 @@ export class RejectedComponent extends BaseListingComponent {
 			// this.sortColumn = resp['sortColumn'];
 			// this.primengTable['_sortField'] = resp['sortColumn'];
 			this.primengTable['filters'] = resp['table_config'];
+			this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
 			this.primengTable._filter();
 		});
 	}
@@ -171,6 +197,8 @@ export class RejectedComponent extends BaseListingComponent {
 			if (filterData?.['table_config']?.['rejected_date_time'].value) {
 				filterData['table_config']['rejected_date_time'].value = new Date(filterData['table_config']['rejected_date_time'].value);
 			}
+			this.selectedColumns = this.checkSelectedColumn(filterData['selectedColumns'] || [], this.selectedColumns);
+			this.onColumnsChange();
 			this.isFilterShowReject = true;
 			this.isFilterShowAuditedChange.emit(this.isFilterShowReject);
 			setTimeout(() => {
@@ -195,11 +223,39 @@ export class RejectedComponent extends BaseListingComponent {
 				}
 				this.primengTable['filters'] = filterData['table_config'];
 				// this.primengTable._filter();
+
 			}, 1000);
 			// this.primengTable['_sortField'] = filterData['sortColumn'];
 			// this.sortColumn = filterData['sortColumn'];
+		} else {
+			this.selectedColumns = this.checkSelectedColumn([], this.selectedColumns);
+			this.onColumnsChange();
 		}
 	}
+
+	onColumnsChange(): void {
+		this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
+	}
+
+	checkSelectedColumn(col: any[], oldCol: Column[]): any[] {
+		if (col.length) return col
+		else {
+			var Col = this._filterService.getSelectedColumns({ name: this.filter_table_name })?.columns || [];
+			if (!Col.length)
+				return oldCol;
+			else
+				return Col;
+		}
+	}
+
+	isDisplayHashCol(): boolean {
+		return this.selectedColumns.length > 0;
+	}
+
+	toggleOverlayPanel(event: MouseEvent) {
+		this.overlayPanel.toggle(event);
+	}
+
 
 	ngOnChanges(changes: SimpleChanges) {
 		this.mopList = this.filterApiData.mopData;
@@ -373,5 +429,15 @@ export class RejectedComponent extends BaseListingComponent {
 		}
 	}
 
+	displayColCount(): number {
+		return this.selectedColumns.length + 1;
+	}
+
+
+	isValidDate(value: any): boolean {
+		const date = new Date(value);
+		return value && !isNaN(date.getTime());
+
+	}
 
 }

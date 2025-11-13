@@ -150,21 +150,21 @@ export class PurchaseProductEntryComponent {
         return true;
     }
 
-    refreshItems(): void {
-        const filterReq = GridUtils.GetFilterReq(
-            this._paginator,
-            this._sort,
-            this.searchInputControl.value
-        );
-        this.crmService.getProductPurchaseMasterList(filterReq).subscribe({
-            next: (data) => {
-                this.dataList = data.data;
-            },
-            error: (err) => {
-                this.alertService.showToast('error', err, 'top-right', true);
-            },
-        });
-    }
+    // refreshItems(): void {
+    //     const filterReq = GridUtils.GetFilterReq(
+    //         this._paginator,
+    //         this._sort,
+    //         this.searchInputControl.value
+    //     );
+    //     this.crmService.getProductPurchaseMasterList(filterReq).subscribe({
+    //         next: (data) => {
+    //             this.dataList = data.data;
+    //         },
+    //         error: (err) => {
+    //             this.alertService.showToast('error', err, 'top-right', true);
+    //         },
+    //     });
+    // }
 
     onProductSelectionChange(selectedProduct: any): void {
         this.productDetail = this.productList?.find(x => x.id == selectedProduct);
@@ -294,13 +294,13 @@ export class PurchaseProductEntryComponent {
 
         const json = this.formGroup.getRawValue();
         const newJson = {
-            agent_id: this.record?.agentid ? this.record?.agentid : this.record?.editData?.agentid,
+            agentId: this.record?.agentid ? this.record?.agentid : this.record?.editData?.agentid,
             id: this.productPurchaseMasterId ? this.productPurchaseMasterId : "",
-            product_id: this.productId ? this.productId : "",
-            purchase_amount: json?.price,
+            productId: this.productId ? this.productId : "",
+            purchaseAmount: json?.price,
             max_installment: json?.installments,
-            installmentArr: this.installmentsArray,
-            rm_remark: json.rm_remark
+            installments: this.installmentsArray,
+            rmRemark: json.rm_remark
         };
 
         if (this.formGroup.get("price").value != "" && totalAmount != 0 && this.validateDates() == true) {

@@ -88,6 +88,7 @@ export class ProformaEntryComponent {
       particular: [''],
       particularfilter: [''],
       currency: [''],
+      gst:[''],
       total_amount: [''],
       tax: [''],
       remark: [''],
@@ -112,9 +113,10 @@ export class ProformaEntryComponent {
             { name: 'Invoice No.', value: this.referralData.invoice_no },
             { name: 'Invoice Date', value: this.referralData.invoice_date ? DateTime.fromISO(this.referralData.invoice_date).toFormat('dd-MM-yyyy').toString() : '' },
             { name: 'Currency', value: this.referralData.currency },
+            { name: 'GST', value: this.referralData.gst },
             { name: 'Taxable Amount', value: this.referralData.taxable_amount },
             { name: 'Tax', value: this.referralData.tax },
-            { name: 'Total Amount', value: this.referralData.total_amount },
+            { name: 'Service Charge (Without GST)', value: this.referralData.total_amount },
           ]
         }
       }
@@ -179,6 +181,7 @@ export class ProformaEntryComponent {
       invoice_date: new Date(),
       customer_name: '',
       currency: '',
+      gst:'',
       total_amount: '',
       tax: '',
       remark: '',
@@ -228,6 +231,7 @@ export class ProformaEntryComponent {
               invoice_date: data.invoice_date,
               customer_name: data.customer_name,
               currency: data.currency,
+              gst:data.gst,
               taxable_amount: data.taxable_amount,
               tax: data.tax,
               total_amount: data.total_amount,

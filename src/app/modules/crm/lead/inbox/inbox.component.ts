@@ -30,11 +30,13 @@ import { DialCallListComponent } from '../dial-call-list/dial-call-list.componen
 import { CRMScheduleCallListComponent } from '../schedule-call-list/schedule-call-list.component';
 import { EntityService } from 'app/services/entity.service';
 import { LeadStatusChangedLogComponent } from '../lead-status-changed-log/lead-status-changed-log.component';
-import { BaseListingComponent, Column } from 'app/form-models/base-listing';
+import { BaseListingComponent, Column, Types } from 'app/form-models/base-listing';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { Subscription } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { ScheduleCallRemarkComponent } from '../call-history-tab/schedule-call-details/schedule-call-details.component';
+import { OverlayPanel } from 'primeng/overlaypanel';
+import { cloneDeep } from 'lodash';
 
 @Component({
     selector: 'app-inbox',
@@ -75,19 +77,21 @@ import { ScheduleCallRemarkComponent } from '../call-history-tab/schedule-call-d
 
 export class InboxComponent extends BaseListingComponent {
     @Input() isFilterShowInbox: boolean;
-    @Input() selectedColumns: Column[];
+    // @Input() selectedColumns: Column[];
     @Output() isFilterShowInboxChange = new EventEmitter<boolean>();
     @ViewChild('tabGroup') tabGroup;
     @ViewChild(MatPaginator) public _paginatorInbox: MatPaginator;
     @ViewChild(MatSort) public _sortInbox: MatSort;
+    @ViewChild('op') overlayPanel!: OverlayPanel;
 
     Mainmodule: any;
     filter_table_name = filter_module_name.leads_inbox;
     private settingsUpdatedSubscription: Subscription;
     statusList = ['New', 'Live', 'Dead'];
     typeList = ['B2B Partner', 'Build My Brand', 'WL', 'Boost My Brand', 'Corporate'];
+    feedbackList = ['Positive', 'Negative', 'No Answer'];
 
-    cols = [];
+
     dataList = [];
     searchInputControlInbox = new FormControl('');
     deadLeadId: any;
@@ -102,6 +106,15 @@ export class InboxComponent extends BaseListingComponent {
     data: any
     filter: any = {}
 
+    types = Types;
+    exportCol: Column[] = [];
+    activeFiltData: any = {};
+    cols: Column[] = [
+        { field: 'lead_assign_by', header: 'Assign By', type: Types.text },
+        { field: 'lead_assign_by_date', header: 'Assign By Date', type: Types.date, dateFormat: 'dd-MM-yyyy' },
+    ];
+    selectedColumns: Column[] = [];
+
     constructor(
         private crmService: CrmService,
         private conformationService: FuseConfirmationService,
@@ -115,6 +128,23 @@ export class InboxComponent extends BaseListingComponent {
         this.sortDirection = 'desc';
         this.Mainmodule = this;
         this._filterService.applyDefaultFilter(this.filter_table_name);
+
+        this.selectedColumns = [
+            { field: 'callCount', header: 'Calls', type: Types.number, fixVal: 0, class: 'text-center' },
+            { field: 'agency_name', header: 'Agency', type: Types.text },
+            { field: 'lead_status', header: 'Status', type: Types.select, isCustomColor: true },
+            { field: 'lead_type', header: 'Type', type: Types.select },
+            { field: 'call_purpose', header: 'Purpose', type: Types.text },
+            { field: 'last_call_date_time', header: 'Last Call', type: Types.dateTime, dateFormat: 'dd-MM-yyyy' },
+            { field: 'assignByName', header: 'Assigned By', type: Types.text },
+            { field: 'lead_source', header: 'Source', type: Types.text },
+            { field: 'last_call_feedback', header: 'Feedback', type: Types.select },
+            { field: 'entry_date_time', header: 'Lead Date', type: Types.dateTime, dateFormat: 'dd-MM-yyyy HH:mm' },
+            { field: 'call_date_time', header: 'Call Date', type: Types.dateTime, dateFormat: 'dd-MM-yyyy HH:mm' },
+        ];
+
+        this.cols.unshift(...this.selectedColumns);
+        this.exportCol = cloneDeep(this.cols);
     }
 
     ngOnInit(): void {
@@ -140,6 +170,7 @@ export class InboxComponent extends BaseListingComponent {
 
             this.primengTable['filters'] = resp['table_config'];
             this.isFilterShowInbox = true;
+            this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
             this.isFilterShowInboxChange.emit(this.isFilterShowInbox);
             this.primengTable._filter();
         });
@@ -169,9 +200,36 @@ export class InboxComponent extends BaseListingComponent {
                 this._filterService.rangeDateConvert(filterData['table_config']['call_date_time']);
             }
             this.primengTable['filters'] = filterData['table_config'];
-            // this.primengTable['_sortField'] = filterData['sortColumn'];
-            // this.sortColumn = filterData['sortColumn'];
+            this.selectedColumns = this.checkSelectedColumn(filterData['selectedColumns'] || [], this.selectedColumns);
+            this.onColumnsChange();
+        } else {
+            this.selectedColumns = this.checkSelectedColumn([], this.selectedColumns);
+            this.onColumnsChange();
         }
+    }
+
+    onColumnsChange(): void {
+        this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
+    }
+
+    checkSelectedColumn(col: any[], oldCol: Column[]): any[] {
+        if (col.length) return col
+        else {
+            var Col = this._filterService.getSelectedColumns({ name: this.filter_table_name })?.columns || [];
+            if (!Col.length)
+                return oldCol;
+            else
+                return Col;
+        }
+    }
+
+    isDisplayHashCol(): boolean {
+        return this.selectedColumns.length > 0;
+    }
+
+
+    toggleOverlayPanel(event: MouseEvent) {
+        this.overlayPanel.toggle(event);
     }
 
 
@@ -409,6 +467,16 @@ export class InboxComponent extends BaseListingComponent {
             this.settingsUpdatedSubscription.unsubscribe();
             this._filterService.activeFiltData = {};
         }
+    }
+
+    displayColCount(): number {
+        return this.selectedColumns.length + 1;
+    }
+
+    isValidDate(value: any): boolean {
+        const date = new Date(value);
+        return value && !isNaN(date.getTime());
+
     }
 
 }

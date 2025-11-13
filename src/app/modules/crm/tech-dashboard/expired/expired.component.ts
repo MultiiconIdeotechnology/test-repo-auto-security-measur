@@ -30,7 +30,7 @@ import { Subject } from 'rxjs';
 import { PendingWLSettingComponent } from '../pending-wl-setting/pending-wl-setting.component';
 import { TechInfoTabsComponent } from '../info-tabs/info-tabs.component';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
-import { BaseListingComponent } from 'app/form-models/base-listing';
+import { BaseListingComponent, Column, Types } from 'app/form-models/base-listing';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { DateTime } from 'luxon';
 import { AgentService } from 'app/services/agent.service';
@@ -39,6 +39,8 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
 import { GlobalSearchService } from 'app/services/global-search.service';
 import { Excel } from 'app/utils/export/excel';
 import { DomainSslVerificationComponent } from '../domain-ssl-verification/domain-ssl-verification.component';
+import { OverlayPanel } from 'primeng/overlaypanel';
+import { cloneDeep } from 'lodash';
 
 @Component({
     selector: 'app-crm-tech-dashboard-expired',
@@ -80,7 +82,7 @@ import { DomainSslVerificationComponent } from '../domain-ssl-verification/domai
 export class TechDashboardExpiredComponent extends BaseListingComponent {
     @Input() isFilterShowExpired: boolean;
     @Output() isFilterShowExpiredChange = new EventEmitter<boolean>();
-    cols = [];
+    @ViewChild('op') overlayPanel!: OverlayPanel;
     total = 0;
 
     dataList: any;
@@ -97,13 +99,19 @@ export class TechDashboardExpiredComponent extends BaseListingComponent {
     public sortColumn: any;
     public sortDirection: any;
 
-    module_name = module_name.lead;
+    module_name = module_name.techDashboard;
     filter_table_name = filter_module_name.tech_dashboard_expired;
     private settingsUpdatedSubscription: Subscription;
     data: any;
     selectedAgent: any;
     agentList: any[] = [];
     filter: any = {}
+
+    types = Types;
+    exportCol: Column[] = [];
+    activeFiltData: any = {};
+    cols: Column[] = [];
+    selectedColumns: Column[] = [];
 
     constructor(
         private crmService: CrmService,
@@ -115,10 +123,24 @@ export class TechDashboardExpiredComponent extends BaseListingComponent {
     ) {
         super(module_name.techDashboard)
         this.key = this.module_name;
-        this.sortColumn = 'expiry_date';
+        this.sortColumn = 'expiryDate';
         this.sortDirection = 'desc';
         this.Mainmodule = this;
         this._filterService.applyDefaultFilter(this.filter_table_name);
+
+        this.selectedColumns = [
+            { field: 'itemCode', header: 'Item Code', type: Types.text },
+            { field: 'itemName', header: 'Item', type: Types.select },
+            { field: 'productName', header: 'Product', type: Types.select },
+            { field: 'agentCode', header: 'Agent Code', type: Types.number, fixVal: 0 },
+            { field: 'agencyName', header: 'Agency Name', type: Types.select },
+            { field: 'activationDate', header: 'Activation Date', type: Types.date, dateFormat: 'dd-MM-yyyy' },
+            { field: 'expiryDate', header: 'Expiry Date', type: Types.date, dateFormat: 'dd-MM-yyyy' },
+            { field: 'rm', header: 'RM', type: Types.text }
+        ];
+
+        this.cols.unshift(...this.selectedColumns);
+        this.exportCol = cloneDeep(this.cols);
     }
 
     ngOnInit(): void {
@@ -126,7 +148,7 @@ export class TechDashboardExpiredComponent extends BaseListingComponent {
 
         // common filter
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
-            this.selectedAgent = resp['table_config']['agency_name']?.value;
+            this.selectedAgent = resp['table_config']['agencyName']?.value;
             if (this.selectedAgent && this.selectedAgent.id) {
 
                 const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
@@ -136,14 +158,15 @@ export class TechDashboardExpiredComponent extends BaseListingComponent {
             }
             // this.sortColumn = resp['sortColumn'];
             // this.primengTable['_sortField'] = resp['sortColumn'];
-            if (resp['table_config']['activation_date'].value) {
-                resp['table_config']['activation_date'].value = new Date(resp['table_config']['activation_date'].value);
+            if (resp['table_config']['activationDate'].value) {
+                resp['table_config']['activationDate'].value = new Date(resp['table_config']['activationDate'].value);
             }
-            if (resp['table_config']['expiry_date'].value) {
-                resp['table_config']['expiry_date'].value = new Date(resp['table_config']['expiry_date'].value);
+            if (resp['table_config']['expiryDate'].value) {
+                resp['table_config']['expiryDate'].value = new Date(resp['table_config']['expiryDate'].value);
             }
             this.primengTable['filters'] = resp['table_config'];
             this.isFilterShowExpired = true;
+            this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
             this.isFilterShowExpiredChange.emit(this.isFilterShowExpired);
             this.primengTable._filter();
         });
@@ -156,7 +179,7 @@ export class TechDashboardExpiredComponent extends BaseListingComponent {
             this.isFilterShowExpiredChange.emit(this.isFilterShowExpired);
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
             setTimeout(() => {
-                this.selectedAgent = filterData['table_config']['agency_name']?.value;
+                this.selectedAgent = filterData['table_config']['agencyName']?.value;
                 if (this.selectedAgent && this.selectedAgent.id) {
 
                     const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
@@ -165,16 +188,43 @@ export class TechDashboardExpiredComponent extends BaseListingComponent {
                     }
                 }
             }, 1000);
-            if (filterData['table_config']['activation_date'].value) {
-                filterData['table_config']['activation_date'].value = new Date(filterData['table_config']['activation_date'].value);
+            if (filterData['table_config']['activationDate'].value) {
+                filterData['table_config']['activationDate'].value = new Date(filterData['table_config']['activationDate'].value);
             }
-            if (filterData['table_config']['expiry_date'].value) {
-                filterData['table_config']['expiry_date'].value = new Date(filterData['table_config']['expiry_date'].value);
+            if (filterData['table_config']['expiryDate'].value) {
+                filterData['table_config']['expiryDate'].value = new Date(filterData['table_config']['expiryDate'].value);
             }
             this.primengTable['filters'] = filterData['table_config'];
-            // this.primengTable['_sortField'] = filterData['sortColumn'];
-            // this.sortColumn = filterData['sortColumn'];
+            this.selectedColumns = this.checkSelectedColumn(filterData['selectedColumns'] || [], this.selectedColumns);
+            this.onColumnsChange();
+        } else {
+            this.selectedColumns = this.checkSelectedColumn([], this.selectedColumns);
+            this.onColumnsChange();
         }
+    }
+
+    onColumnsChange(): void {
+        this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
+    }
+
+    checkSelectedColumn(col: any[], oldCol: Column[]): any[] {
+        if (col.length) return col
+        else {
+            var Col = this._filterService.getSelectedColumns({ name: this.filter_table_name })?.columns || [];
+            if (!Col.length)
+                return oldCol;
+            else
+                return Col;
+        }
+    }
+
+    isDisplayHashCol(): boolean {
+        return this.selectedColumns.length > 0;
+    }
+
+
+    toggleOverlayPanel(event: MouseEvent) {
+        this.overlayPanel.toggle(event);
     }
 
     getStatusColor(status: string): string {
@@ -262,23 +312,23 @@ export class TechDashboardExpiredComponent extends BaseListingComponent {
     //     });
     // }
 
-    wlSetting(record:any){
+    wlSetting(record: any) {
         if (!Security.hasPermission(techDashPermissions.wlSettingPermissions)) {
             return this.alertService.showToast('error', messages.permissionDenied);
         }
 
-        this.crmService.getWLSettingListTwoParams(record?.code, record?.item_name).subscribe({
+        this.crmService.getWLSettingListTwoParams(record?.code, record?.itemName).subscribe({
             next: (data) => {
                 this.isLoading = false;
                 this.getWLSettingList = data[0];
 
                 this.matDialog.open(DomainSslVerificationComponent, {
                     disableClose: true,
-                    data: {record:record, wlSettingList:this.getWLSettingList, from:'expired'},
+                    data: { record: record, wlSettingList: this.getWLSettingList, from: 'expired' },
                     panelClass: ['custom-dialog-modal-md'],
                     autoFocus: false,
-                  }).afterClosed().subscribe((res:any) => {
-                    if(res && res == 'expired'){
+                }).afterClosed().subscribe((res: any) => {
+                    if (res && res == 'expired') {
                         this.refreshItems();
                     }
                 })
@@ -303,24 +353,24 @@ export class TechDashboardExpiredComponent extends BaseListingComponent {
                 inputBox: 'Date',
                 dateCustomShow: true,
                 customShow: false,
-                datepickerParameter: record?.activation_date
+                datepickerParameter: record?.expiryDate
             })
             .afterClosed()
             .subscribe((res) => {
                 if (res?.action === 'confirmed') {
                     let newJson = {
-                        id: record?.subid ? record?.subid : "",
-                        expiry_date: res?.date ? DateTime.fromISO(res?.date).toFormat('yyyy-MM-dd') : ""
+                        id: record?.id ? record?.id : "",
+                        NewExpiryDate: res?.date ? DateTime.fromISO(res?.date).toFormat('yyyy-MM-dd') : ""
                     }
                     this.crmService.updateExpiryDate(newJson).subscribe({
                         next: (res) => {
-                            this.alertService.showToast(
-                                'success',
-                                'Update Expiry Date has been updated!',
-                                'top-right',
-                                true
-                            );
                             if (res) {
+                                this.alertService.showToast(
+                                    'success',
+                                    'Update Expiry Date has been updated!',
+                                    'top-right',
+                                    true
+                                );
                                 this.refreshItems();
                             }
                         },
@@ -370,19 +420,19 @@ export class TechDashboardExpiredComponent extends BaseListingComponent {
             .subscribe((res) => {
                 if (res?.action === 'confirmed') {
                     let newJson = {
-                        id: record.subid,
-                        is_block: true,
-                        special_status_remark: res?.statusRemark ? res?.statusRemark : ""
+                        ServiceId: record.id,
+                        Isblock: true,
+                        BlockRemarks: res?.statusRemark ? res?.statusRemark : ""
                     }
                     this.crmService.blocked(newJson).subscribe({
                         next: (res) => {
-                            this.alertService.showToast(
-                                'success',
-                                'Blocked Successfully!',
-                                'top-right',
-                                true
-                            );
                             if (res) {
+                                this.alertService.showToast(
+                                    'success',
+                                    'Blocked Successfully!',
+                                    'top-right',
+                                    true
+                                );
                                 this.dataList.splice(index, 1);
                             }
                         },
@@ -419,22 +469,33 @@ export class TechDashboardExpiredComponent extends BaseListingComponent {
 
         this.crmService.getTechExpiredProductList(filterReq).subscribe(data => {
             for (var dt of data.data) {
-                dt.activation_date = dt.activation_date ? DateTime.fromISO(dt.activation_date).toFormat('dd-MM-yyyy') : ''
-                dt.expiry_date = dt.expiry_date ? DateTime.fromISO(dt.expiry_date).toFormat('dd-MM-yyyy') : ''
+                dt.activationDate = dt.activationDate ? DateTime.fromISO(dt.activationDate).toFormat('dd-MM-yyyy') : ''
+                dt.expiryDate = dt.expiryDate ? DateTime.fromISO(dt.expiryDate).toFormat('dd-MM-yyyy') : ''
             }
             Excel.export(
                 'Expired',
                 [
-                    { header: 'Item Code', property: 'item_code' },
-                    { header: 'Item.', property: 'item_name' },
-                    { header: 'Product', property: 'product_name' },
+                    { header: 'Item Code', property: 'itemCode' },
+                    { header: 'Item', property: 'itemName' },
+                    { header: 'Product', property: 'productName' },
                     { header: 'Agent Code', property: 'agentCode' },
-                    { header: 'Agency Name', property: 'agency_name' },
-                    { header: 'Activation Date', property: 'activation_date' },
-                    { header: 'Expiry Date', property: 'expiry_date' },
+                    { header: 'Agency Name', property: 'agencyName' },
+                    { header: 'Activation Date', property: 'activationDate' },
+                    { header: 'Expiry Date', property: 'expiryDate' },
                     { header: 'RM', property: 'rm' },
                 ],
                 data.data, "Expired", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 5 } }]);
         });
+    }
+
+
+    displayColCount(): number {
+        return this.selectedColumns.length + 1;
+    }
+
+    isValidDate(value: any): boolean {
+        const date = new Date(value);
+        return value && !isNaN(date.getTime());
+
     }
 }

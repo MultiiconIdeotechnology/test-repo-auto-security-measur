@@ -28,9 +28,22 @@
 
             <!------Common Filter------->
             <button class="ml-4" mat-flat-button [color]="'primary'"
-                (click)="_filterService.openDrawer(filter_table_name, primengTable)" matTooltip="Saved Filter" [disabled]="isLoading">
+                (click)="_filterService.openDrawer(filter_table_name, primengTable)" matTooltip="Saved Filter"
+                [disabled]="isLoading">
                 <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
             </button>
+
+            <!-- Select Columns Button and Select Box Code -->
+            <button class="ml-4 rounded-full" mat-flat-button [color]="'primary'" matTooltip="Select more columns"
+                [disabled]="isLoading" (click)="op.toggle($event)">
+                <img class="w-5 cursor-pointer ml-1 pt-1" src="assets/icons/column.svg" alt="c">
+            </button>
+            <p-overlayPanel #op>
+                <p-multiSelect [options]="cols" [(ngModel)]="selectedColumns" optionLabel="header" class="overlay-panel"
+                    [style]="{'max-width': '220px'}" display="chip" placeholder="Choose Columns"
+                    (onChange)="onSelectedColumnsChange()" />
+            </p-overlayPanel>
+
 
             <!------Refresh------>
             <button class="ml-4" mat-flat-button [color]="'primary'" [disabled]="isLoading" (click)="refreshItems()"
@@ -59,647 +72,154 @@
     <!----------------Table----------------->
     <div class="table-container paginator-bottom">
         <p-table #datatable [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1" [resizableColumns]="true"
-            columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}" [loading]="isLoading" [paginator]="true"
-            [rows]="appConfig.pageSize" [totalRecords]="totalRecords" [rowsPerPageOptions]="appConfig.pageSizeOptions"
-            [scrollable]="true" [scrollHeight]="scrollHeight" [showCurrentPageReport]="true" [showPageLinks]="false"
-            [showJumpToPageDropdown]="false" currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
-            [globalFilterFields]="['agent_code','master_agent','service_type','sales_type','agent_pan_no','agent_gst_no','agent_pincode','agent_state','booking_date','travel_date','inquiry_date','invoice_date','invoice_no','destination','pax','booking_ref_no','pnr','gds_pnr','purchase_amount','commission_income','tds_on_commission_income','net_purchase','service_charge','service_charge_tax','sgst','cgst','igst','commission_passedon','tds_on_commission_passedon','sale_price','commission_given','tds_on_commission_given','booking_currency','roe','billing_company','supplier','gst_number_passed_to_supplier','travel_type','ticket_status','booking_type','supplier_invoice_number','payment_mode']"
+            [columns]="selectedColumns" columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}"
+            [loading]="isLoading" [paginator]="true" [rows]="appConfig.pageSize" [totalRecords]="totalRecords"
+            [rowsPerPageOptions]="appConfig.pageSizeOptions" [scrollable]="true" [scrollHeight]="scrollHeight"
+            [showCurrentPageReport]="true" [showPageLinks]="false" [showJumpToPageDropdown]="false"
+            currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
             styleClass="p-datatable-gridlines p-datatable-sm">
-            <ng-template pTemplate="header">
+            <ng-template pTemplate="header" let-columns>
                 <tr>
-                    <th class="min-w-[150px] max-w-[175px]" pSortableColumn="agent_code" pResizableColumn
-                        alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.agent_code"
-                        [ngClass]="{'left-0': !frozenObj?.agent_code}">
-                        Agent Code <p-sortIcon field="agent_code" />
-                        <span class="float-right" (click)="isFrozenColumn('agent_code');$event.stopPropagation()">
-                            <i *ngIf="!frozenObj?.agent_code" class="pi pi-lock-open icon-size-3"></i>
-                            <i *ngIf="frozenObj?.agent_code" class="pi pi-lock icon-size-3"></i>
-                        </span>
-                    </th>
+                    <!-- <th class="left-[-1px] text-center w-1 dark:bg-gray-800" *ngIf="isDisplayHashCol()" pFrozenColumn>#
+                    </th> -->
 
-                    <th pSortableColumn="master_agent" pResizableColumn>
-                        Agent<p-sortIcon field="master_agent" />
-                    </th>
-                    
-                    
-
-                    <th [ngClass]="{'min-w-[150px]': isFilterShow}" pSortableColumn="bill_to" pResizableColumn>
-                        Bill To<p-sortIcon field="bill_to" />
-                    </th>
-
-                    <th pSortableColumn="service_type" pResizableColumn>
-                        Service Type<p-sortIcon field="service_type" />
-                    </th>
-
-                    <th pSortableColumn="sales_type" pResizableColumn>
-                        Sales Type<p-sortIcon field="sales_type" />
-                    </th>
-
-                    <th pSortableColumn="agent_pan_no" pResizableColumn>
-                        Agent PAN No.<p-sortIcon field="agent_pan_no" />
-                    </th>
-
-                    <th pSortableColumn="agent_gst_no" pResizableColumn>
-                        Agent GST No.<p-sortIcon field="agent_gst_no" />
-                    </th>
-
-                    <th pSortableColumn="agent_pincode" pResizableColumn>
-                        Agent Pincode<p-sortIcon field="agent_pincode" />
-                    </th>
-
-                    <th pSortableColumn="agent_state" pResizableColumn>
-                        Agent State<p-sortIcon field="agent_state" />
-                    </th>
-
-                    <th pSortableColumn="booking_date" pResizableColumn>
-                        Booking Date<p-sortIcon field="booking_date" />
-                    </th>
-
-                    <th pSortableColumn="travel_date" pResizableColumn>
-                        Travel Date<p-sortIcon field="travel_date" />
-                    </th>
-
-                    <th pSortableColumn="inquiry_date" pResizableColumn>
-                        Inquiry / Completed Date<p-sortIcon field="inquiry_date" />
-                    </th>
-
-                    <th pSortableColumn="invoice_date" pResizableColumn>
-                        Invoice Date<p-sortIcon field="invoice_date" />
-                    </th>
-
-                    <th pSortableColumn="invoice_no" pResizableColumn>
-                        Invoice No.<p-sortIcon field="invoice_no" />
-                    </th>
-
-                    <th pSortableColumn="destination" pResizableColumn>
-                        Destination<p-sortIcon field="destination" />
-                    </th>
-
-                    <th pSortableColumn="pax" pResizableColumn class="text-center">
-                        Pax<p-sortIcon field="pax" />
-                    </th>
-
-                    <th pSortableColumn="booking_ref_no" pResizableColumn>
-                        Booking Reference No.<p-sortIcon field="booking_ref_no" />
-                    </th>
-
-                    <th pSortableColumn="pnr" pResizableColumn>
-                        PNR<p-sortIcon field="pnr" />
-                    </th>
-
-                    <th pSortableColumn="supplier_booking_ref_no" pResizableColumn>
-                        Supplier Booking Ref. No.<p-sortIcon field="supplier_booking_ref_no" />
-                    </th>
-
-                    <th pSortableColumn="gds_pnr" pResizableColumn>
-                        GDS PNR<p-sortIcon field="gds_pnr" />
-                    </th>
-
-                    <th pSortableColumn="purchase_amount" pResizableColumn class="text-right">
-                        Purchase Amount<p-sortIcon field="purchase_amount" />
-                    </th>
-
-                    <th pSortableColumn="commission_income" pResizableColumn class="text-right">
-                        Commission Income<p-sortIcon field="commission_income" />
-                    </th>
-
-                    <th pSortableColumn="tds_on_commission_income" pResizableColumn class="text-right">
-                        TDS On Commission Income<p-sortIcon field="tds_on_commission_income" />
-                    </th>
-
-                    <th pSortableColumn="net_purchase" pResizableColumn class="text-right">
-                        Net Purchase<p-sortIcon field="net_purchase" />
-                    </th>
-
-                    <th pSortableColumn="service_charge" pResizableColumn class="text-right">
-                        Service Charge<p-sortIcon field="service_charge" />
-                    </th>
-
-                    <th pSortableColumn="service_charge_tax" pResizableColumn class="text-right">
-                        Service Charge Tax<p-sortIcon field="service_charge_tax" />
-                    </th>
-
-                    <th pSortableColumn="sgst" pResizableColumn class="text-right">
-                        SGST<p-sortIcon field="sgst" />
-                    </th>
-
-                    <th pSortableColumn="cgst" pResizableColumn class="text-right">
-                        CGST<p-sortIcon field="cgst" />
-                    </th>
-
-                    <th pSortableColumn="igst" pResizableColumn class="text-right">
-                        IGST<p-sortIcon field="igst" />
-                    </th>
-
-                    <th pSortableColumn="sale_price" pResizableColumn class="text-right">
-                        Sale Price<p-sortIcon field="sale_price" />
-                    </th>
-
-                    <th pSortableColumn="commission_passedon" pResizableColumn class="text-right">
-                        Commission Passed On<p-sortIcon field="commission_passedon" />
-                    </th>
-
-                    <th pSortableColumn="tds_on_commission_passedon" pResizableColumn class="text-right">
-                        TDS On Commission Passed On<p-sortIcon field="tds_on_commission_passedon" />
-                    </th>
-
-                    
-
-                    <th pSortableColumn="commission_given" pResizableColumn class="text-right">
-                        Commission Given<p-sortIcon field="commission_given" />
-                    </th>
-
-                    <th pSortableColumn="tds_on_commission_given" pResizableColumn class="text-right">
-                        Tds On Commission Given<p-sortIcon field="tds_on_commission_given" />
-                    </th>
-
-                    <th pSortableColumn="booking_currency" pResizableColumn>
-                        Booking Currency<p-sortIcon field="booking_currency" />
-                    </th>
-
-                    <th pSortableColumn="roe" pResizableColumn class="text-right">
-                        ROE<p-sortIcon field="roe" />
-                    </th>
-
-                    <th pSortableColumn="billing_company" pResizableColumn>
-                        Billing Company<p-sortIcon field="billing_company" />
-                    </th>
-
-                    <th pSortableColumn="supplier" pResizableColumn>
-                        Supplier<p-sortIcon field="supplier" />
-                    </th>
-
-                    <th pSortableColumn="gst_number_passed_to_supplier" pResizableColumn>
-                        GST Number Passed To Supplier<p-sortIcon field="gst_number_passed_to_supplier" />
-                    </th>
-
-                    <th pSortableColumn="travel_type" pResizableColumn>
-                        Travel Type<p-sortIcon field="travel_type" />
-                    </th>
-
-                    <th pSortableColumn="ticket_status" pResizableColumn>
-                        Ticket Status<p-sortIcon field="ticket_status" />
-                    </th>
-
-                    <th pSortableColumn="booking_type" pResizableColumn>
-                        Booking Type<p-sortIcon field="booking_type" />
-                    </th>
-
-                    <th pSortableColumn="supplier_invoice_number" pResizableColumn>
-                        Supplier Invoice No.<p-sortIcon field="supplier_invoice_number" />
-                    </th>
-
-                    <th pSortableColumn="payment_mode" pResizableColumn>
-                        Payment Mode<p-sortIcon field="payment_mode" />
-                    </th>
-
-                    <th pSortableColumn="cashback" pResizableColumn>
-                        Cashback<p-sortIcon field="cashback" />
-                    </th>
-
-                    <th pSortableColumn="cashback_tds" pResizableColumn>
-                        Cashback TDS<p-sortIcon field="cashback_tds" />
-                    </th>
+                    <th *ngFor="let col of columns; let isLast = last" [pSortableColumn]="col.field" pResizableColumn
+                        [ngClass]="{ 'w-full': isLast}" [class]="col.class">
+                        {{ col.header }}
+                        <p-sortIcon [field]="col?.field" />
+                    </th>        
                 </tr>
 
                 <tr *ngIf="isFilterShow">
+                    <!-- <th class="left-[-1px] bg-gray-50 dark:bg-gray-800" pFrozenColumn></th> -->
+                    <th *ngFor="let col of columns">
+                        <ng-container *ngIf="!col?.isHideFilter">
+                            <!-- Text -->
+                            <p-columnFilter *ngIf="(col.type == types.text)" [type]="'text'" [field]="col.field"
+                                [placeholder]="'Search by '+ col.header" [ariaLabel]="'Filter '+ col.header"
+                                matchMode="contains" />
 
-                    <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.agent_code">
-                        <p-columnFilter type="text" matchMode="contains" field="agent_code"
-                            placeholder="Search by Agent Code" ariaLabel="Filter Agent Code" />
-                    </th>
+                            <!--date picker-->
+                            <p-columnFilter *ngIf="col.type == types.date" type="date" [field]="col.field">
+                                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                    <p-calendar (onSelect)="filter($event)" dateFormat="dd-mm-yy" [ngModel]="value"
+                                        appendTo="body" placeholder="Search by Signup">
+                                    </p-calendar>
+                                </ng-template>
+                            </p-columnFilter>
 
-                    <th>
-                        <p-columnFilter class="searchableDropdown" field="master_agent" matchMode="equals"
-                            [showMenu]="false">
-                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-dropdown class="filter-dropdown" [options]="agentList" optionLabel="agent_info"
-                                    [filter]="true" filterBy="agent_info" [(ngModel)]="selectedAgent"
-                                    (onFilter)="getAgent($event?.filter)" (onChange)="onAgentChange($event.value)"
-                                    [showClear]="true" appendTo="body" placeholder="Select Agent">
-                                    <ng-template let-agent pTemplate="item">
-                                        <div class="flex align-items-center gap-1">
-                                            <div [value]="agent.id">
-                                                <div class="m-0">
-                                                    {{agent.code}} - {{agent.agency_name}}
-                                                    <div class="text-sm text-slate-500">{{agent.email_address}}</div>
+                            <!--2 digit point number-->
+                            <p-columnFilter *ngIf="col.type == types.number" [type]="'numeric'" [field]="col.field"
+                                [matchMode]="'equals'" [placeholder]="'Search by '+ col.header"
+                                [ariaLabel]="'Filter '+ col.header" locale="en-US" minFractionDigits="2"
+                                maxFractionDigits="2">
+                            </p-columnFilter>
+
+                            <p-columnFilter class="searchableDropdown"
+                                *ngIf="col.type == types.select && col.field == 'master_agent'" [field]="col.field"
+                                matchMode="equals" [showMenu]="false">
+                                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                    <p-dropdown class="filter-dropdown" [options]="agentList" optionLabel="agent_info"
+                                        [filter]="true" filterBy="agent_info" [(ngModel)]="selectedAgent"
+                                        (onFilter)="getAgent($event?.filter)" (onChange)="onAgentChange($event.value)"
+                                        [showClear]="true" appendTo="body" placeholder="Select Agent">
+                                        <ng-template let-agent pTemplate="item">
+                                            <div class="flex align-items-center gap-1">
+                                                <div [value]="agent.id">
+                                                    <div class="m-0">
+                                                        {{agent.code}} - {{agent.agency_name}}
+                                                        <div class="text-sm text-slate-500">{{agent.email_address}}
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </ng-template>
-                                </p-dropdown>
-                            </ng-template>
-                        </p-columnFilter>
-                    </th>
+                                        </ng-template>
+                                    </p-dropdown>
+                                </ng-template>
+                            </p-columnFilter>
 
-                    <th>
-                        <p-columnFilter type="text" field="bill_to" placeholder="Search by Bill To"
-                            ariaLabel="Filter Bill To" />
-                    </th>
+                            <p-columnFilter *ngIf="col.type == types.select && col.field == 'service_type'"
+                                [field]="col.field" matchMode="equals" [showMenu]="false">
+                                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                    <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="ServicesBy"
+                                        (onChange)="filter($event.value)" placeholder="Select Service" appendTo="body"
+                                        [showClear]="true">
+                                        <ng-template let-option pTemplate="item">
+                                            <p>{{option.value}}</p>
+                                        </ng-template>
+                                    </p-dropdown>
+                                </ng-template>
+                            </p-columnFilter>
 
-                    <th>
-                        <p-columnFilter field="service_type" matchMode="equals" [showMenu]="false">
-                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="ServicesBy"
-                                    (onChange)="filter($event.value)" placeholder="Select Service" appendTo="body"
-                                    [showClear]="true">
-                                    <ng-template let-option pTemplate="item">
-                                        <p>{{option.value}}</p>
-                                    </ng-template>
-                                </p-dropdown>
-                            </ng-template>
-                        </p-columnFilter>
+                            <p-columnFilter class="searchableDropdown"
+                                *ngIf="col.type == types.select && col.field == 'billing_company'" [field]="col.field"
+                                matchMode="equals" [showMenu]="false">
+                                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                    <p-dropdown class="filter-dropdown" [options]="companyList"
+                                        optionLabel="company_name" [filter]="true" filterBy="company_name"
+                                        [(ngModel)]="selectedCompany" (onChange)="onBillingComChange($event.value)"
+                                        [showClear]="true" appendTo="body" placeholder="Select Company">
+                                        <ng-template let-company pTemplate="item">
+                                            <div> {{company.company_name}}</div>
+                                        </ng-template>
+                                    </p-dropdown>
+                                </ng-template>
+                            </p-columnFilter>
 
-                    </th>
+                            <p-columnFilter class="searchableDropdown"
+                                *ngIf="col.type == types.select && col.field == 'supplier'" [field]="col.field"
+                                matchMode="equals" [showMenu]="false">
+                                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                    <p-dropdown class="filter-dropdown" [options]="supplierList"
+                                        optionLabel="company_name" [filter]="true" filterBy="company_name"
+                                        [(ngModel)]="selectedSupplier" (onChange)="onSupplierChange($event.value)"
+                                        [showClear]="true" appendTo="body" placeholder="Select Supplier">
+                                        <ng-template let-supplier pTemplate="item">
+                                            <div>
+                                                {{supplier.company_name}}
+                                            </div>
+                                        </ng-template>
+                                    </p-dropdown>
+                                </ng-template>
+                            </p-columnFilter>
 
-                    <th>
-                        <p-columnFilter type="text" matchMode="contains" field="sales_type"
-                            placeholder="Search by Sales Type" ariaLabel="Filter Sales Type" />
-                    </th>
-
-                    <th>
-                        <p-columnFilter type="text" matchMode="contains" field="agent_pan_no"
-                            placeholder="Search by Agent PAN No." ariaLabel="Filter Agent PAN No." />
-                    </th>
-
-                    <th>
-                        <p-columnFilter type="text" matchMode="contains" field="agent_gst_no"
-                            placeholder="Search by Agent GST No." ariaLabel="Filter Agent GST No." />
-                    </th>
-
-                    <th>
-                        <p-columnFilter type="text" matchMode="contains" field="agent_pincode"
-                            placeholder="Search by Agent Pincode" ariaLabel="Filter Agent Pincode" />
-                    </th>
-
-                    <th>
-                        <p-columnFilter type="text" matchMode="contains" field="agent_state"
-                            placeholder="Search by Agent State" ariaLabel="Filter Agent State" />
-                    </th>
-
-                    <th>
-                        <p-columnFilter field="booking_date" type="date">
-                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-calendar (onSelect)="filter($event)" dateFormat="dd-mm-yy" appendTo="body"
-                                    [ngModel]="value" placeholder="Search by Return Date Time">
-                                </p-calendar>
-                            </ng-template>
-                        </p-columnFilter>
-                    </th>
-
-                    <th>
-                        <p-columnFilter field="travel_date" type="date">
-                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-calendar (onSelect)="filter($event)" dateFormat="dd-mm-yy" appendTo="body"
-                                    [ngModel]="value" placeholder="Search by Return Date Time">
-                                </p-calendar>
-                            </ng-template>
-                        </p-columnFilter>
-                    </th>
-
-                    <th>
-                        <p-columnFilter field="inquiry_date" type="date">
-                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-calendar (onSelect)="filter($event)" dateFormat="dd-mm-yy" appendTo="body"
-                                    [ngModel]="value" placeholder="Search by Return Date Time">
-                                </p-calendar>
-                            </ng-template>
-                        </p-columnFilter>
-                    </th>
-
-                    <th>
-                        <p-columnFilter field="invoice_date" type="date">
-                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-calendar (onSelect)="filter($event)" dateFormat="dd-mm-yy" appendTo="body"
-                                    [ngModel]="value" placeholder="Search by Return Date Time">
-                                </p-calendar>
-                            </ng-template>
-                        </p-columnFilter>
-                    </th>
-
-                    <th>
-                        <p-columnFilter type="text" matchMode="contains" field="invoice_no"
-                            placeholder="Search by Invoice No." ariaLabel="Filter Invoice No." />
-                    </th>
-
-                    <th>
-                        <p-columnFilter type="text" matchMode="contains" field="destination"
-                            placeholder="Search by Destination" ariaLabel="Filter Destination" />
-                    </th>
-
-                    <th>
-                        <p-columnFilter type="text" matchMode="contains" field="pax" placeholder="Search by Pax"
-                            ariaLabel="Filter Pax" />
-                    </th>
-
-                    <th>
-                        <p-columnFilter type="text" matchMode="contains" field="booking_ref_no"
-                            placeholder="Search by Booking Reference No." ariaLabel="Filter Booking Reference No." />
-                    </th>
-
-                    <th>
-                        <p-columnFilter type="text" matchMode="contains" field="pnr" placeholder="Search by PNR"
-                            ariaLabel="Filter PNR" />
-                    </th>
-
-                    <th>
-                        <p-columnFilter type="text" field="supplier_booking_ref_no" placeholder="Search by Supplier Booking Ref. No."
-                            ariaLabel="Filter Supplier Booking Ref. No." />
-                    </th>
-
-                    <th>
-                        <p-columnFilter type="text" matchMode="contains" field="gds_pnr" placeholder="Search by GDS PNR"
-                            ariaLabel="Filter GDS PNR" />
-                    </th>
-
-                    <th>
-                        <p-columnFilter type="numeric" field="purchase_amount" placeholder="Search by Purchase Amount"
-                            ariaLabel="Filter Purchase Amount" />
-                    </th>
-
-                    <th>
-                        <p-columnFilter type="numeric" field="commission_income"
-                            placeholder="Search by Commission Income" ariaLabel="Filter Commission Income" />
-                    </th>
-
-                    <th>
-                        <p-columnFilter type="numeric" field="tds_on_commission_income"
-                            placeholder="Search by TDS On Commission Income"
-                            ariaLabel="Filter TDS On Commission Income" />
-                    </th>
-
-                    <th>
-                        <p-columnFilter type="numeric" field="net_purchase" placeholder="Search by Net Purchase"
-                            ariaLabel="Filter Net Purchase" />
-                    </th>
-
-                    <th>
-                        <p-columnFilter type="numeric" field="service_charge" placeholder="Search by Service Charge"
-                            ariaLabel="Filter Service Charge" />
-                    </th>
-
-                    <th>
-                        <p-columnFilter type="numeric" field="service_charge_tax"
-                            placeholder="Search by Service Charge Tax" ariaLabel="Filter Service Charge Tax" />
-                    </th>
-
-                    <th>
-                        <p-columnFilter type="numeric" field="sgst" placeholder="Search by SGST"
-                            ariaLabel="Filter SGST" />
-                    </th>
-
-                    <th>
-                        <p-columnFilter type="numeric" field="cgst" placeholder="Search by CGST"
-                            ariaLabel="Filter CGST" />
-                    </th>
-
-                    <th>
-                        <p-columnFilter type="numeric" field="igst" placeholder="Search by IGST"
-                            ariaLabel="Filter IGST" />
-                    </th>
-
-                    <th>
-                        <p-columnFilter type="numeric" field="sale_price" placeholder="Search by Sale Price"
-                            ariaLabel="Filter Sale Price" />
-                    </th>
-
-                    <th>
-                        <p-columnFilter type="numeric" field="commission_passedon"
-                            placeholder="Search by Commission Passed On" ariaLabel="Filter Commission Passed On" />
-                    </th>
-
-                    <th>
-                        <p-columnFilter type="numeric" field="tds_on_commission_passedon"
-                            placeholder="Search by TDS On Commission Passed On"
-                            ariaLabel="Filter TDS On Commission Passed On" />
-                    </th>
-
-                   
-
-                    <th>
-                        <p-columnFilter type="numeric" field="commission_given" placeholder="Search by Commission Given"
-                            ariaLabel="Filter Commission Given" />
-                    </th>
-
-                    <th>
-                        <p-columnFilter type="numeric" field="tds_on_commission_given"
-                            placeholder="Search by Tds On Commission Given"
-                            ariaLabel="Filter Tds On Commission Given" />
-                    </th>
-
-                    <th>
-                        <p-columnFilter type="text" matchMode="contains" field="booking_currency"
-                            placeholder="Search by Booking Currency" ariaLabel="Filter Booking Currency" />
-                    </th>
-
-                    <th>
-                        <p-columnFilter type="numeric" field="roe" placeholder="Search by ROE" ariaLabel="Filter ROE" />
-                    </th>
-
-                    <th>
-                        <p-columnFilter class="searchableDropdown" field="billing_company" matchMode="equals"
-                            [showMenu]="false">
-                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-dropdown class="filter-dropdown" [options]="companyList" optionLabel="company_name"
-                                    [filter]="true" filterBy="company_name" [(ngModel)]="selectedCompany"
-                                    (onChange)="onBillingComChange($event.value)" [showClear]="true" appendTo="body"
-                                    placeholder="Select Company">
-                                    <ng-template let-company pTemplate="item">
-                                        <div> {{company.company_name}}</div>
-                                    </ng-template>
-                                </p-dropdown>
-                            </ng-template>
-                        </p-columnFilter>
-                    </th>
-
-                    <th>
-                        <p-columnFilter class="searchableDropdown" field="supplier" matchMode="equals"
-                            [showMenu]="false">
-                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-dropdown class="filter-dropdown" [options]="supplierList" optionLabel="company_name"
-                                    [filter]="true" filterBy="company_name" [(ngModel)]="selectedSupplier"
-                                    (onChange)="onSupplierChange($event.value)" [showClear]="true" appendTo="body"
-                                    placeholder="Select Supplier">
-                                    <ng-template let-supplier pTemplate="item">
-                                        <div>
-                                            {{supplier.company_name}}
-                                        </div>
-                                    </ng-template>
-                                </p-dropdown>
-                            </ng-template>
-                        </p-columnFilter>
-                    </th>
-
-                    <th>
-                        <p-columnFilter type="text" matchMode="contains" field="gst_number_passed_to_supplier"
-                            placeholder="Search by GST Number Passed To Supplier"
-                            ariaLabel="Filter GST Number Passed To Supplier" />
-                    </th>
-
-                    <th>
-                        <p-columnFilter type="text" matchMode="contains" field="travel_type"
-                            placeholder="Search by Travel Type" ariaLabel="Filter Travel Type" />
-                    </th>
-
-                    <th>
-                        <p-columnFilter type="text" matchMode="contains" field="ticket_status"
-                            placeholder="Search by Ticket Status" ariaLabel="Filter Ticket Status" />
-                    </th>
-
-                    <th>
-                        <p-columnFilter type="text" matchMode="contains" field="booking_type"
-                            placeholder="Search by Booking Type" ariaLabel="Filter Booking Type" />
-                    </th>
-
-                    <th>
-                        <p-columnFilter type="text" matchMode="contains" field="supplier_invoice_number"
-                            placeholder="Search by Supplier Invoice No." ariaLabel="Filter Supplier Invoice No." />
-                    </th>
-
-                    <th>
-                        <p-columnFilter type="text" matchMode="contains" field="payment_mode"
-                            placeholder="Search by Payment Mode" ariaLabel="Filter Payment Mode" />
-                    </th>
-
-                    <th>
-                        <p-columnFilter type="numeric" field="cashback" placeholder="Search by Cashback"
-                            ariaLabel="Filter Cashback" />
-                    </th>
-                    <th class="w-auto">
-                        <p-columnFilter type="numeric" field="cashback_tds" placeholder="Search by Cashback TDS"
-                            ariaLabel="Filter Cashback TDS" />
+                        </ng-container>
                     </th>
                 </tr>
             </ng-template>
 
             <ng-template pTemplate="body" let-element let-columns="columns">
                 <tr>
-                    <td class="min-w-[150px]" alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.agent_code">
-                        <span> {{element.agent_code || "-"}} </span>
-                    </td>
-
-                    <td>{{element.master_agent || '-'}}</td>
-
-
-                    <td>{{element.bill_to || '-'}}</td>
-
-                    <td>{{element.service_type || '-'}}</td>
-
-                    <td>{{element.sales_type || '-'}}</td>
-
-                    <td>{{element.agent_pan_no || '-'}}</td>
-
-                    <td>{{element.agent_gst_no || '-'}}</td>
-
-                    <td>{{element.agent_pincode || '-'}}</td>
-
-                    <td>{{element.agent_state || '-'}}</td>
-
-                    <!-- <td>{{(element?.booking_date | date: 'dd-MM-yyyy') || '-'}}</td> -->
-                    <td>{{element.booking_date ? (element.booking_date | date: 'dd-MM-yyyy') : '-'}}</td>
-
-
-                    <td>
-                        <ng-container *ngIf="element.travel_date">
-                            {{element.travel_date | date: 'dd-MM-yyyy'}}
+                    <td *ngFor="let col of columns" [ngClass]="col.class">
+                        <ng-container *ngIf="(col.type === types.text || col.type === types.select)">
+                            <span [ngClass]="col.isCustomColor ? getStatusColor(element[col.field]) : ''">
+                                {{ element[col.field] || '-' }}
+                            </span>
                         </ng-container>
-                        <ng-container *ngIf="!element.travel_date">
-                            -
+
+                        <ng-container *ngIf="col.type == types.number">
+                            <span>
+                                {{element[col.field] ? (element[col.field]).toFixed(col?.fixVal || 0) :
+                                (0).toFixed(col?.fixVal || 0)}}
+                            </span>
                         </ng-container>
-                    </td>
 
-                    <td>{{(element?.inquiry_date | date: 'dd-MM-yyyy') || '-'}}</td>
-
-                    <td>{{(element?.invoice_date | date: 'dd-MM-yyyy') || '-'}}</td>
-
-                    <td>{{element.invoice_no || '-'}}</td>
-
-                    <td>{{element.destination || '-'}}</td>
-
-                    <td class="text-center">{{element.pax || '-'}}</td>
-
-                    <td>{{element.booking_ref_no || '-'}}</td>
-
-                    <td>{{element.pnr || '-'}}</td>
-
-                    <td>{{element.supplier_booking_ref_no || '-'}}</td>
-
-
-                    <td>{{element.gds_pnr || '-'}}</td>
-
-                    <td class="text-right">{{element.purchase_amount ? (element.purchase_amount.toFixed(2) | number:'1.2-2') : 0}}</td>
-
-                    <td class="text-right">{{element.commission_income ? (element.commission_income.toFixed(2) | number:'1.2-2') : 0 }}
-                    </td>
-
-                    <td class="text-right">{{element.tds_on_commission_income ?
-                        (element.tds_on_commission_income.toFixed(2) | number:'1.2-2') : 0 }}</td>
-
-                    <td class="text-right">{{element.net_purchase ? (element.net_purchase.toFixed(2) | number:'1.2-2') : 0 }}</td>
-
-                    <td class="text-right">{{element.service_charge ? (element.service_charge.toFixed(2) | number:'1.2-2') : 0 }}</td>
-
-                    <td class="text-right">{{element.service_charge_tax ? (element.service_charge_tax.toFixed(2) | number:'1.2-2') : 0 }}
-                    </td>
-
-                    <td class="text-right">{{element.sgst ? (element.sgst.toFixed(2) | number:'1.2-2'): 0 }}</td>
-
-                    <td class="text-right">{{element.cgst ? (element.cgst.toFixed(2) | number:'1.2-2'): 0 }}</td>
-
-                    <td class="text-right">{{element.igst ? (element.igst.toFixed(2) | number:'1.2-2'): 0 }}</td>
-
-                    <td class="text-right">{{element.sale_price ? (element.sale_price.toFixed(2) | number:'1.2-2'): 0 }}</td>
-
-
-                    <td class="text-right">{{element.commission_passedon ? (element.commission_passedon.toFixed(2) | number:'1.2-2'): 0 }}
-                    </td>
-
-                    <td class="text-right">{{element.tds_on_commission_passedon ?
-                        (element.tds_on_commission_passedon.toFixed(2) | number:'1.2-2'): 0 }}</td>
-
-
-                    <td class="text-right">{{element.commission_given ? (element.commission_given.toFixed(2) | number:'1.2-2'): 0 }}</td>
-
-                    <td class="text-right">{{element.tds_on_commission_given ?
-                        (element.tds_on_commission_given.toFixed(2) | number:'1.2-2'): 0 }}</td>
-
-                    <td>{{element.booking_currency || '-'}}</td>
-
-                    <td class="text-right">{{element.roe ? (element.roe.toFixed(2) | number:'1.2-2') : 0 }}</td>
-
-                    <td>{{element.billing_company || '-'}}</td>
-
-                    <td>{{element.supplier || '-'}}</td>
-
-                    <td>{{element.gst_number_passed_to_supplier || '-'}}</td>
-
-                    <td>{{element.travel_type || '-'}}</td>
-
-                    <!-- <td>{{element.ticket_status || '-'}}</td> -->
-
-                    <td>
-                        <span [ngClass]="getStatusColor(element.ticket_status)">
-                            {{element.ticket_status || "-"}}
-                        </span>
-                    </td>
-
-                    <td>{{element.booking_type || '-'}}</td>
-
-                    <td>{{element.supplier_invoice_number || '-'}}</td>
-
-                    <td>{{element.payment_mode || '-'}}</td>
-                    <td class="text-right">{{element.cashback ? (element.cashback.toFixed(2) | number:'1.2-2') : 0}}</td>
-                    <td class="w-auto text-right">{{element.cashback_tds ? (element.cashback_tds.toFixed(2) | number:'1.2-2') : 0}}</td>
+                        <ng-container *ngIf="col.type == types.date">
+                            {{isValidDate(element[col.field])? (element[col.field] | date: col.dateFormat): "-"}}
+                        </ng-container>
+                    </td>                
                 </tr>
             </ng-template>
 
             <ng-template pTemplate="emptymessage">
-                <tr class="h-15">
-                    <td colspan="43" class="text-center font-semibold text-lg">
-                        {{getNodataText()}}
+                <tr class="h-14" *ngIf="selectedColumns?.length">
+                    <td [attr.colspan]="displayColCount()" class="text-center font-semibold text-lg">{{getNodataText()}}
                     </td>
                 </tr>
             </ng-template>
         </p-table>
+    </div>
+    <div class="text-center mt-5" *ngIf="selectedColumns && !selectedColumns?.length"> No column to display! Please
+        Select a column
     </div>
 </div>

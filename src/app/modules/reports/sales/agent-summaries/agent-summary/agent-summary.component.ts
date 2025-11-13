@@ -17,7 +17,7 @@ import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { messages, module_name, Security, saleProductPermissions, filter_module_name, agentPermissions, partnerRegisterPermissions } from 'app/security';
 import { SalesProductsService } from 'app/services/slaes-products.service';
-import { BaseListingComponent } from 'app/form-models/base-listing';
+import { BaseListingComponent, Column, Types } from 'app/form-models/base-listing';
 import { GridUtils } from 'app/utils/grid/gridUtils';
 import { AgentService } from 'app/services/agent.service';
 import { RefferralService } from 'app/services/referral.service';
@@ -31,6 +31,7 @@ import { Routes } from 'app/common/const';
 import { DialAgentCallListComponent } from 'app/modules/crm/agent/dial-call-list/dial-call-list.component';
 import { MatDialog } from '@angular/material/dialog';
 import { AgentFollowupComponent } from '../agent-followup/agent-followup.component';
+import { cloneDeep } from 'lodash';
 
 @Component({
     selector: 'app-agent-summary',
@@ -71,9 +72,17 @@ export class AgentSummaryComponent extends BaseListingComponent implements OnDes
     employeeList: any[] = [];
     selectedAgent: any;
     selectedRM: any;
+    prevSelectedRM: any;
+
     user: any = {};
     selectedToolTip: string = "";
     isFilterShow: boolean = false;
+
+    types = Types;
+    cols: Column[] = [];
+    selectedColumns: Column[] = [];
+    exportCol: Column[] = [];
+    activeFiltData: any = {};
 
     constructor(
         private salesProductsService: SalesProductsService,
@@ -94,6 +103,25 @@ export class AgentSummaryComponent extends BaseListingComponent implements OnDes
         this._userService.user$.pipe((takeUntil(this._unsubscribeAll))).subscribe((user: any) => {
             this.user = user;
         });
+
+        this.selectedColumns = [
+            { field: 'followup', header: 'Calls', type: Types.number, fixVal: 0, class: 'text-center' },
+            { field: 'agent_code', header: 'Agent Code', type: Types.number, fixVal: 0, },
+            { field: 'agent_name', header: 'Agency Name', type: Types.link },
+            { field: 'rm', header: 'RM', type: Types.select },
+            { field: 'status', header: 'Status', type: Types.select , isCustomColor : true },
+            { field: 'volume', header: 'Volume', type: Types.number, fixVal: 2 },
+            { field: 'tec_product', header: 'Tech Product', type: Types.boolean },
+            { field: 'tech_gp', header: 'Tech GP', type: Types.number, fixVal: 2, class:'text-right' },
+            { field: 'last_call_date', header: 'Last Followup Date', type: Types.date, dateFormat: 'dd-MM-yyyy' },
+            { field: 'create_date', header: 'Create Date', type: Types.dateTime, dateFormat: 'dd-MM-yyyy' },
+            { field: 'last_login_time', header: 'Last Login Date', type: Types.date, dateFormat: 'dd-MM-yyyy' },
+            { field: 'last_trancation_date', header: 'Last Transaction Date', type: Types.date, dateFormat: 'dd-MM-yyyy' },
+            { field: 'statuschange_date', header: 'Last Status Change Date', type: Types.date, dateFormat: 'dd-MM-yyyy' }, 
+            { field: 'previous_relation_manager', header: 'Previous RM', type: Types.select },
+        ];
+        this.cols.unshift(...this.selectedColumns);
+        this.exportCol = cloneDeep(this.cols);
     }
 
     ngOnInit(): void {
@@ -105,7 +133,7 @@ export class AgentSummaryComponent extends BaseListingComponent implements OnDes
         })
 
         // common filter
-         this._filterService.updateSelectedOption('');
+        this._filterService.updateSelectedOption('');
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
             this.selectedAgent = resp['table_config']['agent_name']?.value;
             if (this.selectedAgent && this.selectedAgent.id) {
@@ -115,7 +143,7 @@ export class AgentSummaryComponent extends BaseListingComponent implements OnDes
                 }
             }
             this.selectedRM = resp['table_config']['rm']?.value;
-
+            this.prevSelectedRM = resp['table_config']['previous_relation_manager']?.value;
             if (resp['table_config']['last_call_date']?.value) {
                 resp['table_config']['last_call_date'].value = new Date(resp['table_config']['last_call_date'].value);
             }
@@ -137,6 +165,7 @@ export class AgentSummaryComponent extends BaseListingComponent implements OnDes
             this.primengTable['_sortField'] = resp['sortColumn'];
             this.primengTable['filters'] = resp['table_config'];
             this.isFilterShow = true;
+            this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
             this.primengTable._filter();
         });
     }
@@ -160,6 +189,7 @@ export class AgentSummaryComponent extends BaseListingComponent implements OnDes
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
             this.selectedAgent = filterData['table_config']['agent_name']?.value;
             this.selectedRM = filterData['table_config']['rm']?.value;
+            this.prevSelectedRM = filterData['table_config']['previous_relation_manager']?.value;
             if (this.selectedAgent && this.selectedAgent.id) {
                 const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
                 if (!match) {
@@ -170,7 +200,7 @@ export class AgentSummaryComponent extends BaseListingComponent implements OnDes
             if (filterData['table_config']['last_call_date']?.value) {
                 filterData['table_config']['last_call_date'].value = new Date(filterData['table_config']['last_call_date'].value);
             }
-           if (filterData['table_config']['create_date']?.value != null && filterData['table_config']['create_date'].value.length) {
+            if (filterData['table_config']['create_date']?.value != null && filterData['table_config']['create_date'].value.length) {
                 this._filterService.updateSelectedOption('custom_date_range');
                 this._filterService.rangeDateConvert(filterData['table_config']['create_date']);
             }
@@ -186,6 +216,47 @@ export class AgentSummaryComponent extends BaseListingComponent implements OnDes
             // this.primengTable['_sortField'] = filterData['sortColumn'];
             // this.sortColumn = filterData['sortColumn'];
             this.primengTable['filters'] = filterData['table_config'];
+            this.selectedColumns = this.checkSelectedColumn(filterData['selectedColumns'] || [], this.selectedColumns);
+            this.onColumnsChange();
+        } else {
+            this.selectedColumns = this.checkSelectedColumn([], this.selectedColumns);
+            this.onColumnsChange();
+        }
+    }
+
+    onColumnsChange(): void {
+        this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
+    }
+
+    checkSelectedColumn(col: any[], oldCol: Column[]): any[] {
+        if (col.length) return col;
+        else {
+            var Col = this._filterService.getSelectedColumns({ name: this.filter_table_name })?.columns || [];
+            if (!Col.length)
+                return oldCol;
+            else
+                return Col;
+        }
+    }
+
+    isDisplayHashCol(): boolean {
+        return this.selectedColumns.length > 0;
+    }
+
+    onSelectedColumnsChange(): void {
+        this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
+    }
+
+    getStatusColor(status: string): string {
+        switch (status) {
+            case 'Active':
+                return 'text-green-600';
+            case 'New':
+                return 'text-blue-600';
+            case 'Dormant':
+            case 'Inactive':
+            default:
+                return 'text-red-600';
         }
     }
 
@@ -295,7 +366,7 @@ export class AgentSummaryComponent extends BaseListingComponent implements OnDes
                 [
                     { header: 'Agent Code', property: 'agent_code' },
                     { header: 'Agency Name', property: 'agent_name' },
-                    { header: 'RM', property: 'rm' },
+                    { header: 'RM', property: 'rm' },                  
                     { header: 'Status', property: 'status' },
                     { header: 'Volumn', property: 'volume' },
                     { header: 'Tec Product', property: 'tec_product' },
@@ -305,7 +376,8 @@ export class AgentSummaryComponent extends BaseListingComponent implements OnDes
                     { header: 'Create Date', property: 'create_date' },
                     { header: 'Last Login Date', property: 'last_login_time' },
                     { header: 'Last Transaction Date', property: 'last_trancation_date' },
-                    { header: 'Last Status Change Date', property: 'statuschange_date' }
+                    { header: 'Last Status Change Date', property: 'statuschange_date' },
+                    { header: 'Previous RM', property: 'previous_relation_manager' },
                 ],
                 data.data, "Partner Register", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 15 } }]);
         });
@@ -323,5 +395,15 @@ export class AgentSummaryComponent extends BaseListingComponent implements OnDes
             });
             return newAgent;
         });
+    }
+
+    displayColCount(): number {
+        return this.selectedColumns.length + 1;
+    }
+
+
+    isValidDate(value: any): boolean {
+        const date = new Date(value);
+        return value && !isNaN(date.getTime());
     }
 }

@@ -37,8 +37,8 @@
 
 <div class="body">
     <!-- domain form component for web only (web:step 1) -->
-    <app-manage-domain-form *ngIf="!(record?.item_name?.toLowerCase()?.includes('android') ||
-        record?.item_name?.toLowerCase()?.includes('ios'))"
+    <app-manage-domain-form *ngIf="!(record?.itemName?.toLowerCase()?.includes('android') ||
+        record?.itemName?.toLowerCase()?.includes('ios'))"
         [hidden]="activeStepperId !== 1" 
         [data]="record" 
         [wlSettingData]="wlSettingData"
@@ -46,8 +46,8 @@
     </app-manage-domain-form>
 
     <!-- console account form for mobile(android and ios) (mobile: step 1) -->
-    <app-console-account-form *ngIf="record?.item_name?.toLowerCase()?.includes('android') ||
-        record?.item_name?.toLowerCase()?.includes('ios')" 
+    <app-console-account-form *ngIf="record?.itemName?.toLowerCase()?.includes('android') ||
+        record?.itemName?.toLowerCase()?.includes('ios')" 
         [hidden]="activeStepperId !== 1" 
         [data]="record"
         (stepCompleted)="onStepComplete(1)"
@@ -55,8 +55,8 @@
     </app-console-account-form>
 
     <!-- form for mobile(android and ios) only (mobile: step 2) -->
-    <app-manage-mobile-app-domain-form *ngIf="record?.item_name?.toLowerCase()?.includes('android') ||
-        record?.item_name?.toLowerCase()?.includes('ios')" 
+    <app-manage-mobile-app-domain-form *ngIf="record?.itemName?.toLowerCase()?.includes('android') ||
+        record?.itemName?.toLowerCase()?.includes('ios')" 
         [hidden]="activeStepperId !== 2" 
         [data]="record"
         [wlSettingData]="wlSettingData"

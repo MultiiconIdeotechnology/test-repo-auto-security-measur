@@ -33,21 +33,25 @@
             </mat-form-field> -->
 
             <div class="flex items-center gap-1">
-                <mat-form-field class="translate-y-[10px] min-w-[6rem]"> 
-                    <span class="absolute top-[-12px] dark:bg-gray-900 bg-white text-gray-600 text-sm px-2 dark:text-gray-400">From Month</span>
+                <mat-form-field class="translate-y-[10px] min-w-[6rem]">
+                    <span
+                        class="absolute top-[-12px] dark:bg-gray-900 bg-white text-gray-600 text-sm px-2 dark:text-gray-400">From
+                        Month</span>
                     <input matInput [matDatepicker]="fromMonth" [formControl]="startDate">
                     <mat-datepicker-toggle matIconSuffix [for]="fromMonth"></mat-datepicker-toggle>
-                    <mat-datepicker #fromMonth startView="multi-year"  (monthSelected)="setMonthAndYear($event, fromMonth)"
-                        panelClass="example-month-picker">
+                    <mat-datepicker #fromMonth startView="multi-year"
+                        (monthSelected)="setMonthAndYear($event, fromMonth)" panelClass="example-month-picker">
                     </mat-datepicker>
                 </mat-form-field>
-    
-                <mat-form-field class="translate-y-[10px] min-w-[6rem]"> 
-                    <span class="absolute top-[-12px] dark:bg-gray-900 bg-white text-gray-600 text-sm px-2 dark:text-gray-400">To Month</span>
+
+                <mat-form-field class="translate-y-[10px] min-w-[6rem]">
+                    <span
+                        class="absolute top-[-12px] dark:bg-gray-900 bg-white text-gray-600 text-sm px-2 dark:text-gray-400">To
+                        Month</span>
                     <input matInput [matDatepicker]="toMonth" [formControl]="endDate">
                     <mat-datepicker-toggle matIconSuffix [for]="toMonth"></mat-datepicker-toggle>
-                    <mat-datepicker #toMonth startView="multi-year"  (monthSelected)="setFromMonthAndYear($event, toMonth)"
-                        panelClass="example-month-picker">
+                    <mat-datepicker #toMonth startView="multi-year"
+                        (monthSelected)="setFromMonthAndYear($event, toMonth)" panelClass="example-month-picker">
                     </mat-datepicker>
                 </mat-form-field>
             </div>
@@ -66,6 +70,17 @@
                 [disabled]="isLoading">
                 <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
             </button>
+
+            <!-- Select Columns Button and Select Box Code -->
+            <button class="rounded-full" mat-flat-button [color]="'primary'" matTooltip="Select more columns"
+                [disabled]="isLoading" (click)="op.toggle($event)">
+                <img class="w-5 cursor-pointer ml-1 pt-1" src="assets/icons/column.svg" alt="c">
+            </button>
+            <p-overlayPanel #op>
+                <p-multiSelect [options]="cols" [(ngModel)]="selectedColumns" optionLabel="header" class="overlay-panel"
+                    [style]="{'max-width': '220px'}" display="chip" placeholder="Choose Columns"
+                    (onChange)="onSelectedColumnsChange()" />
+            </p-overlayPanel>
 
             <!------Refresh------>
             <button mat-flat-button [color]="'primary'" matTooltip="Refresh" [disabled]="isLoading"
@@ -89,233 +104,129 @@
 
     <!----------------Table----------------->
     <div class="table-container paginator-bottom">
-        <p-table #datatable [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1" [resizableColumns]="true"
-            columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}" [loading]="isLoading" [paginator]="true"
-            [rows]="appConfig.pageSize" [totalRecords]="totalRecords" [rowsPerPageOptions]="appConfig.pageSizeOptions"
-            [lazy]="true" (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="scrollHeight"
-            [showCurrentPageReport]="true" [showPageLinks]="false" [showJumpToPageDropdown]="false"
-            currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
+        <p-table #datatable [value]="dataList" [columns]="selectedColumns" [sortField]="sortColumn" [sortOrder]="-1"
+            [resizableColumns]="true" columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}"
+            [loading]="isLoading" [paginator]="true" [rows]="appConfig.pageSize" [totalRecords]="totalRecords"
+            [rowsPerPageOptions]="appConfig.pageSizeOptions" [lazy]="true" (onLazyLoad)="refreshItems($event)"
+            [scrollable]="true" [scrollHeight]="scrollHeight" [showCurrentPageReport]="true" [showPageLinks]="false"
+            [showJumpToPageDropdown]="false" currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
             [globalFilterFields]="['campaign_name', 'campaign_type', 'campaign_code', 'relationship_manager_name', 'leads', 'no_of_signup', 'turnover', 'tech_GP', 'travel_GP', 'total_GP']"
             styleClass="p-datatable-gridlines p-datatable-sm">
 
-            <ng-template pTemplate="header">
+            <ng-template pTemplate="header" let-columns>
                 <tr>
-                    <th class="min-w-[150px] dark:bg-[#1e293b]" pSortableColumn="campaignName" pResizableColumn
-                        alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.campaignName"
-                        [ngClass]="{'left-0': !frozenObj?.campaignName}">
-                        Name <p-sortIcon field="campaignName" />
-                        <span class="float-right" (click)="isFrozenColumn('campaignName');$event.stopPropagation()">
-                            <i *ngIf="!frozenObj?.campaignName" class="pi pi-lock-open icon-size-3"></i>
-                            <i *ngIf="frozenObj?.campaignName" class="pi pi-lock icon-size-3"></i>
-                        </span>
+                    <th *ngFor="let col of columns; let isLast = last" [pSortableColumn]="col.field" pResizableColumn
+                        [class]="col.class">
+                        {{ col.header }}
+                        <p-sortIcon [field]="col?.field" />
                     </th>
-                    <th pSortableColumn="campaignCategory" pResizableColumn>
-                        Category <p-sortIcon field="campaignCategory" />
-                    </th>
-                    <th pSortableColumn="campaignType" pResizableColumn>
-                        Type <p-sortIcon field="campaignType" />
-                    </th>
-                    <th pSortableColumn="referralCode" pResizableColumn>
-                        Code <p-sortIcon field="referralCode" />
-                    </th>
-                    <th pSortableColumn="rm" pResizableColumn>
-                        RM <p-sortIcon field="rm" />
-                    </th>
-                    <th pSortableColumn="totalSpent" pResizableColumn>
-                        Total Spent <p-sortIcon field="totalSpent" />
-                    </th>
-                    <th pSortableColumn="leadCost" pResizableColumn>
-                        Lead Cost <p-sortIcon field="leadCost" />
-                    </th>
-                    <th pSortableColumn="cac" pResizableColumn>
-                        CAC <p-sortIcon field="cac" />
-                    </th>
-                    <th pSortableColumn="cRatio" pResizableColumn>
-                        C. Ratio % <p-sortIcon field="cRatio" />
-                    </th>
-                    <th pSortableColumn="advtRatio" pResizableColumn>
-                        Advt. Ratio <p-sortIcon field="advtRatio" />
-                    </th>
-                    <th pSortableColumn="leads" pResizableColumn>
-                        Leads <p-sortIcon field="leads" />
-                    </th>
-                    <th pSortableColumn="signUp" pResizableColumn>
-                        Signup <p-sortIcon field="signUp" />
-                    </th>
-                    <th pSortableColumn="turnover" pResizableColumn>
-                        Turnover <p-sortIcon field="turnover" />
-                    </th>
-                    <th pSortableColumn="techGP" pResizableColumn>
-                        Tech GP <p-sortIcon field="techGP" />
-                    </th>
-                    <th pSortableColumn="travelGP" pResizableColumn>
-                        Travel GP <p-sortIcon field="travelGP" />
-                    </th>
-                    <th pSortableColumn="totalGP" pResizableColumn>
-                        Total GP <p-sortIcon field="totalGP" />
-                    </th>
+                    <th *ngIf="selectedColumns?.length && isAnyIndexMatch()" class="w-full"></th>
+
 
                 </tr>
 
                 <tr *ngIf="isFilterShow">
-                    <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.campaignName">
-                        <p-columnFilter type="text" matchMode="contains" field="campaignName"
-                            placeholder="Search by Campaign Name" ariaLabel="Filter Campaign Name" />
+                    <!-- <th class="left-[-1px] bg-gray-50 dark:bg-gray-800" pFrozenColumn></th> -->
+                    <th *ngFor="let col of columns;let isLast = last">
+                        <ng-container *ngIf="!col?.isHideFilter">
+
+                            <!-- Text -->
+                            <p-columnFilter *ngIf="(col.type == types.text  || col.type == types.link)" [type]="'text'"
+                                [field]="col.field" [placeholder]="'Search by '+ col.header"
+                                [ariaLabel]="'Filter '+ col.header" matchMode="contains" />
+
+                            <p-columnFilter class="searchableDropdown"
+                                *ngIf="col.type == types.select && col.field == 'rm'" [field]="col.field"
+                                matchMode="equals" [showMenu]="false">
+                                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                    <p-dropdown class="filter-dropdown" [options]="rmList" optionLabel="employee_name"
+                                        [(ngModel)]="selectedRm" [filter]="true" filterBy="employee_name"
+                                        (onChange)="filter($event.value)" [showClear]="true" appendTo="body"
+                                        placeholder="Select RM">
+                                        <ng-template let-employee pTemplate="item">
+                                            <div>{{employee.employee_name}}</div>
+                                        </ng-template>
+                                    </p-dropdown>
+                                </ng-template>
+                            </p-columnFilter>
+
+                            <!--2 digit point number-->
+                            <p-columnFilter *ngIf="col.type == types.number" [type]="'numeric'" [field]="col.field"
+                                [matchMode]="'equals'" [placeholder]="'Search by '+ col.header"
+                                [ariaLabel]="'Filter '+ col.header" locale="en-US" minFractionDigits="2"
+                                maxFractionDigits="2">
+                            </p-columnFilter>
+                        </ng-container>
                     </th>
-                    <th>
-                        <p-columnFilter type="text" matchMode="contains" field="campaignCategory"
-                            placeholder="Search by Category" ariaLabel="Filter Category" />
-                    </th>
-                    <th>
-                        <p-columnFilter type="text" matchMode="contains" field="campaignType"
-                            placeholder="Search by Type" ariaLabel="Filter Type" />
-                    </th>
-                    <th>
-                        <p-columnFilter type="text" matchMode="contains" field="referralCode"
-                            placeholder="Search by Code" ariaLabel="Filter Code" />
-                    </th>
-                    <th>
-                        <p-columnFilter class="searchableDropdown" field="rm" matchMode="equals" [showMenu]="false">
-                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-dropdown class="filter-dropdown" [options]="rmList" optionLabel="employee_name"
-                                    [(ngModel)]="selectedRm" [filter]="true" filterBy="employee_name"
-                                    (onChange)="filter($event.value)" [showClear]="true" appendTo="body"
-                                    placeholder="Select RM">
-                                    <ng-template let-employee pTemplate="item">
-                                        <div>{{employee.employee_name}}</div>
-                                    </ng-template>
-                                </p-dropdown>
-                            </ng-template>
-                        </p-columnFilter>
-                    </th>
-                    <th>
-                        <p-columnFilter type="numeric" matchMode="equals" field="totalSpent"
-                            placeholder="Filter Total Spent" ariaLabel="Filter Total Spent" />
-                    </th>
-                    <th>
-                        <p-columnFilter type="numeric" matchMode="equals" field="leadCost"
-                            placeholder="Filter Lead Cost" ariaLabel="Filter Lead Cost" />
-                    </th>
-                    <th>
-                        <p-columnFilter type="numeric" matchMode="equals" field="cac" placeholder="Filter CAC"
-                            ariaLabel="Filter CAC" />
-                    </th>
-                    <th>
-                        <p-columnFilter type="numeric" matchMode="equals" field="cRatio" placeholder="Filter C. Ratio %"
-                            ariaLabel="Filter C. Ratio %" />
-                    </th>
-                    <th>
-                        <p-columnFilter type="numeric" matchMode="equals" field="advtRatio"
-                            placeholder="Filter Advt. Ratio" ariaLabel="Filter Advt. Ratio" />
-                    </th>
-                    <th>
-                        <p-columnFilter type="numeric" matchMode="equals" field="leads" placeholder="Filter Leads"
-                            ariaLabel="Filter Leads" />
-                    </th>
-                    <th>
-                        <p-columnFilter type="numeric" matchMode="equals" field="signUp" placeholder="Filter Signup"
-                            ariaLabel="Filter Signup" />
-                    </th>
-                    <th>
-                        <p-columnFilter type="numeric" matchMode="equals" field="turnover" placeholder="Filter Turnover"
-                            ariaLabel="Filter Turnover" />
-                    </th>
-                    <th>
-                        <p-columnFilter type="numeric" matchMode="equals" field="techGP" placeholder="Filter Tech GP"
-                            ariaLabel="Filter Tech GP" />
-                    </th>
-                    <th>
-                        <p-columnFilter type="numeric" matchMode="equals" field="travelGP"
-                            placeholder="Filter Travel GP" ariaLabel="Filter Travel GP" />
-                    </th>
-                    <th>
-                        <p-columnFilter type="numeric" matchMode="equals" field="totalGpCombined"
-                            placeholder="Filter Total GP" ariaLabel="Filter Total GP" />
-                    </th>
+                    <th *ngIf="selectedColumns?.length && isAnyIndexMatch()" class="w-full"></th>
+
 
                 </tr>
             </ng-template>
 
-            <ng-template pTemplate="body" let-element>
+            <ng-template pTemplate="body" let-element let-columns="columns">
                 <tr>
-                    <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.campaignName">
-                        {{element.campaignName || "-"}}
+                    <td *ngFor="let col of columns;let isLast = last" [ngClass]="col.class">
+                        <ng-container *ngIf="(col.type === types.text || col.type === types.select)">
+                            <span>
+                                {{ element[col.field] || '-' }}
+                            </span>
+                        </ng-container>
+
+                        <ng-container *ngIf="col.type == types.number">
+                            <span>
+                                {{(element[col?.field] || 0).toFixed(col?.fixVal || 0)}}
+                            </span>
+                        </ng-container>
+
                     </td>
-                    <td>{{ element.campaignCategory || "-" }}</td>
-                    <td>{{ element.campaignType || "-" }}</td>
-                    <td>{{ element.referralCode || "-" }}</td>
-                    <td>{{ element.rm || "-" }}</td>
-                    <td class="text-right">
-                        {{ element.totalSpent ? (element.totalSpent.toFixed(2) | number:'1.2-2') : 0 }}
-                    </td>
-                    <td class="text-right">
-                        {{ element.leadCost ? (element.leadCost.toFixed(2) | number:'1.2-2') : 0 }}
-                    </td>
-                    <td class="text-right">
-                        {{ element.cac ? (element.cac.toFixed(2) | number:'1.2-2') : 0 }}
-                    </td>
-                    <td class="text-right">
-                        {{ element.cRatio ? (element.cRatio.toFixed(2) | number:'1.2-2') : 0 }}
-                    </td>
-                    <td class="text-right">
-                        {{ element.advtRatio ? (element.advtRatio.toFixed(2) | number:'1.2-2') : 0 }}
-                    </td>
-                    <td class="text-right">
-                        {{ element.leads ? (element.leads.toFixed(2) | number:'1.2-2') : 0 }}
-                    </td>
-                    <td class="text-right">
-                        {{ element.signUp ? (element.signUp.toFixed(2) | number:'1.2-2') : 0 }}
-                    </td>
-                    <td class="text-right">
-                        {{ element.turnover ? (element.turnover.toFixed(2) | number:'1.2-2') : 0 }}
-                    </td>
-                    <td class="text-right">
-                        {{ element.techGP ? (element.techGP.toFixed(2) | number:'1.2-2') : 0 }}
-                    </td>
-                    <td class="text-right">
-                        {{ element.travelGP ? (element.travelGP.toFixed(2) | number:'1.2-2') : 0 }}
-                    </td>
-                    <td class="text-right">
-                        {{ element.totalGP ? (element.totalGP.toFixed(2) | number:'1.2-2') : 0 }}
-                    </td>
+                    <td *ngIf="selectedColumns?.length && isAnyIndexMatch()" class="w-full"></td>
 
                 </tr>
             </ng-template>
             <ng-template pTemplate="footer">
-                <tr>
-                    <td>Total</td>
-                    <td *ngFor="let i of [1,2,3,4,5,6,7,8,9]"></td>
-                    <td class="text-right">
-                        {{ dataListTotals?.totalLeads ? (dataListTotals.totalLeads.toFixed(2) | number:'1.2-2') : 0 }}
-                    </td>
-                    <td class="text-right">
-                        {{ dataListTotals?.totalSignup ? (dataListTotals.totalSignup.toFixed(2) | number:'1.2-2') : 0 }}
-                    </td>
-                    <td class="text-right">
-                        {{ dataListTotals?.totalTurnover ? (dataListTotals.totalTurnover.toFixed(2) | number:'1.2-2') :
-                        0 }}
-                    </td>
-                    <td class="text-right">
-                        {{ dataListTotals?.totalTechGP ? (dataListTotals.totalTechGP.toFixed(2) | number:'1.2-2') : 0 }}
-                    </td>
-                    <td class="text-right">
-                        {{ dataListTotals?.totalTravelGP ? (dataListTotals.totalTravelGP.toFixed(2) | number:'1.2-2') :
-                        0 }}
-                    </td>
-                    <td class="text-right">
-                        {{ dataListTotals?.totalGP ? (dataListTotals.totalGP.toFixed(2) | number:'1.2-2') : 0 }}
-                    </td>
-                </tr>
+                <ng-container *ngIf="isDisplayFooter()">
+                    <tr>
+                        <!-- <td>Total</td> -->
+                        <!-- <td></td> -->
+                        <ng-container *ngFor="let el of selectedColumns; let i = index; let last = last">
+                            <td *ngIf="isNotDisplay(el.field)">
+                                {{i == 0 ? 'Total: ' : ''}}
+                            </td>
+                            <td *ngIf="el.field == 'leads'" class="text-right">
+                                {{i == 0 ? 'Total: ' : ''}} {{(dataListTotals?.totalLeads || 0).toFixed(2)}}
+                            </td>
+                            <td *ngIf="el.field == 'signUp'" class="text-right">
+                                {{i == 0 ? 'Total: ' : ''}}{{(dataListTotals?.totalSignup || 0).toFixed(2)}}
+                            </td>
+                            <td *ngIf="el.field == 'turnover'" class="text-right">
+                                {{i == 0 ? 'Total: ' : ''}} {{(dataListTotals?.totalTurnover || 0).toFixed(2)}}
+                            </td>
+                            <td *ngIf="el.field == 'techGP'" class="text-right">
+                                {{i == 0 ? 'Total: ' : ''}} {{(dataListTotals?.totalTechGP || 0).toFixed(2)}}
+                            </td>
+                            <td *ngIf="el.field == 'travelGP'" class="text-right">
+                                {{i == 0 ? 'Total: ' : ''}} {{(dataListTotals?.totalTravelGP || 0).toFixed(2)}}
+                            </td>
+                            <td *ngIf="el.field == 'totalGP'" class="text-right">
+                                {{i == 0 ? 'Total: ' : ''}} {{(dataListTotals?.totalGP || 0).toFixed(2)}}
+                            </td>
+                            <td *ngIf="last && !isNotDisplay(el.field)" class="w-full"></td>
+                        </ng-container>
+                    </tr>
+                </ng-container>
             </ng-template>
 
+
             <ng-template pTemplate="emptymessage">
-                <tr class="h-14">
-                    <td colspan="16" class="text-center font-semibold text-lg">
-                        {{getNodataText()}}
+                <tr class="h-14" *ngIf="selectedColumns?.length">
+                    <td [attr.colspan]="displayColCount()" class="text-center font-semibold text-lg">{{getNodataText()}}
                     </td>
                 </tr>
             </ng-template>
         </p-table>
     </div>
-
+    <div class="text-center mt-5" *ngIf="selectedColumns && !selectedColumns?.length"> No column to display! Please
+        Select a column
+    </div>
 </div>

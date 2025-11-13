@@ -57,7 +57,7 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
     AuditedComponent,
     RejectedComponent,
     WalletEnterySettingsComponent
-],
+  ],
 })
 export class WalletComponent extends BaseListingComponent implements OnDestroy {
   module_name = module_name.wallet;
@@ -175,6 +175,21 @@ export class WalletComponent extends BaseListingComponent implements OnDestroy {
       return Security.hasPermission(walletRechargePermissions.rejectedTabPermissions)
   }
 
+  toggleOverlayPanel(event: MouseEvent) {
+    switch (this.tab) {
+      case 'Pending':
+        this.pending.toggleOverlayPanel(event);
+        break;
+      case 'Audited':
+        this.audited.toggleOverlayPanel(event);
+        break;
+      case 'Rejected':
+        this.rejected.toggleOverlayPanel(event);
+        break;
+    }
+
+  }
+
   public tabChanged(event: any): void {
     const tabName = event?.tab?.ariaLabel;
     this.tabNameStr = tabName
@@ -184,7 +199,7 @@ export class WalletComponent extends BaseListingComponent implements OnDestroy {
       case 'Pending':
         this.tab = 'Pending';
         // this._filterService.applyDefaultFilter(this.filter_table_name.wallet_recharge_pending);
-          // this.pending.refreshItemsPending();
+        // this.pending.refreshItemsPending();
         break;
 
       case 'Audited':
@@ -238,13 +253,13 @@ export class WalletComponent extends BaseListingComponent implements OnDestroy {
   }
 
   createWallet(): void {
-    this.entityService.raisewalletRechargeCall({create: true, mopData: this.filterApiData.mopData})
-}
+    this.entityService.raisewalletRechargeCall({ create: true, mopData: this.filterApiData.mopData })
+  }
 
-  ngAfterViewInit(): void {    
-    if(this.tab = 'Pending') {
+  ngAfterViewInit(): void {
+    if (this.tab = 'Pending') {
       this.pending.pendingFilter = this.filterData;
-    } else if(this.tab = 'Audited') {
+    } else if (this.tab = 'Audited') {
       this.audited.auditListFilter = this.filterData;
     } else {
       this.rejected.rejectFilter = this.filterData;
@@ -279,8 +294,8 @@ export class WalletComponent extends BaseListingComponent implements OnDestroy {
       this.audited.refreshItemsAudited()
     else if (this.tab == 'Rejected')
       this.rejected.refreshItemsRejected()
-    else{
-        this.pending.refreshItemsPending()
+    else {
+      this.pending.refreshItemsPending()
     }
   }
 

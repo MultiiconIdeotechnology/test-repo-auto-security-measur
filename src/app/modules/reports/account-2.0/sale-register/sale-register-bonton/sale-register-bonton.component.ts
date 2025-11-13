@@ -1,8 +1,8 @@
 import { filter_module_name, messages, module_name, Security } from 'app/security';
-import { Component, EventEmitter, HostListener, Input, OnDestroy, Output } from '@angular/core';
+import { Component, EventEmitter, HostListener, Input, OnDestroy, Output, ViewChild } from '@angular/core';
 import { CommonModule, DatePipe, NgFor, NgIf } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { BaseListingComponent, Column } from 'app/form-models/base-listing';
+import { BaseListingComponent, Column, Types } from 'app/form-models/base-listing';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatMenuModule } from '@angular/material/menu';
@@ -27,6 +27,8 @@ import { EntityService } from 'app/services/entity.service';
 import { Router } from '@angular/router';
 import { AgentService } from 'app/services/agent.service';
 import { CurrencyService } from 'app/services/currency.service';
+import { OverlayPanel } from 'primeng/overlaypanel';
+import { cloneDeep } from 'lodash';
 
 @Component({
   selector: 'app-sale-register-bonton',
@@ -58,8 +60,9 @@ export class SaleRegisterBontonComponent extends BaseListingComponent implements
   @Input() endDate: any;
   @Input() supplierList: any = [];
   @Input() lastSearchString = '';
-  // module_name = module_name.products_collection;
-  filter_table_name = filter_module_name.purchase_register_bonton;
+  @ViewChild('op') overlayPanel!: OverlayPanel;
+   module_name = module_name.sale_register_2;
+  filter_table_name = filter_module_name.sale_register_bonton;
   private settingsUpdatedSubscription: Subscription;
   isLoading = false;
   dataList = [];
@@ -80,6 +83,12 @@ export class SaleRegisterBontonComponent extends BaseListingComponent implements
     { label: 'No', value: true },
   ]
 
+  types = Types;
+  selectedColumns: Column[] = [];
+  exportCol: Column[] = [];
+  activeFiltData: any = {};
+  cols: Column[] = [];
+
   tableFieldArr: any[] = [
     { field: 'invoice_date', header: 'Date', type: 'custom', matchMode: 'custom' },
     { field: 'code', header: 'Code', type: 'numeric', matchMode: 'equals' },
@@ -91,7 +100,7 @@ export class SaleRegisterBontonComponent extends BaseListingComponent implements
     { field: 'pnr', header: 'PNR', type: 'text', matchMode: 'contains' },
     { field: 'gdS_PNR', header: 'GDS PNR', type: 'text', matchMode: 'contains' },
     { field: 'currency', header: 'Currency', type: 'select', matchMode: 'contains' },
-    { field: 'roe', header: 'ROE', type: 'numeric', matchMode: 'equals', isNotFixed:true },
+    { field: 'roe', header: 'ROE', type: 'numeric', matchMode: 'equals', isNotFixed: true },
     { field: 'base_Fare', header: 'Base Fare', type: 'numeric', matchMode: 'equals' },
     { field: 'airline_Tax', header: 'Airline Tax', type: 'numeric', matchMode: 'equals' },
     { field: 'ssr_Amount', header: 'SSR Amount', type: 'numeric', matchMode: 'equals' },
@@ -110,8 +119,8 @@ export class SaleRegisterBontonComponent extends BaseListingComponent implements
     { field: 'tdS_On_CB', header: 'TDS on CB', type: 'numeric', matchMode: 'equals' },
     { field: 'service_Type', header: 'Service Type', type: 'static-select', matchMode: 'contains' },
     { field: 'sales_Type', header: 'Sales Type', type: 'text', matchMode: 'contains' },
-    { field: 'booking_Date', header: 'Booking Date', type: 'custom', matchMode: 'custom' },
-    { field: 'travel_Date', header: 'Travel Date', type: 'custom', matchMode: 'custom' },
+    { field: 'booking_Date', header: 'Booking Date', type: Types.dateTime, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
+    { field: 'travel_Date', header: 'Travel Date', type: Types.dateTime, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
     { field: 'gsT_No_Passed_To_Supplier', header: 'GST No Passed to Supplier', type: 'text', matchMode: 'contains' },
     { field: 'travel_Type', header: 'Travel Type', type: 'text', matchMode: 'contains' },
     { field: 'booking_Type', header: 'Booking Type', type: 'text', matchMode: 'contains' }
@@ -126,10 +135,51 @@ export class SaleRegisterBontonComponent extends BaseListingComponent implements
     private currencyService: CurrencyService,
     private router: Router,
   ) {
-    super(module_name.products_collection);
+    super(module_name.sale_register_2);
 
     this.sortColumn = 'invoice_date';
     this._filterService.applyDefaultFilter(this.filter_table_name);
+
+    this.selectedColumns = [
+      { field: 'invoice_date', header: 'Date', type: Types.dateTime, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
+      { field: 'code', header: 'Code', type: Types.number, fixVal: 0 },
+      { field: 'name', header: 'Name', type: Types.select },
+      { field: 'gsT_No', header: 'GST No.', type: Types.text },
+      { field: 'state', header: 'State', type: Types.text },
+      { field: 'invoice_No', header: 'Invoice No', type: Types.text },
+      { field: 'ref_No', header: 'Ref. No', type: Types.link },
+      { field: 'pnr', header: 'PNR', type: Types.text },
+      { field: 'gdS_PNR', header: 'GDS PNR', type: Types.text },
+      { field: 'currency', header: 'Currency', type: Types.select },
+      { field: 'roe', header: 'ROE', type: Types.number, fixVal: 2, class: 'text-right' },
+      { field: 'base_Fare', header: 'Base Fare', type: Types.number, fixVal: 2, class: 'text-right' },
+      { field: 'airline_Tax', header: 'Airline Tax', type: Types.number, fixVal: 2, class: 'text-right' },
+      { field: 'ssr_Amount', header: 'SSR Amount', type: Types.number, fixVal: 2, class: 'text-right' },
+      { field: 'service_Charge', header: 'Service charge', type: Types.number, fixVal: 2, class: 'text-right' },
+      { field: 'cgst', header: 'CGST', type: Types.number, fixVal: 2, class: 'text-right' },
+      { field: 'sgst', header: 'SGST', type: Types.number, fixVal: 2, class: 'text-right' },
+      { field: 'igst', header: 'IGST', type: Types.number, fixVal: 2, class: 'text-right' },
+      { field: 'total_Sale', header: 'Total Sale', type: Types.number, fixVal: 2, class: 'text-right' },
+      { field: 'pan', header: 'PAN', type: Types.text },
+      { field: 'commission_Passed_On', header: 'Commission Passed on', type: Types.number, fixVal: 2, class: 'text-right' },
+      { field: 'tdS_On_CP', header: 'TDS on CP', type: Types.number, fixVal: 2, class: 'text-right' },
+      { field: 'net_Receivable', header: 'Net Receivable', type: Types.number, fixVal: 2, class: 'text-right' },
+      { field: 'commission_Given', header: 'Commission Given', type: Types.number, fixVal: 2, class: 'text-right' },
+      { field: 'tdS_On_CG', header: 'TDS on CG', type: Types.number, fixVal: 2, class: 'text-right' },
+      { field: 'cashback', header: 'Cashback', type: Types.number, fixVal: 2, class: 'text-right' },
+      { field: 'tdS_On_CB', header: 'TDS on CB', type: Types.number, fixVal: 2, class: 'text-right' },
+      { field: 'service_Type', header: 'Service Type', type: Types.select },
+      { field: 'sales_Type', header: 'Sales Type', type: Types.text },
+      { field: 'booking_Date', header: 'Booking Date', type: Types.dateTime, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
+      { field: 'travel_Date', header: 'Travel Date', type: Types.dateTime, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
+      { field: 'gsT_No_Passed_To_Supplier', header: 'GST No Passed to Supplier', type: 'text' },
+      { field: 'travel_Type', header: 'Travel Type', type: Types.text },
+      { field: 'booking_Type', header: 'Booking Type', type: Types.text },
+    ];
+
+    this.cols.unshift(...this.selectedColumns);
+    this.exportCol = cloneDeep(this.cols);
+
 
   }
 
@@ -161,6 +211,17 @@ export class SaleRegisterBontonComponent extends BaseListingComponent implements
     //     }
     //   }
     // })
+    this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+      if (resp['gridName'] != this.filter_table_name) return;
+      this.activeFiltData = resp;
+      this.sortColumn = resp['sortColumn'];
+      // this.selectDateRanges(resp['table_config']);
+      this.primengTable['_sortField'] = resp['sortColumn'];
+      this.isFilterShow = true;
+      this.primengTable['filters'] = resp['table_config'];
+      this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
+      this.primengTable._filter();
+    });
   }
 
   ngAfterViewInit() {
@@ -181,7 +242,36 @@ export class SaleRegisterBontonComponent extends BaseListingComponent implements
       this.restoreDateFilter('travel_date', filterData['table_config']);
       this.isFilterShowEvent.emit(true);
       this.primengTable['filters'] = filterData['table_config'];
+      this.selectedColumns = this.checkSelectedColumn(filterData['selectedColumns'] || [], this.selectedColumns);
+      this.onColumnsChange();
+    } else {
+      this.selectedColumns = this.checkSelectedColumn([], this.selectedColumns);
+      this.onColumnsChange();
     }
+  }
+
+  onColumnsChange(): void {
+    this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
+  }
+
+  checkSelectedColumn(col: any[], oldCol: Column[]): any[] {
+    if (col.length) return col
+    else {
+      var Col = this._filterService.getSelectedColumns({ name: this.filter_table_name })?.columns || [];
+      if (!Col.length)
+        return oldCol;
+      else
+        return Col;
+    }
+  }
+
+  isDisplayHashCol(): boolean {
+    return this.selectedColumns.length > 0;
+  }
+
+
+  toggleOverlayPanel(event: MouseEvent) {
+    this.overlayPanel.toggle(event);
   }
 
   onOptionClick(option: any, primengTable: any, field: string) {
@@ -323,39 +413,39 @@ export class SaleRegisterBontonComponent extends BaseListingComponent implements
       Excel.export(
         'Sale Register(Bonton)',
         [
-          { property: 'invoice_date', header: 'Date'},
-          { property: 'code', header: 'Code'},
-          { property: 'name', header: 'Name'},
-          { property: 'gsT_No', header: 'GST No.'},
-          { property: 'state', header: 'State'},
-          { property: 'invoice_No', header: 'Invoice No'},
-          { property: 'ref_No', header: 'Ref. No'},
-          { property: 'pnr', header: 'PNR'},
-          { property: 'gdS_PNR', header: 'GDS PNR'},
-          { property: 'currency', header: 'Currency'},
-          { property: 'roe', header: 'ROE'},
-          { property: 'base_Fare', header: 'Base Fare'},
-          { property: 'airline_Tax', header: 'Airline Tax'},
-          { property: 'ssr_Amount', header: 'SSR Amount'},
-          { property: 'service_Charge', header: 'Service charge'},
-          { property: 'cgst', header: 'CGST'},
-          { property: 'sgst', header: 'SGST'},
-          { property: 'igst', header: 'IGST'},
-          { property: 'total_Sale', header: 'Total Sale'},
-          { property: 'pan', header: 'PAN'},
-          { property: 'commission_Passed_On', header: 'Commission Passed on'},
-          { property: 'tdS_On_CP', header: 'TDS on CP'},
-          { property: 'net_Receivable', header: 'Net Receivable'},
-          { property: 'commission_Given', header: 'Commission Given'},
-          { property: 'tdS_On_CG', header: 'TDS on CG'},
-          { property: 'cashback', header: 'Cashback'},
-          { property: 'tdS_On_CB', header: 'TDS on CB'},
-          { property: 'service_Type', header: 'Service Type'},
-          { property: 'sales_Type', header: 'Sales Type'},
-          { property: 'booking_Date', header: 'Booking Date'},
-          { property: 'travel_Date', header: 'Travel Date'},
-          { property: 'gsT_No_Passed_To_Supplier', header: 'GST No Passed to Supplier'},
-          { property: 'travel_Type', header: 'Travel Type'},
+          { property: 'invoice_date', header: 'Date' },
+          { property: 'code', header: 'Code' },
+          { property: 'name', header: 'Name' },
+          { property: 'gsT_No', header: 'GST No.' },
+          { property: 'state', header: 'State' },
+          { property: 'invoice_No', header: 'Invoice No' },
+          { property: 'ref_No', header: 'Ref. No' },
+          { property: 'pnr', header: 'PNR' },
+          { property: 'gdS_PNR', header: 'GDS PNR' },
+          { property: 'currency', header: 'Currency' },
+          { property: 'roe', header: 'ROE' },
+          { property: 'base_Fare', header: 'Base Fare' },
+          { property: 'airline_Tax', header: 'Airline Tax' },
+          { property: 'ssr_Amount', header: 'SSR Amount' },
+          { property: 'service_Charge', header: 'Service charge' },
+          { property: 'cgst', header: 'CGST' },
+          { property: 'sgst', header: 'SGST' },
+          { property: 'igst', header: 'IGST' },
+          { property: 'total_Sale', header: 'Total Sale' },
+          { property: 'pan', header: 'PAN' },
+          { property: 'commission_Passed_On', header: 'Commission Passed on' },
+          { property: 'tdS_On_CP', header: 'TDS on CP' },
+          { property: 'net_Receivable', header: 'Net Receivable' },
+          { property: 'commission_Given', header: 'Commission Given' },
+          { property: 'tdS_On_CG', header: 'TDS on CG' },
+          { property: 'cashback', header: 'Cashback' },
+          { property: 'tdS_On_CB', header: 'TDS on CB' },
+          { property: 'service_Type', header: 'Service Type' },
+          { property: 'sales_Type', header: 'Sales Type' },
+          { property: 'booking_Date', header: 'Booking Date' },
+          { property: 'travel_Date', header: 'Travel Date' },
+          { property: 'gsT_No_Passed_To_Supplier', header: 'GST No Passed to Supplier' },
+          { property: 'travel_Type', header: 'Travel Type' },
           { property: 'booking_Type', header: 'Booking Type' }
         ],
         data.data,
@@ -420,5 +510,15 @@ export class SaleRegisterBontonComponent extends BaseListingComponent implements
 
     this.destroy$.next(null);
     this.destroy$.complete();
+  }
+
+  displayColCount(): number {
+    return this.selectedColumns.length + 1;
+  }
+
+  isValidDate(value: any): boolean {
+    const date = new Date(value);
+    return value && !isNaN(date.getTime());
+
   }
 }

@@ -28,7 +28,7 @@ import { Subject } from 'rxjs';
 import { PendingWLSettingComponent } from '../pending-wl-setting/pending-wl-setting.component';
 import { TechInfoTabsComponent } from '../info-tabs/info-tabs.component';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
-import { BaseListingComponent } from 'app/form-models/base-listing';
+import { BaseListingComponent, Column, Types } from 'app/form-models/base-listing';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { DateTime } from 'luxon';
 import { AgentService } from 'app/services/agent.service';
@@ -37,6 +37,8 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
 import { GlobalSearchService } from 'app/services/global-search.service';
 import { Excel } from 'app/utils/export/excel';
 import { DomainSslVerificationComponent } from '../domain-ssl-verification/domain-ssl-verification.component';
+import { OverlayPanel } from 'primeng/overlaypanel';
+import { cloneDeep } from 'lodash';
 
 @Component({
     selector: 'app-crm-tech-dashboard-blocked',
@@ -81,11 +83,11 @@ export class TechDashboardBlockedComponent extends BaseListingComponent {
     @ViewChild('tabGroup') tabGroup;
     @ViewChild(MatPaginator) public _paginator: MatPaginator;
     @ViewChild(MatSort) public _sortArchive: MatSort;
+    @ViewChild('op') overlayPanel!: OverlayPanel;
 
-    module_name = module_name.lead;
+    module_name = module_name.techDashboard;
     filter_table_name = filter_module_name.tech_dashboard_blocked;
     private settingsUpdatedSubscription: Subscription;
-    cols = [];
     total = 0;
     dataList: any;
     appConfig = AppConfig;
@@ -102,6 +104,12 @@ export class TechDashboardBlockedComponent extends BaseListingComponent {
     agentList: any[] = [];
     filter: any = {}
 
+    types = Types;
+    exportCol: Column[] = [];
+    activeFiltData: any = {};
+    cols: Column[] = [];
+    selectedColumns: Column[] = [];
+
     constructor(
         private crmService: CrmService,
         private matDialog: MatDialog,
@@ -112,10 +120,25 @@ export class TechDashboardBlockedComponent extends BaseListingComponent {
     ) {
         super(module_name.techDashboard);
         this.key = this.module_name;
-        this.sortColumn = 'block_date_time';
+        this.sortColumn = 'blockDate';
         this.sortDirection = 'desc';
         this.Mainmodule = this;
         this._filterService.applyDefaultFilter(this.filter_table_name);
+
+        this.selectedColumns = [
+
+            { field: 'itemCode', header: 'Item Code', type: Types.text },
+            { field: 'itemName', header: 'Item', type: Types.select },
+            { field: 'productName', header: 'Product', type: Types.select},
+            { field: 'agentCode', header: 'Agent Code', type: Types.number, fixVal: 0  },
+            { field: 'agencyName', header: 'Agency Name', type: Types.select },
+            { field: 'blockDate', header: 'Block Date', type: Types.date, dateFormat: 'dd-MM-yyyy' },
+            { field: 'expiryDate', header: 'Expiry Date', type: Types.date, dateFormat: 'dd-MM-yyyy' },
+            { field: 'rm', header: 'RM', type: Types.text }
+        ];
+
+        this.cols.unshift(...this.selectedColumns);
+        this.exportCol = cloneDeep(this.cols);
     }
 
     ngOnInit(): void {
@@ -123,7 +146,7 @@ export class TechDashboardBlockedComponent extends BaseListingComponent {
 
         // common filter
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
-            this.selectedAgent = resp['table_config']['agency_name']?.value;
+            this.selectedAgent = resp['table_config']['agencyName']?.value;
             if (this.selectedAgent && this.selectedAgent.id) {
                 const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
                 if (!match) {
@@ -132,14 +155,15 @@ export class TechDashboardBlockedComponent extends BaseListingComponent {
             }
             // this.sortColumn = resp['sortColumn'];
             // this.primengTable['_sortField'] = resp['sortColumn'];
-            if (resp['table_config']['block_date_time'].value) {
-                resp['table_config']['block_date_time'].value = new Date(resp['table_config']['block_date_time'].value);
+            if (resp['table_config']['blockDate'].value) {
+                resp['table_config']['blockDate'].value = new Date(resp['table_config']['blockDate'].value);
             }
-            if (resp['table_config']['expiry_date'].value) {
-                resp['table_config']['expiry_date'].value = new Date(resp['table_config']['expiry_date'].value);
+            if (resp['table_config']['expiryDate'].value) {
+                resp['table_config']['expiryDate'].value = new Date(resp['table_config']['expiryDate'].value);
             }
             this.primengTable['filters'] = resp['table_config'];
             this.isFilterShowBlocked = true;
+            this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
             this.isFilterShowBlockedChange.emit(this.isFilterShowBlocked);
             this.primengTable._filter();
         });
@@ -152,7 +176,7 @@ export class TechDashboardBlockedComponent extends BaseListingComponent {
             this.isFilterShowBlockedChange.emit(this.isFilterShowBlocked);
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
             setTimeout(() => {
-                this.selectedAgent = filterData['table_config']['agency_name']?.value;
+                this.selectedAgent = filterData['table_config']['agencyName']?.value;
                 if (this.selectedAgent && this.selectedAgent.id) {
                     const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
                     if (!match) {
@@ -161,16 +185,43 @@ export class TechDashboardBlockedComponent extends BaseListingComponent {
                 }
             }, 1000);
 
-            if (filterData['table_config']['block_date_time'].value) {
-                filterData['table_config']['block_date_time'].value = new Date(filterData['table_config']['block_date_time'].value);
+            if (filterData['table_config']['blockDate'].value) {
+                filterData['table_config']['blockDate'].value = new Date(filterData['table_config']['blockDate'].value);
             }
-            if (filterData['table_config']['expiry_date'].value) {
-                filterData['table_config']['expiry_date'].value = new Date(filterData['table_config']['expiry_date'].value);
+            if (filterData['table_config']['expiryDate'].value) {
+                filterData['table_config']['expiryDate'].value = new Date(filterData['table_config']['expiryDate'].value);
             }
             this.primengTable['filters'] = filterData['table_config'];
-            // this.primengTable['_sortField'] = filterData['sortColumn'];
-            // this.sortColumn = filterData['sortColumn'];
+            this.selectedColumns = this.checkSelectedColumn(filterData['selectedColumns'] || [], this.selectedColumns);
+            this.onColumnsChange();
+        } else {
+            this.selectedColumns = this.checkSelectedColumn([], this.selectedColumns);
+            this.onColumnsChange();
         }
+    }
+
+    onColumnsChange(): void {
+        this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
+    }
+
+    checkSelectedColumn(col: any[], oldCol: Column[]): any[] {
+        if (col.length) return col
+        else {
+            var Col = this._filterService.getSelectedColumns({ name: this.filter_table_name })?.columns || [];
+            if (!Col.length)
+                return oldCol;
+            else
+                return Col;
+        }
+    }
+
+    isDisplayHashCol(): boolean {
+        return this.selectedColumns.length > 0;
+    }
+
+
+    toggleOverlayPanel(event: MouseEvent) {
+        this.overlayPanel.toggle(event);
     }
 
     getStatusColor(status: string): string {
@@ -211,18 +262,18 @@ export class TechDashboardBlockedComponent extends BaseListingComponent {
             .subscribe((res) => {
                 if (res?.action === 'confirmed') {
                     let newJson = {
-                        id: record?.subid ? record?.subid : "",
-                        expiry_date: res?.date ? DateTime.fromISO(res?.date).toFormat('yyyy-MM-dd') : ""
+                        Id: record?.id ? record?.id : "",
+                        NewExpiryDate: res?.date ? DateTime.fromISO(res?.date).toFormat('yyyy-MM-dd') : ""
                     }
                     this.crmService.updateExpiryDate(newJson).subscribe({
                         next: (res) => {
-                            this.alertService.showToast(
-                                'success',
-                                'Update Expiry Date has been updated!',
-                                'top-right',
-                                true
-                            );
                             if (res) {
+                                this.alertService.showToast(
+                                    'success',
+                                    'Update Expiry Date has been updated!',
+                                    'top-right',
+                                    true
+                                );
                                 this.refreshItems();
                             }
                         },
@@ -264,7 +315,7 @@ export class TechDashboardBlockedComponent extends BaseListingComponent {
         });
     }
 
-    // Api call to Get Agent data
+     // Api call to Get Agent data
     getAgent(value: string) {
         this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
             this.agentList = data;
@@ -275,6 +326,7 @@ export class TechDashboardBlockedComponent extends BaseListingComponent {
             }
         })
     }
+
 
     // wlSetting(record): void {
     //     if (!Security.hasPermission(techDashPermissions.wlSettingPermissions)) {
@@ -298,23 +350,23 @@ export class TechDashboardBlockedComponent extends BaseListingComponent {
     //     });
     // }
 
-    wlSetting(record:any){
+    wlSetting(record: any) {
         if (!Security.hasPermission(techDashPermissions.wlSettingPermissions)) {
             return this.alertService.showToast('error', messages.permissionDenied);
         }
 
-        this.crmService.getWLSettingListTwoParams(record?.code, record?.item_name).subscribe({
+        this.crmService.getWLSettingListTwoParams(record?.code, record?.itemName).subscribe({
             next: (data) => {
                 this.isLoading = false;
                 this.getWLSettingList = data[0];
 
                 this.matDialog.open(DomainSslVerificationComponent, {
                     disableClose: true,
-                    data: {record:record, wlSettingList:this.getWLSettingList, from:'blocked'},
+                    data: { record: record, wlSettingList: this.getWLSettingList, from: 'blocked' },
                     panelClass: ['custom-dialog-modal-md'],
                     autoFocus: false,
-                  }).afterClosed().subscribe((res:any) => {
-                    if(res && res == 'blocked'){
+                }).afterClosed().subscribe((res: any) => {
+                    if (res && res == 'blocked') {
                         this.refreshItems();
                     }
                 })
@@ -343,6 +395,7 @@ export class TechDashboardBlockedComponent extends BaseListingComponent {
     }
 
     unBlocked(record, index): void {
+        
         // if (!Security.hasPermission(agentsPermissions.removeAllSubagentPermissions)) {
         //     return this.alertService.showToast('error', messages.permissionDenied);
         // }
@@ -358,18 +411,19 @@ export class TechDashboardBlockedComponent extends BaseListingComponent {
             .subscribe((res) => {
                 if (res === 'confirmed') {
                     let newJson = {
-                        id: record.subid,
-                        is_block: false
+                        ServiceId: record.id,
+                        Isblock: false,
+                        BlockRemarks:""
                     }
-                    this.crmService.unblocked(newJson).subscribe({
+                    this.crmService.blocked(newJson).subscribe({
                         next: (res) => {
-                            this.alertService.showToast(
-                                'success',
-                                'Un-blocked Successfully!',
-                                'top-right',
-                                true
-                            );
                             if (res) {
+                                this.alertService.showToast(
+                                    'success',
+                                    'Un-blocked Successfully!',
+                                    'top-right',
+                                    true
+                                );
                                 this.dataList.splice(index, 1);
                             }
                         },
@@ -405,22 +459,32 @@ export class TechDashboardBlockedComponent extends BaseListingComponent {
 
         this.crmService.getTechBlockedProductList(filterReq).subscribe(data => {
             for (var dt of data.data) {
-                dt.block_date_time = dt.block_date_time ? DateTime.fromISO(dt.block_date_time).toFormat('dd-MM-yyyy') : ''
-                dt.expiry_date = dt.expiry_date ? DateTime.fromISO(dt.expiry_date).toFormat('dd-MM-yyyy') : ''
+                dt.blockDate = dt.blockDate ? DateTime.fromISO(dt.blockDate).toFormat('dd-MM-yyyy') : ''
+                dt.expiryDate = dt.expiryDate ? DateTime.fromISO(dt.expiryDate).toFormat('dd-MM-yyyy') : ''
             }
             Excel.export(
                 'Blocked',
                 [
-                    { header: 'Item Code', property: 'item_code' },
-                    { header: 'Item.', property: 'item_name' },
-                    { header: 'Product', property: 'product_name' },
+                    { header: 'Item Code', property: 'itemCode' },
+                    { header: 'Item', property: 'itemName' },
+                    { header: 'Product', property: 'productName' },
                     { header: 'Agent Code', property: 'agentCode' },
-                    { header: 'Agency Name', property: 'agency_name' },
-                    { header: 'Block Date', property: 'block_date_time' },
-                    { header: 'Expiry Date', property: 'expiry_date' },
+                    { header: 'Agency Name', property: 'agencyName' },
+                    { header: 'Block Date', property: 'blockDate' },
+                    { header: 'Expiry Date', property: 'expiryDate' },
                     { header: 'RM', property: 'rm' },
                 ],
                 data.data, "Blocked", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 5 } }]);
         });
+    }
+
+    displayColCount(): number {
+        return this.selectedColumns.length + 1;
+    }
+
+    isValidDate(value: any): boolean {
+        const date = new Date(value);
+        return value && !isNaN(date.getTime());
+
     }
 }

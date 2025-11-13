@@ -27,6 +27,7 @@ import { CrmService } from 'app/services/crm.service';
 import { EntityService } from 'app/services/entity.service';
 import { ToasterService } from 'app/services/toaster.service';
 import { GridUtils } from 'app/utils/grid/gridUtils';
+import { DateTime } from 'luxon';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
 import { Subject, takeUntil } from 'rxjs';
@@ -100,13 +101,19 @@ export class InstallmentRightComponent implements OnInit, OnDestroy {
         public alertService: ToasterService,
         private crmService: CrmService,
     ) {
+         this.formGroup = this.formBuilder.group({
+            installment_date: ['', Validators.required]
+        });
+
         this.entityService.onInstallmentCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
             next: (item) => {
-                this.settingsDrawer.toggle();
+                if(item)
+                this.settingsDrawer?.toggle();
+            
                 this.record = item ?? {}
                 if (item?.edit) {
                     this.record = item?.data ?? {}
-                    this.formGroup.get('installment_date').patchValue(this.record?.installment_date);
+                    this.formGroup.get('installment_date').patchValue(this.record?.installmentDate);
                 }
             }
         })
@@ -122,9 +129,7 @@ export class InstallmentRightComponent implements OnInit, OnDestroy {
                 this.config = config;
             });
 
-        this.formGroup = this.formBuilder.group({
-            installment_date: ['', Validators.required]
-        });
+       
     }
 
     numberOnly(event): boolean {
@@ -135,21 +140,21 @@ export class InstallmentRightComponent implements OnInit, OnDestroy {
         return true;
     }
 
-    refreshItems(): void {
-        const filterReq = GridUtils.GetFilterReq(
-            this._paginator,
-            this._sort,
-            this.searchInputControl.value
-        );
-        this.crmService.getProductPurchaseMasterList(filterReq).subscribe({
-            next: (data) => {
-                this.dataList = data.data;
-            },
-            error: (err) => {
-                this.alertService.showToast('error', err, 'top-right', true);
-            },
-        });
-    }
+    // refreshItems(): void {
+    //     const filterReq = GridUtils.GetFilterReq(
+    //         this._paginator,
+    //         this._sort,
+    //         this.searchInputControl.value
+    //     );
+    //     this.crmService.getProductPurchaseMasterList(filterReq).subscribe({
+    //         next: (data) => {
+    //             this.dataList = data.data;
+    //         },
+    //         error: (err) => {
+    //             this.alertService.showToast('error', err, 'top-right', true);
+    //         },
+    //     });
+    // }
 
     ngOnDestroy(): void {
         this._unsubscribeAll.next(null);
@@ -170,18 +175,20 @@ export class InstallmentRightComponent implements OnInit, OnDestroy {
         const json = this.formGroup.getRawValue();
 
         const newJson = {
-            id: this.record?.insid ? this.record?.insid : "",
-            installment_date: json?.installment_date ? json?.installment_date : ""
+            id: this.record?.id ? this.record?.id : "",
+            NewInstallmentDate: json?.installment_date ?  DateTime.fromJSDate(new Date(json?.installment_date)).toFormat('yyyy-MM-dd') : ""
         }
 
         this.disableBtn = true;
         this.crmService.updateInstallment(newJson).subscribe({
-            next: () => {
-                this.router.navigate([this.leadListRoute]);
-                this.disableBtn = false;
-                this.entityService.raiserefreshInstallmentCall(true);
-                this.settingsDrawer.close()
-                this.alertService.showToast('success', 'Record modified', 'top-right', true);
+            next: (res) => {
+                if(res){
+                    this.router.navigate([this.leadListRoute]);
+                    this.disableBtn = false;
+                    this.entityService.raiserefreshInstallmentCall(true);
+                    this.settingsDrawer.close()
+                    this.alertService.showToast('success', 'Record modified', 'top-right', true);
+                }
             },
             error: (err) => {
                 this.alertService.showToast('error', err, 'top-right', true);

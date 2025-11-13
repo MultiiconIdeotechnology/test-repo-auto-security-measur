@@ -46,7 +46,7 @@ export class DomainVerificationService {
     }
 
     activate(model: any): Observable<any> {
-        return this.http.post<any>(this.baseUrl + 'Dashboard/TecDashboard/ActivateProduct', model);
+        return this.http.post<any>(this.baseUrl + 'ProductPurchaseService/activeProduct', model);
     }
       
  

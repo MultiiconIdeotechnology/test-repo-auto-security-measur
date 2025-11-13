@@ -234,9 +234,9 @@ export class CabListComponent extends BaseListingComponent {
   }
 
   deleteData(record: any, index: any): void {
-    // if (!Security.hasDeleteEntryPermission(module_name.inventoryCab)) {
-    //   return this.alertService.showToast('error', messages.permissionDenied);
-    // }
+    if (!Security.hasPermission(inventoryCabPermissions.deletePermissions)) {
+      return this.alertService.showToast('error', messages.permissionDenied);
+    }
 
     const label: string = 'Delete Cab';
     this.conformationService
@@ -267,9 +267,9 @@ export class CabListComponent extends BaseListingComponent {
   }
 
   cabPublish(record): void {
-    // if (!Security.hasPermission(inventoryCabPermissions.publishUnpublishPermissions)) {
-    //   return this.alertService.showToast('error', messages.permissionDenied);
-    // }
+    if (!Security.hasPermission(inventoryCabPermissions.publishUnpublishPermissions)) {
+      return this.alertService.showToast('error', messages.permissionDenied);
+    }
 
     if (!record.is_audited) {
       this.alertService.showToast('error', 'Cab product must be audited before it can be published.');
@@ -367,9 +367,9 @@ export class CabListComponent extends BaseListingComponent {
   // }
 
   Audit(data: any): void {
-    // if (!Security.hasPermission(walletRechargePermissions.auditUnauditPermissions)) {
-    // 	return this.alertService.showToast('error', messages.permissionDenied);
-    // }
+    if (!Security.hasPermission(inventoryCabPermissions.auditUnauditPermissions)) {
+    	return this.alertService.showToast('error', messages.permissionDenied);
+    }
 
     const label: string = data.is_audited ? 'UnAudit Cab' : 'Audit Cab';
     this.conformationService.open({
@@ -399,9 +399,9 @@ export class CabListComponent extends BaseListingComponent {
   }
 
   viewDetails(record: any): void {
-    // if (!Security.hasPermission(inventoryCabPermissions.viewCabPermissions)) {
-    //   return this.alertService.showToast('error', messages.permissionDenied);
-    // }
+    if (!Security.hasPermission(inventoryCabPermissions.viewCabPermissions)) {
+      return this.alertService.showToast('error', messages.permissionDenied);
+    }
 
     const queryParams = {
       id: record.id,

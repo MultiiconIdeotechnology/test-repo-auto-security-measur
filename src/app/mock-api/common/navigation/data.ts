@@ -4,6 +4,23 @@ import { Routes } from 'app/common/const';
 
 export const defaultNavigation: FuseNavigationItem[] = [
     {
+        id: 'dashboard',
+        title: 'Dashboard',
+        type: 'group',
+        pid: 'MAINMENU_DASHBOARD_VIEW',
+        icon: 'heroicons_outline:cube',
+        children: [
+            {
+                id: 'dashboard.airline',
+                title: 'Airline',
+                type: 'basic',
+                pid: 'DASHBOARD_AIRLINE_VIEW',
+                icon: 'flight_takeoff',
+                link: Routes.dashboard.airline_route
+            },
+        ]
+    },
+    {
         id: 'crm',
         title: 'CRM',
         type: 'group',
@@ -315,7 +332,14 @@ export const defaultNavigation: FuseNavigationItem[] = [
                         type: 'basic',
                         pid: 'BOOKINGS-FLIGHT_GROUPINQUIRY_VIEW',
                         link: Routes.booking.group_inquiry_path
-                    }
+                    },
+                    {
+                        id: 'booking.airline-block',
+                        title: 'Airline BLock',
+                        type: 'basic',
+                        pid: 'BOOKINGS-FLIGHT_AIRLINEBLOCK_VIEW',
+                        link: Routes.booking.airline_block_lead_path
+                    },
                 ]
             },
             {
@@ -530,7 +554,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 ]
             },
 
-              {
+            {
                 id: 'reports.account2.0',
                 title: 'Accounts 2.0',
                 type: 'collapsable',
@@ -833,14 +857,14 @@ export const defaultNavigation: FuseNavigationItem[] = [
                       icon: '',
                       link: Routes.reports.campaign_register_path_route
                   },
-                    {
-                        id: 'reports.campaignsummary',
-                        title: 'Campaign Summary',
-                        type: 'basic',
-                        pid: 'CAMPAIGN-REPORTS_CAMPAIGNSUMMARY_VIEW',
-                        icon: '',
-                        link: Routes.reports.campaign_summary_path_route
-                    },
+                    // {
+                    //     id: 'reports.campaignsummary',
+                    //     title: 'Campaign Summary',
+                    //     type: 'basic',
+                    //     pid: 'CAMPAIGN-REPORTS_CAMPAIGNSUMMARY_VIEW',
+                    //     icon: '',
+                    //     link: Routes.reports.campaign_summary_path_route
+                    // },
                      {
                         id: 'reports.campaignsummaryreport',
                         title: 'Campaign Summary Report',
@@ -959,14 +983,22 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 icon: 'mat_outline:holiday_village',
                 link: Routes.inventory.holiday_v2_route
             },
-            // {
-            //     id: 'inventory.cab',
-            //     title: 'Cab',
-            //     type: 'basic',
-            //     pid: 'INVENTORY_CAB_VIEW',
-            //     icon: 'heroicons_outline:newspaper',
-            //     link: Routes.inventory.cab_route
-            // },
+            {
+                id: 'inventory.air_block',
+                title: 'Airline Block',
+                type: 'basic',
+                pid: 'INVENTORY_AIRLINEBLOCK_VIEW',
+                icon: 'mat_outline:flight',
+                link: Routes.inventory.airline_block_path
+            },
+            {
+                id: 'inventory.cab',
+                title: 'Cab',
+                type: 'basic',
+                pid: 'INVENTORY_CAB_VIEW',
+                icon: 'heroicons_outline:newspaper',
+                link: Routes.inventory.cab_route
+            },
             // {
             //     id: 'inventory.cab',
             //     title: 'Cab',
@@ -1127,6 +1159,14 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 link: Routes.settings.cashback_parameters_route
             },
             {
+                id: 'settings.pspsetup',
+                title: 'PSP Setup',
+                type: 'basic',
+                pid: 'SETTINGS_PSPSETUP_VIEW',
+                icon: 'heroicons_outline:server',
+                link: Routes.settings.psp_setup_route
+            },
+            {
                 id: 'settings.supplierinventoryprofile',
                 title: 'Supplier Inventory Profile',
                 type: 'basic',
@@ -1141,11 +1181,20 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 pid: 'SETTINGS_FARETYPEMAPPER_VIEW',
                 icon: 'heroicons_outline:inbox-arrow-down',
                 link: Routes.settings.supplier_faretype_mapper_route
-            }
+            },
+          
         ]
     }
 ];
 export const compactNavigation: FuseNavigationItem[] = [
+    {
+        id: 'dashboard',
+        title: 'Dashboard',
+        type: 'aside',
+        pid: 'MAINMENU_DASHBOARD_VIEW',
+        icon: 'heroicons_outline:cube',
+        children: []
+    },
     {
         id: 'crm',
         title: 'CRM',

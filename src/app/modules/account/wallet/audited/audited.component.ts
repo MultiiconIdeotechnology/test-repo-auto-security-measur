@@ -22,10 +22,12 @@ import { InfoWalletComponent } from '../info-wallet/info-wallet.component';
 import { DateTime } from 'luxon';
 import { Excel } from 'app/utils/export/excel';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
-import { BaseListingComponent } from 'app/form-models/base-listing';
+import { BaseListingComponent, Column, Types } from 'app/form-models/base-listing';
 import { AgentService } from 'app/services/agent.service';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { IndianNumberPipe } from '@fuse/pipes/indianNumberFormat.pipe';
+import { cloneDeep } from 'lodash';
+import { OverlayPanel } from 'primeng/overlaypanel';
 
 @Component({
   selector: 'app-audited',
@@ -57,6 +59,7 @@ import { IndianNumberPipe } from '@fuse/pipes/indianNumberFormat.pipe';
 export class AuditedComponent extends BaseListingComponent {
 
   @ViewChild('tabGroup') tabGroup;
+  @ViewChild('op') overlayPanel!: OverlayPanel;
   @Input() isFilterShowAudit: boolean;
   @Output() isFilterShowAuditedChange = new EventEmitter<boolean>();
   @Input() filterApiData: any;
@@ -85,7 +88,11 @@ export class AuditedComponent extends BaseListingComponent {
   selectedPsp: any;
   selectedAgent: any;
 
-  cols = [];
+  types = Types;
+  selectedColumns: Column[] = [];
+  exportCol: Column[] = [];
+  activeFiltData: any = {};
+  cols: Column[] = [];
 
   protected masterService: MasterService;
   public settingsAuitedSubscription: Subscription;
@@ -115,6 +122,26 @@ export class AuditedComponent extends BaseListingComponent {
 
     this.auditListFilter.FromDate.setDate(1);
     this.auditListFilter.FromDate.setMonth(this.auditListFilter.FromDate.getMonth());
+
+    this.selectedColumns = [
+
+      { field: 'reference_number', header: 'Ref. No', type: Types.text  },
+      { field: 'request_date_time', header: 'Request', type: Types.dateTime, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
+      { field: 'agent_code', header: 'Agent Code', type: Types.number, fixVal: 0 },
+      { field: 'recharge_for_name', header: 'Agent', type: Types.select },
+      { field: 'currency', header: 'Currency' , type: Types.text},
+      { field: 'recharge_amount', header: 'Amount', type: Types.number, fixVal: 0, class: 'text-right' },
+      { field: 'settled_amount', header: 'Settled Amount', type: Types.number, fixVal: 0, class: 'text-right' },
+      { field: 'mop', header: 'MOP' , type: Types.select},
+      { field: 'psp_name', header: 'PSP' , type: Types.select},
+      { field: 'psp_ref_number', header: 'PSP Ref No.', type: Types.text },
+      { field: 'audited_by_name', header: 'Audit By', type: Types.text },
+      { field: 'audited_date_time', header: 'Audit Time', type: Types.date, dateFormat: 'dd-MM-yyyy HH:mm:ss'  },
+      { field: 'user_remark', header: 'Remark', type: Types.text }
+    ];
+
+    this.cols.unshift(...this.selectedColumns);
+    this.exportCol = cloneDeep(this.cols);
   }
 
   ngOnInit(): void {
@@ -161,6 +188,7 @@ export class AuditedComponent extends BaseListingComponent {
       // this.sortColumn = resp['sortColumn'];
       // this.primengTable['_sortField'] = resp['sortColumn'];
       this.primengTable['filters'] = resp['table_config'];
+      this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
       this.primengTable._filter();
     });
   }
@@ -205,7 +233,35 @@ export class AuditedComponent extends BaseListingComponent {
       // this.primengTable['_sortField'] = filterData['sortColumn'];
       // this.sortColumn = filterData['sortColumn'];
       this.primengTable['filters'] = filterData['table_config'];
+      this.selectedColumns = this.checkSelectedColumn(filterData['selectedColumns'] || [], this.selectedColumns);
+      this.onColumnsChange();
+    } else {
+      this.selectedColumns = this.checkSelectedColumn([], this.selectedColumns);
+      this.onColumnsChange();
     }
+  }
+
+  onColumnsChange(): void {
+    this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
+  }
+
+  checkSelectedColumn(col: any[], oldCol: Column[]): any[] {
+    if (col.length) return col
+    else {
+      var Col = this._filterService.getSelectedColumns({ name: this.filter_table_name })?.columns || [];
+      if (!Col.length)
+        return oldCol;
+      else
+        return Col;
+    }
+  }
+
+  isDisplayHashCol(): boolean {
+    return this.selectedColumns.length > 0;
+  }
+
+  toggleOverlayPanel(event: MouseEvent) {
+    this.overlayPanel.toggle(event);
   }
 
 
@@ -374,6 +430,17 @@ export class AuditedComponent extends BaseListingComponent {
       this.settingsAuitedSubscription.unsubscribe();
       this._filterService.activeFiltData = {};
     }
+  }
+
+  displayColCount(): number {
+    return this.selectedColumns.length + 1;
+  }
+
+
+  isValidDate(value: any): boolean {
+    const date = new Date(value);
+    return value && !isNaN(date.getTime());
+
   }
 
 }

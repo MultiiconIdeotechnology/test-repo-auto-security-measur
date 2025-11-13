@@ -56,7 +56,8 @@ export class ConsoleAccountFormComponent {
       product_id : [""]
     });
 
-    if(this.data?.item_name?.toLowerCase().includes('ios')){
+
+    if(this.data?.itemName?.toLowerCase().includes('ios')){
       this.formGroup.get('password').setValidators([Validators.required]);
       this.formGroup.get('password')?.patchValue(this.wlSettingData?.play_console_password)
     } else {
@@ -75,7 +76,7 @@ export class ConsoleAccountFormComponent {
   }
 
   openVideoLink(){
-    const itemName = this.data?.item_name?.toLowerCase();
+    const itemName = this.data?.itemName?.toLowerCase();
     if (itemName?.includes('android')) {
       window.open(this.adroidLinkVideoLink, '_blank'); 
     } else if (itemName?.includes('ios')){
@@ -84,7 +85,7 @@ export class ConsoleAccountFormComponent {
   }
 
   openMoreDetails(){
-    const itemName = this.data?.item_name?.toLowerCase();
+    const itemName = this.data?.itemName?.toLowerCase();
   
     if (itemName?.includes('android')) {
       window.open(this.androidLink, '_blank'); 
@@ -99,13 +100,12 @@ export class ConsoleAccountFormComponent {
       this.formGroup.markAllAsTouched();
       return;
     }
-
     let payloadData = this.formGroup.value;
-    payloadData.agent_id = this.data?.agentid;
-    payloadData.product_id = this.data?.subid;
+    payloadData.agent_id = this.data?.agentId;
+    payloadData.product_id = this.data?.id;
     payloadData.wl_id = this.wlSettingData?.wl_id;
     payloadData.is_account_active = this.is_account_active;
-
+    
     this.domainVarifyService.androidIosConfig(payloadData).subscribe({
       next: (res) => {
         if (res) {

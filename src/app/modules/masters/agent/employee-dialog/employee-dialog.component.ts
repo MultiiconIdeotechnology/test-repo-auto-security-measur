@@ -84,10 +84,12 @@ export class EmployeeDialogComponent {
 
   submit(): void {
     this.agentService.setRelationManager(this.record.id, this.formGroup.get('empId').value).subscribe({
-      next: () => {
+      next: (res) => {
         // record.is_blocked = !record.is_blocked;
-        this.alertService.showToast('success', "Relationship Manager Changed!");
-        this.matDialogRef.close(true);
+        if(res){
+          this.alertService.showToast('success', "Relationship Manager Changed!");
+          this.matDialogRef.close(true);
+        }
       },
       error: (err) => {
         this.alertService.showToast('error', err, 'top-right', true);

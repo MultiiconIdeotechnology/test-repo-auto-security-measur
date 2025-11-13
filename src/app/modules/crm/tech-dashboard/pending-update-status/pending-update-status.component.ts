@@ -98,8 +98,8 @@ export class PendingUpdateStatusComponent {
         const json = this.formGroup.getRawValue();
         const newJson = {
             id: this.record?.data?.id ? this.record?.data?.id : "",
-            product_status: json.product_status ? json.product_status : "",
-            special_status_remark: json.special_status_remark ? json.special_status_remark : ""
+            Status: json.product_status ? json.product_status : "",
+            Remark: json.special_status_remark ? json.special_status_remark : ""
         }
         this.crmService.updateStatus(newJson).subscribe({
             next: () => {

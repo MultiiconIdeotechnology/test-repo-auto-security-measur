@@ -70,7 +70,9 @@ import { DropdownModule } from 'primeng/dropdown';
         RippleModule,
         StyleClassModule,
         AutoFocusModule,
-        DropdownModule
+        DropdownModule,
+         
+        
     ],
     exports: [
         BadgeModule,
@@ -106,7 +108,8 @@ import { DropdownModule } from 'primeng/dropdown';
         RippleModule,
         StyleClassModule,
         AutoFocusModule,
-        DropdownModule
+        DropdownModule,
+
     ],
     providers: []
 })

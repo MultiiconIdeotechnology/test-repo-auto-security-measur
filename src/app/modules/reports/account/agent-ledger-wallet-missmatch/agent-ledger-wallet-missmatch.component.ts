@@ -20,9 +20,10 @@ import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { AgentLedgerWalletMissmatchService } from 'app/services/agent-ledger-wallet-missmatch.service';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
-import { BaseListingComponent } from 'app/form-models/base-listing';
+import { BaseListingComponent, Column, Types } from 'app/form-models/base-listing';
 import { filter_module_name, module_name } from 'app/security';
 import { Subscription } from 'rxjs';
+import { cloneDeep } from 'lodash';
 
 
 @Component({
@@ -68,6 +69,12 @@ export class AgentLedgerWalletMissmatchComponent extends BaseListingComponent im
   selectedAgent: any;
   agentList: any[] = [];
 
+  types = Types;
+  cols: Column[] = [];
+  selectedColumns: Column[] = [];
+  exportCol: Column[] = [];
+  activeFiltData: any = {};
+
   constructor(
     private agentLedgerWalletMissmatchService: AgentLedgerWalletMissmatchService,
     public _filterService: CommonFilterService
@@ -78,6 +85,17 @@ export class AgentLedgerWalletMissmatchComponent extends BaseListingComponent im
     this.sortDirection = 'desc';
     this.Mainmodule = this;
     this._filterService.applyDefaultFilter(this.filter_table_name);
+
+    this.selectedColumns = [
+      { field: 'code', header: 'Agent Code', type: Types.number, isFrozen: false, fixVal: 0 },
+      { field: 'type', header: 'Type', type: Types.text },
+      { field: 'name', header: 'Name', type: Types.text },
+      { field: 'ledgerBalance', header: 'Ledger Balance', type: Types.number, fixVal: 2, class: 'text-right' },
+      { field: 'walletBalance', header: 'Wallet Balance', type: Types.number, fixVal: 2, class: 'text-right' },
+      { field: 'mismatchAmount', header: 'Missmatch Amount', type: Types.number, fixVal: 2, class: 'text-right' }
+    ];
+    this.cols.unshift(...this.selectedColumns);
+    this.exportCol = cloneDeep(this.cols);
   }
 
   ngOnInit(): void {
@@ -102,6 +120,7 @@ export class AgentLedgerWalletMissmatchComponent extends BaseListingComponent im
       }
       this.primengTable['filters'] = resp['table_config'];
       this.isFilterShow = true;
+      this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
       this.primengTable._filter();
     });
   }
@@ -126,8 +145,35 @@ export class AgentLedgerWalletMissmatchComponent extends BaseListingComponent im
       }
       // this.primengTable['_sortField'] = filterData['sortColumn'];
       // this.sortColumn = filterData['sortColumn'];
-      this.primengTable['filters'] = filterData['table_config'];
+      this.selectedColumns = this.checkSelectedColumn(filterData['selectedColumns'] || [], this.selectedColumns);
+      this.onColumnsChange();
+    } else {
+      this.selectedColumns = this.checkSelectedColumn([], this.selectedColumns);
+      this.onColumnsChange();
     }
+  }
+
+  onColumnsChange(): void {
+    this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
+  }
+
+  checkSelectedColumn(col: any[], oldCol: Column[]): any[] {
+    if (col.length) return col;
+    else {
+      var Col = this._filterService.getSelectedColumns({ name: this.filter_table_name })?.columns || [];
+      if (!Col.length)
+        return oldCol;
+      else
+        return Col;
+    }
+  }
+
+  isDisplayHashCol(): boolean {
+    return this.selectedColumns.length > 0;
+  }
+
+  onSelectedColumnsChange(): void {
+    this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
   }
 
   refreshItems(event?: any): void {
@@ -150,6 +196,16 @@ export class AgentLedgerWalletMissmatchComponent extends BaseListingComponent im
     else if (this.searchInputControl.value)
       return `no search results found for \'${this.searchInputControl.value}\'.`;
     else return 'No data to display';
+  }
+
+  displayColCount(): number {
+    return this.selectedColumns.length + 1;
+  }
+
+
+  isValidDate(value: any): boolean {
+    const date = new Date(value);
+    return value && !isNaN(date.getTime());
   }
 
 }

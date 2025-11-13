@@ -8,7 +8,7 @@ import { trigger, transition, style, animate } from '@angular/animations';
 import { MatIconModule } from '@angular/material/icon';
 import { FuseConfigService, Scheme } from '@fuse/services/config';
 import { MatDialog } from '@angular/material/dialog';
-import { combineLatest, Subject, takeUntil } from 'rxjs';
+import { combineLatest, ReplaySubject, Subject, takeUntil } from 'rxjs';
 import { UserService } from './core/user/user.service';
 import { SetPasswordComponent } from './layout/common/user/set-password/set-password.component';
 import { SidebarModule } from 'primeng/sidebar';
@@ -18,6 +18,7 @@ import { AuthService } from './core/auth/auth.service';
 import { TwoFaAuthenticationService } from './services/twofa-authentication.service';
 import { CityService } from './services/city.service';
 import { TwoFactorAuthComponent } from './layout/common/user/two-factor/two-factor-auth/two-factor-auth.component';
+import { CommanLoaderService } from './services/comman-loader.service';
 
 @Component({
     selector: 'app-root',
@@ -45,7 +46,10 @@ export class AppComponent implements AfterViewInit {
     /**
      * Constructor
      */
-
+    showLoader = false;
+    loaderMessage: string;
+    unSubscribeAll: ReplaySubject<any> = new ReplaySubject<any>();
+    
     user: any;
     is_first: boolean;
     _unsubscribeAll: Subject<any> = new Subject<any>();
@@ -56,6 +60,7 @@ export class AppComponent implements AfterViewInit {
         private toastr: ToasterService,
         private _fuseConfigService: FuseConfigService,
         private matDialog: MatDialog,
+        private commanService: CommanLoaderService,
         public _userService: UserService,
         public _filterService: CommonFilterService,
         private twoFaAuthenticationService: TwoFaAuthenticationService,
@@ -98,6 +103,11 @@ export class AppComponent implements AfterViewInit {
               this.openAuthDialog();
             }
           });
+
+           this.commanService.onLoader().pipe(takeUntil(this.unSubscribeAll)).subscribe(res => {
+            this.showLoader = res.loading;
+            this.loaderMessage = res.message || 'Please Wait...';
+        })
     }
 
     ngAfterViewInit(): void {

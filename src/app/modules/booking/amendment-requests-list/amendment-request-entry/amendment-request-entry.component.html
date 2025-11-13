@@ -146,8 +146,8 @@
                             </div>
 
                             <mat-icon svgIcon="heroicons_mini:arrow-down-tray"
-                                *ngIf="af.name == 'Credit Invoice' || af.name == 'Debit Invoice'"
-                                (click)="af.value ? invoice(af.value,af.name) : null" class="icon-size-5 cursor-pointer"
+                                *ngIf="af.name == 'Your Credit Invoice' || af.name == 'Credit Invoice' || af.name == 'Debit Invoice' || af.name == 'Your Debit Invoice'"                               
+                                 (click)="af.value ? invoice(af.value, getInvoiceParam(af)) : null" class="icon-size-5 cursor-pointer" [ngClass]="af.value ? 'text-blue-500' : 'text-gray-500' "
                                 [ngClass]="af.value ? 'text-blue-500' : 'text-gray-500' "
                                 [matTooltip]="af.value ? 'Download' : ''"></mat-icon>
 
@@ -156,8 +156,13 @@
                                 Credit invoice not generated.
                             </span>
 
+                            <span class="" *ngIf="af.name == 'Your Credit Invoice' && !af.value"
+                                class="text-red-600 pt-[3px] text-xs font-light">
+                                Your Credit invoice not generated.
+                            </span>
+
                             <span class="text-base truncate"
-                                *ngIf="af.name != 'Credit Invoice' && af.name != 'Debit Invoice'">{{(af.value ||
+                                *ngIf=" af.name != 'Your Credit Invoice' && af.name != 'Your Debit Invoice' && af.name != 'Credit Invoice' && af.name != 'Debit Invoice'">{{(af.value ||
                                 af.value == 0)
                                 ? af.value : '--'}}</span>
                         </div>

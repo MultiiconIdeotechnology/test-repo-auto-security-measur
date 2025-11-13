@@ -144,10 +144,10 @@ export class CRMSalesReturnRightComponent implements OnInit, OnDestroy {
         // sales_return_amount: json?.sales_return_amount ? json?.sales_return_amount : "",
         const newJson = {
             id: this.record?.id ? this.record?.id : "",
-            is_sales_return: false,
-            sales_return_amount: json?.sales_return_amount ? json?.sales_return_amount : this.record?.default_sales_Amount,
-            sales_retrun_date: json?.sales_retrun_date ? DateTime.fromISO(json.sales_retrun_date).toFormat('yyyy-MM-dd') : "",
-            sales_retrun_remark: json?.sales_retrun_remark ? json?.sales_retrun_remark : ""
+            // is_sales_return: false,
+            Amount: json?.sales_return_amount ? json?.sales_return_amount : this.record?.default_sales_Amount,
+            ReturnDate: json?.sales_retrun_date ? DateTime.fromISO(json.sales_retrun_date).toFormat('yyyy-MM-dd') : "",
+            Remark: json?.sales_retrun_remark ? json?.sales_retrun_remark : ""
         }
 
         this.crmService.createSalesreturn(newJson).subscribe({

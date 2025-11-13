@@ -130,7 +130,25 @@ export const keys = {
     permissionHash: '6964D472E7741EC05A2DF8833E39DA88',
 };
 
+export const flightClass = {
+    economy: 'Economy',
+    business: 'Business',
+    premium_economy: 'Premium Economy',
+    first_class: 'First Class',
+}
+
+export const flightFareType = {
+    regular: 'Regular',
+    student: 'Student',
+    senior_citizen: 'Senior Citizen',
+    armed_forced: 'Armed Forced',
+}
+
 export const Routes = {
+    dashboard: {
+        airline_path: 'dashboard/airline',
+        airline_route: '/dashboard/airline',
+    },
     crm: {
         lead_path: 'crm/lead',
         lead_route: '/crm/lead',
@@ -340,6 +358,9 @@ export const Routes = {
         visa_route: '/booking/visa',
         visa_details_route: '/booking/visa/details',
 
+        airline_block_lead_path: 'booking/airline-block',
+        airline_block_lead_route: '/booking/airline-block',
+
         offline_service_path: 'booking/offline-service',
         offline_service_route: '/booking/offline-service',
         offline_service_details_route: '/booking/offline-service/details',
@@ -376,6 +397,9 @@ export const Routes = {
 
         visa_path: 'inventory/visa',
         visa_route: '/inventory/visa',
+
+        airline_block_path: 'inventory/airline-block',
+        airline_block_route: '/inventory/airline-block',
 
         holiday_v2_path: 'inventory/holidayv2-products',
         holiday_v2_route: '/inventory/holidayv2-products',
@@ -504,5 +528,10 @@ export const Routes = {
         supplier_inventory_profile_route: '/settings/supplier_inventory-profile',
         supplier_faretype_mapper_path: 'settings/supplier_faretype_mapper',
         supplier_faretype_mapper_route: '/settings/supplier_faretype_mapper',
+        
+        psp_setup_path: 'settings/psp-setup',
+        psp_setup_route: '/settings/psp-setup',
+        psp_setup_entry_path: 'settings/psp-setup/entry',
+        psp_setup_entry_route: '/settings/psp-setup/entry',
     }
 }

@@ -25,8 +25,8 @@
                     </ng-container>
                 </div>
                 <!-- Rows -->
-                <ng-container *ngIf="receiptDetail?.receipt?.length > 0; else noGridItems">
-                    <ng-container *ngFor="let ListItem of receiptDetail?.receipt; let i = index">
+                <ng-container *ngIf="receiptDetail?.length > 0; else noGridItems">
+                    <ng-container *ngFor="let ListItem of receiptDetail; let i = index">
                         <div class="tbl-grid gridwidth grid items-center px-5 py-0 border-b pl-0 cursor-pointer">
                             <button mat-icon-button (click)="$event.stopPropagation()" [matMenuTriggerFor]="optionMenu"
                                 class="sticky left-0 bg-card" style="border-radius: 0%; width: 100%">
@@ -34,18 +34,18 @@
                             </button>
                             <mat-menu #optionMenu>
                                 <button mat-menu-item (click)="editAction(ListItem)"
-                                    *ngIf="ListItem.receipt_Status !== 'Confirmed'">
+                                    *ngIf="ListItem.receiptStatus !== 'Confirmed'">
                                     <mat-icon class="mat-18">edit</mat-icon>
                                     <span style="font-weight: 600">Edit</span>
                                 </button>
                                 <!-- ListItem.is_audited == false  -->
                                 <button mat-menu-item (click)="deleteAction(ListItem)"
-                                    *ngIf="ListItem.receipt_Status !== 'Confirmed'">
+                                    *ngIf="ListItem.receiptStatus !== 'Confirmed'">
                                     <mat-icon class="mat-18">delete</mat-icon>
                                     <span style="font-weight: 600">Delete</span>
                                 </button>
 
-                                <ng-container *ngIf="ListItem['receipt_Status'] == 'Pending'">
+                                <ng-container *ngIf="ListItem['receiptStatus'] == 'Pending'">
                                     <button mat-menu-item *ngIf="!ListItem.paymentLink"
                                         (click)="generatePaymentLink(ListItem)">
                                         <mat-icon svgIcon="heroicons_outline:link"></mat-icon>
@@ -58,27 +58,27 @@
                                     </button>
                                 </ng-container>
 
-                                <button mat-menu-item [ngClass]="{'cursor-pointer text-blue-600': ListItem['proof_attachment'],
-                                'cursor-not-allowed text-blue-400 opacity-20': !ListItem['proof_attachment']}"
-                                    (click)="paymentAttachment(ListItem['proof_attachment'])">
+                                <button mat-menu-item [ngClass]="{'cursor-pointer text-blue-600': ListItem['proofAttachment'],
+                                'cursor-not-allowed text-blue-400 opacity-20': !ListItem['proofAttachment']}"
+                                    (click)="paymentAttachment(ListItem['proofAttachment'])">
                                     <mat-icon svgIcon="heroicons_outline:arrow-down-tray"
                                         class="rounded-full cursor-pointer text-blue-600 p-0.5"></mat-icon>
                                     <span style="font-weight: 600" class="dark:text-white">Proof Attachment</span>
                                 </button>
 
-                                <button mat-menu-item [ngClass]="{'cursor-pointer text-blue-600': ListItem['payment_attachment'],
-                                'cursor-not-allowed text-blue-400 opacity-20': !ListItem['payment_attachment']}"
-                                    (click)="paymentAttachment(ListItem['payment_attachment'])">
+                                <button mat-menu-item [ngClass]="{'cursor-pointer text-blue-600': ListItem['paymentAttachment'],
+                                'cursor-not-allowed text-blue-400 opacity-20': !ListItem['paymentAttachment']}"
+                                    (click)="paymentAttachment(ListItem['paymentAttachment'])">
                                     <mat-icon svgIcon="heroicons_outline:arrow-down-tray"
                                         class="rounded-full cursor-pointer text-blue-600 p-0.5"></mat-icon>
                                     <span style="font-weight: 600" class="dark:text-white">Payment Attachment</span>
                                 </button>
 
                                 <button mat-menu-item [ngClass]="{
-                                  'cursor-pointer text-blue-600': ListItem['receipt_Status'] === 'Confirmed',
-                                  'cursor-not-allowed text-blue-100': ListItem['receipt_Status'] !== 'Confirmed' }"
-                                   [disabled]="ListItem['receipt_Status'] !== 'Confirmed'"
-                                    (click)="ListItem['receipt_Status'] === 'Confirmed' ? downloadInvoice(ListItem['receiptid']) : null">
+                                  'cursor-pointer text-blue-600': ListItem['receiptStatus'] === 'Confirmed',
+                                  'cursor-not-allowed text-blue-100': ListItem['receiptStatus'] !== 'Confirmed' }"
+                                   [disabled]="ListItem['receiptStatus'] !== 'Confirmed'"
+                                    (click)="ListItem['receiptStatus'] === 'Confirmed' ? downloadInvoice(ListItem['receiptId']) : null">
                                     <mat-icon svgIcon="heroicons_outline:arrow-down-tray"
                                         class="rounded-full p-0.5 cursor-pointer text-blue-600"></mat-icon>
                                     <span style="font-weight: 600" class="dark:text-white">Invoice</span>
@@ -90,14 +90,14 @@
                                     [ngClass]="{ 'justify-center': col.align === 'left' }">
 
                                     <div class="truncate max-w-[190px]" *ngIf="col.reference_number"
-                                        [matTooltip]="ListItem['receipt_ref_no'] || '-'">
-                                        {{ ListItem['receipt_ref_no'] || '-' }}
+                                        [matTooltip]="ListItem['receiptRefNo'] || '-'">
+                                        {{ ListItem['receiptRefNo'] || '-' }}
                                     </div>
 
                                     <!-- <span *ngIf="col.isicon" class="text-center justify-center">
                                         <mat-icon svgIcon="heroicons_outline:arrow-down-tray"
                                             class="rounded-full cursor-pointer text-blue-600 p-0.5"
-                                            (click)="downloadInvoice(ListItem['receiptid'])"
+                                            (click)="downloadInvoice(ListItem['receiptId'])"
                                             [attr.disabled]="!ListItem['isInvoice'] ? true : null"
                                             [ngClass]="{'cursor-pointer text-blue-600': ListItem['isInvoice'], 'cursor-not-allowed text-blue-100': !ListItem['isInvoice']}"
                                             [matTooltip]="'Download'"></mat-icon></span> -->
@@ -108,9 +108,9 @@
                                     </span>
 
                                     <div class="flex">
-                                        <div *ngIf="col.indicator" [matTooltip]="ListItem['receipt_Status']"
+                                        <div *ngIf="col.indicator" [matTooltip]="ListItem['receiptStatus']"
                                             class="w-2 h-2 rounded-full mr-[6px]"
-                                            [ngClass]="getStatusIndicatorClass(ListItem['receipt_Status'])"></div>
+                                            [ngClass]="getStatusIndicatorClass(ListItem['receiptStatus'])"></div>
                                     </div>
 
                                     <!-- <div class="flex" *ngIf="col.indicator"
@@ -119,21 +119,20 @@
                                         [ngClass]="getReceiptStatusClass(ListItem['is_audited'])"></div> -->
 
                                     <div class="flex" *ngIf="col.isprice">
-                                        {{ ListItem['payment_amount'] != null ? (ListItem['payment_amount'] | currency:
+                                        {{ ListItem['paymentAmount'] != null ? (ListItem['paymentAmount'] | currency:
                                         (ListItem['currency'] || 'INR') : 'symbol' : '1.2-2') : '-' }}
                                     </div>
 
                                     <div class="truncate max-w-[284px]" *ngIf="col.reject_reason"
-                                        [matTooltip]="ListItem['receipt_reject_reason'] || '-'">
-                                        {{ ListItem['receipt_reject_reason'] || '-' }}
+                                        [matTooltip]="ListItem['rejectReason'] || '-'">
+                                        {{ ListItem['rejectReason'] || '-' }}
                                     </div>
                                     <div
                                         [class]="'flex flex-col truncate '+ (col.class == 'header-right-view' || col.class == 'header-center-view'? 'pr-4' : '') ">
                                         <span class="truncate"
                                             *ngIf="!col.toColor && !col.callAction && !col.isicon && !col.isAudited && !col.isprice && !col.reject_reason && !col.reference_number"
                                             [matTooltip]="col.tooltip ? ListItem[col.key] : ''">
-                                            {{ col.is_date ? (ListItem[col.key] | date: col.date_formate) ||
-                                            " - " : ListItem[col.key] ?? " - " }}
+                                            {{ ListItem[col.key] ?? " - " }}
                                         </span>
                                     </div>
                                 </div>

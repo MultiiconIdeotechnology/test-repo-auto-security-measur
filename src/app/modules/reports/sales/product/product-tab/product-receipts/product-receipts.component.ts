@@ -1,5 +1,5 @@
 import { NgIf, NgFor, DatePipe, CommonModule, NgClass } from '@angular/common';
-import { Component, OnDestroy,Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnDestroy, Input, Output, EventEmitter, ViewChild } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatNativeDateModule } from '@angular/material/core';
@@ -14,7 +14,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterOutlet } from '@angular/router';
-import { BaseListingComponent } from 'app/form-models/base-listing';
+import { BaseListingComponent, Column, Types } from 'app/form-models/base-listing';
 import {
     Security,
     filter_module_name,
@@ -37,6 +37,8 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
 import { ProductTabComponent } from '../product-tab.component';
 import { RefferralService } from 'app/services/referral.service';
 import { UserService } from 'app/core/user/user.service';
+import { OverlayPanel } from 'primeng/overlaypanel';
+import { cloneDeep } from 'lodash';
 
 @Component({
     selector: 'app-product-receipts',
@@ -66,21 +68,34 @@ import { UserService } from 'app/core/user/user.service';
 })
 
 export class ProductReceiptsComponent extends BaseListingComponent implements OnDestroy {
-    @Input() isFilterShow:boolean = false;
+    @Input() isFilterShow: boolean = false;
     @Output() isFilterShowEvent = new EventEmitter(false);
+    @ViewChild('op') overlayPanel!: OverlayPanel;
     module_name = module_name.products_receipts;
     filter_table_name = filter_module_name.products_receipts;
     private settingsUpdatedSubscription: Subscription;
     isLoading = false;
     dataList = [];
     total_amount: any = 0;
-    total_actual_amount:any = 0;
-    finalAmountTotal:number = 0;
+    total_actual_amount: any = 0;
+    finalAmountTotal: number = 0;
     selectedAgent: any;
     agentList: any[] = [];
     selectedRM: any;
     employeeList: any = [];
     user: any = {};
+
+    index = {
+        payment_amount: -1,
+        actual_amount: -1,
+        final_amount:-1
+
+    };
+    types = Types;
+    selectedColumns: Column[] = [];
+    exportCol: Column[] = [];
+    activeFiltData: any = {};
+    cols: Column[] = [];
 
     statusList: any[] = [
         { label: 'Confirmed', value: 'Confirmed' },
@@ -108,9 +123,39 @@ export class ProductReceiptsComponent extends BaseListingComponent implements On
             .subscribe((user: any) => {
                 this.user = user;
             });
+        this.selectedColumns = [
+
+            { field: 'receipt_ref_no', header: 'Reference No.', type: Types.text },
+            { field: 'agent_Code', header: 'Agent Code', type: Types.number, fixVal: 0 },
+            { field: 'agent_name', header: 'Agent', type: Types.select },
+            { field: 'campaign_code', header: 'Campaign Code', type: Types.text },
+            { field: 'rm_name', header: 'RM', type: Types.select },
+            { field: 'product_name', header: 'Product name', type: Types.link },
+            { field: 'payment_amount', header: 'Amount', type: Types.number, fixVal: 2, class: 'text-right' },
+            { field: 'actual_amount', header: 'Without Tax', type: Types.number, fixVal: 2, class: 'text-right' }, 
+            { field: 'final_amount', header: 'With Tax', type: Types.number, fixVal: 2, class: 'text-right' },
+            { field: 'receipt_status', header: 'Status', type: Types.select, isCustomColor: true },
+            { field: 'audit_date_time', header: 'Date', type: Types.dateTime, dateFormat: 'dd-MM-yyyy' },
+        ];
+
+        this.cols.unshift(...this.selectedColumns);
+        this.exportCol = cloneDeep(this.cols);
     }
 
     ngOnInit(): void {
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            if (resp['gridName'] != this.filter_table_name) return;
+            this.activeFiltData = resp;
+            this.sortColumn = resp['sortColumn'];
+            //this.selectDateRanges(resp['table_config']);
+            this.primengTable['_sortField'] = resp['sortColumn'];
+            this.isFilterShow = true;
+            this.primengTable['filters'] = resp['table_config'];
+            this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
+            this.primengTable._filter();
+        });
+
+
         this.agentList = this._filterService.agentListByValue;
         this.employeeList = this._filterService.rmListByValue;
 
@@ -139,7 +184,57 @@ export class ProductReceiptsComponent extends BaseListingComponent implements On
             }
             this.isFilterShowEvent.emit(true);
             this.primengTable['filters'] = filterData['table_config'];
+            this.selectedColumns = this.checkSelectedColumn(filterData['selectedColumns'] || [], this.selectedColumns);
+            this.onColumnsChange();
+        } else {
+            this.selectedColumns = this.checkSelectedColumn([], this.selectedColumns);
+            this.onColumnsChange();
         }
+
+        this.getColIndex();
+    }
+    getColIndex(): void { //  add new
+        this.index.payment_amount = this.selectedColumns.findIndex((item: any) => item.field == 'payment_amount');
+        this.index.actual_amount = this.selectedColumns.findIndex((item: any) => item.field == 'actual_amount');
+        this.index.final_amount = this.selectedColumns.findIndex((item: any) => item.field == 'final_amount');
+    }
+
+    isAnyIndexMatch(): boolean { //  add new
+        const len = this.selectedColumns?.length - 1;
+        return len == this.index.payment_amount || len == this.index.actual_amount  || len == this.index.final_amount;
+    }
+
+    isDisplayFooter(): boolean { //  add new
+        return this.selectedColumns.some(x => x.field == 'payment_amount' || x.field == 'actual_amount' || x.field == 'final_amount');
+    }
+
+    isNotDisplay(field: string): boolean { //  add new
+        return field != "payment_amount" && field != "actual_amount" && field != "final_amount"
+    }
+
+
+    onColumnsChange(): void {
+        this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
+    }
+
+    checkSelectedColumn(col: any[], oldCol: Column[]): any[] {
+        if (col.length) return col
+        else {
+            var Col = this._filterService.getSelectedColumns({ name: this.filter_table_name })?.columns || [];
+            if (!Col.length)
+                return oldCol;
+            else
+                return Col;
+        }
+    }
+
+    isDisplayHashCol(): boolean {
+        return this.selectedColumns.length > 0;
+    }
+
+
+    toggleOverlayPanel(event: MouseEvent) {
+        this.overlayPanel.toggle(event);
     }
 
     // function to get the Agent list from api
@@ -179,15 +274,15 @@ export class ProductReceiptsComponent extends BaseListingComponent implements On
 
     getStatusIndicatorClass(status: string): string {
         if (status == 'Pending') {
-            return 'bg-yellow-600';
+            return 'text-yellow-600';
         } else if (status == 'Audited') {
-            return 'bg-green-600';
+            return 'text-green-600';
         } else if (status == 'Rejected') {
-            return 'bg-red-600';
+            return 'text-red-600';
         } else if (status == 'Confirmed') {
-            return 'bg-green-600';
+            return 'text-green-600';
         } else {
-            return 'bg-blue-600';
+            return 'text-blue-600';
         }
     }
 
@@ -245,7 +340,7 @@ export class ProductReceiptsComponent extends BaseListingComponent implements On
         if (Security.hasPermission(saleProductPermissions.viewOnlyAssignedPermissions)) {
             model.relationmanagerId = this.user.id
         }
-        
+
         this.accountService.getReceiptList(model).subscribe({
             next: (data) => {
                 this.dataList = data.data;
@@ -316,7 +411,7 @@ export class ProductReceiptsComponent extends BaseListingComponent implements On
     }
 
     startSubscription() {
-         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
             this._filterService.updateSelectedOption('');
             this.selectedAgent = resp['table_config']['agent_name']?.value;
             if (this.selectedAgent && this.selectedAgent.id) {
@@ -336,12 +431,12 @@ export class ProductReceiptsComponent extends BaseListingComponent implements On
             this.isFilterShow = true;
             this.primengTable._filter();
         });
-      }
+    }
 
     stopSubscription() {
         if (this.settingsUpdatedSubscription) {
-          this.settingsUpdatedSubscription.unsubscribe();
-          this.settingsUpdatedSubscription = undefined;
+            this.settingsUpdatedSubscription.unsubscribe();
+            this.settingsUpdatedSubscription = undefined;
         }
     }
 
@@ -350,5 +445,15 @@ export class ProductReceiptsComponent extends BaseListingComponent implements On
             this.settingsUpdatedSubscription.unsubscribe();
             this._filterService.activeFiltData = {};
         }
+    }
+
+    displayColCount(): number {
+        return this.selectedColumns.length + 1;
+    }
+
+    isValidDate(value: any): boolean {
+        const date = new Date(value);
+        return value && !isNaN(date.getTime());
+
     }
 }

@@ -60,7 +60,7 @@ export class SupplierInfoComponent extends BaseListingComponent implements OnDes
   record: any = {};
   title: any;
   dataListTotals = [];
-
+  isFilterShow: boolean = false;
 
   constructor(
     public matDialogRef: MatDialogRef<SupplierInfoComponent>,

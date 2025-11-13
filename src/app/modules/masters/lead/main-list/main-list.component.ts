@@ -24,7 +24,7 @@ import { UserService } from 'app/core/user/user.service';
 import { AgentService } from 'app/services/agent.service';
 import { LeadsService } from 'app/services/leads.service';
 import { KycInfoComponent } from '../../agent/kyc-info/kyc-info.component';
-import { BaseListingComponent, Column } from 'app/form-models/base-listing';
+import { BaseListingComponent, Column, Types } from 'app/form-models/base-listing';
 import { LeadEntryComponent } from '../lead-entry/lead-entry.component';
 import { AssignKycComponent } from '../assign-kyc/assign-kyc.component';
 import { Excel } from 'app/utils/export/excel';
@@ -38,6 +38,7 @@ import { EmployeeService } from 'app/services/employee.service';
 import { Subscription } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { cloneDeep } from 'lodash';
 
 @Component({
   selector: 'app-main-list',
@@ -83,16 +84,24 @@ export class MainListComponent extends BaseListingComponent {
   user: any = {};
   total = 0;
   Mainmodule: any;
-  _selectedColumns: Column[];
   isFilterShow: boolean = false;
-  selectedRm:any;
-  employeeList:any[] = [];
+  selectedRm: any;
+  employeeList: any[] = [];
 
-  cols: any = [
+
+  // cols: any = [
+  //   { field: 'contact_person', header: 'Contact Person', type: 'text' },
+  // ];
+
+  cols: Column[] = [
     { field: 'contact_person', header: 'Contact Person', type: 'text' },
   ];
+  types = Types;
+  selectedColumns: Column[] = [];
+  exportCol: Column[] = [];
+  activeFiltData: any = {};
 
-  statusList =  [ 'New', 'Converted', 'Live', 'Kyc Pending', 'Kyc Rejected']
+  statusList = ['New', 'Converted', 'Live', 'Kyc Pending', 'Kyc Rejected']
 
   constructor(
     private conformationService: FuseConfirmationService,
@@ -115,6 +124,18 @@ export class MainListComponent extends BaseListingComponent {
     this.userService.user$.pipe(takeUntil(this._unsubscribeAll)).subscribe((user: any) => {
       this.user = user;
     });
+
+    this.selectedColumns = [
+      { field: 'agency_name', header: 'Agent', type: Types.text },
+      { field: 'lead_status', header: 'Status', type: Types.select, isCustomColor: true },
+      { field: 'entry_date_time', header: 'Date', type: Types.date, dateFormat: 'dd-MM-yyyy' },
+      { field: 'relation_manager', header: 'RM', type: Types.select },
+      { field: 'email_address', header: 'Email', type: Types.text },
+      { field: 'mobile_number', header: 'Mobile', type: Types.text },
+      { field: 'city_name', header: 'City', type: Types.text }
+    ];
+    this.cols.unshift(...this.selectedColumns);
+    this.exportCol = cloneDeep(this.cols);
   }
 
   ngOnInit() {
@@ -122,47 +143,76 @@ export class MainListComponent extends BaseListingComponent {
     this.getRelationManagerList("");
 
     this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
-        this.selectedRm = resp['table_config']['relation_manager']?.value;
-        // this.sortColumn = resp['sortColumn'];
-        // this.primengTable['_sortField'] = resp['sortColumn'];
-        if(resp['table_config']['entry_date_time'].value){
-            resp['table_config']['entry_date_time'].value = new Date(resp['table_config']['entry_date_time'].value);
-        }
-        this.primengTable['filters'] = resp['table_config'];
-        this._selectedColumns = resp['selectedColumns'] || [];
-        this.isFilterShow = true;
-        this.primengTable._filter();
-   });
+      this.selectedRm = resp['table_config']['relation_manager']?.value;
+      // this.sortColumn = resp['sortColumn'];
+      // this.primengTable['_sortField'] = resp['sortColumn'];
+      if (resp['table_config']['entry_date_time'].value) {
+        resp['table_config']['entry_date_time'].value = new Date(resp['table_config']['entry_date_time'].value);
+      }
+      this.primengTable['filters'] = resp['table_config'];
+      this.selectedColumns = resp['selectedColumns'] || [];
+      this.isFilterShow = true;
+      this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
+      this.primengTable._filter();
+    });
   }
 
-  ngAfterViewInit(){
+  ngAfterViewInit() {
     // Defult Active filter show
-    if(this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+    if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
       let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
       this.selectedRm = filterData['table_config']['relation_manager']?.value;
       if (filterData['table_config']['entry_date_time'].value) {
         filterData['table_config']['entry_date_time'].value = new Date(filterData['table_config']['entry_date_time'].value);
       }
       this.primengTable['filters'] = filterData['table_config'];
-      this._selectedColumns = filterData['selectedColumns'] || [];
+      // this.selectedColumns = filterData['selectedColumns'] || [];
+      this.selectedColumns = this.checkSelectedColumn(filterData['selectedColumns'] || [], this.selectedColumns);
+      this.onColumnsChange();
       this.isFilterShow = true;
 
-    }
-  }
-
-  get selectedColumns(): Column[] {
-    return this._selectedColumns;
-  }
-
-  set selectedColumns(val: Column[]) {
-    if (Array.isArray(val)) {
-      this._selectedColumns = this.cols.filter(col =>
-        val.some(selectedCol => selectedCol.field === col.field)
-      );
     } else {
-      this._selectedColumns = [];
+      this.selectedColumns = this.checkSelectedColumn([], this.selectedColumns);
+      this.onColumnsChange();
     }
   }
+
+  onColumnsChange(): void {
+    this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
+  }
+
+  checkSelectedColumn(col: any[], oldCol: Column[]): any[] {
+    if (col.length) return col;
+    else {
+      var Col = this._filterService.getSelectedColumns({ name: this.filter_table_name })?.columns || [];
+      if (!Col.length)
+        return oldCol;
+      else
+        return Col;
+    }
+  }
+
+  isDisplayHashCol(): boolean {
+    return this.selectedColumns.length > 0;
+  }
+
+  onSelectedColumnsChange(): void {
+    this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
+  }
+
+  // get selectedColumns(): Column[] {
+  //   return this._selectedColumns;
+  // }
+
+  // set selectedColumns(val: Column[]) {
+  //   if (Array.isArray(val)) {
+  //     this._selectedColumns = this.cols.filter(col =>
+  //       val.some(selectedCol => selectedCol.field === col.field)
+  //     );
+  //   } else {
+  //     this._selectedColumns = [];
+  //   }
+  // }
 
   refreshItems(event?: any): void {
     this.isLoading = true;
@@ -195,13 +245,13 @@ export class MainListComponent extends BaseListingComponent {
   // To get Relationship Manager data from employeelist api
   getRelationManagerList(value: any) {
     this.employeeService.getemployeeCombo(value).subscribe((data) => {
-        this.employeeList = data;
+      this.employeeList = data;
 
-        for(let i in this.employeeList){
-           this.employeeList[i].id_by_value = this.employeeList[i].employee_name;
-        }
+      for (let i in this.employeeList) {
+        this.employeeList[i].id_by_value = this.employeeList[i].employee_name;
+      }
     })
-}
+  }
 
   create(): void {
     this.matDialog.open(CreateLeadComponent, {
@@ -436,18 +486,18 @@ export class MainListComponent extends BaseListingComponent {
 
 
   getStatusColor(status: string): string {
-        if (status == 'New') {
-            return 'text-yellow-600';
-        } else if (status == 'Converted' || status == 'Live') {
-            return 'text-green-600';
-        }  else if (status == 'Kyc Pending') {
-            return 'text-blue-600';
-        } else if (status == 'Kyc Rejected') {
-            return 'text-red-600';
-        } else {
-            return '';
-        }
+    if (status == 'New') {
+      return 'text-yellow-600';
+    } else if (status == 'Converted' || status == 'Live') {
+      return 'text-green-600';
+    } else if (status == 'Kyc Pending') {
+      return 'text-blue-600';
+    } else if (status == 'Kyc Rejected') {
+      return 'text-red-600';
+    } else {
+      return '';
     }
+  }
 
   getNodataText(): string {
     if (this.isLoading)
@@ -462,5 +512,16 @@ export class MainListComponent extends BaseListingComponent {
       this.settingsUpdatedSubscription.unsubscribe();
     }
   }
+
+  displayColCount(): number {
+    return this.selectedColumns.length + 1;
+  }
+
+
+  isValidDate(value: any): boolean {
+    const date = new Date(value);
+    return value && !isNaN(date.getTime());
+  }
+
 
 }

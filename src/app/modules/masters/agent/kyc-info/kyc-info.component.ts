@@ -69,6 +69,7 @@ export class KycInfoComponent {
   isKycViewDetailFlag: boolean = false;
   closeDialog = ''
   from: string = ''
+  kycDupAgentName: any;
 
   constructor(
     public matDialogRef: MatDialogRef<KycInfoComponent>,
@@ -82,6 +83,7 @@ export class KycInfoComponent {
   ) {
     // this.convertAgent = this.datas.send
     this.data = datas.record;
+    
     if (this.datas?.send)
       this.convertAgent = (this.datas.send == "agentKYC");
 
@@ -104,37 +106,80 @@ export class KycInfoComponent {
   }
 
   ngOnInit(): void {
+    this.getKYCIsDuplicateAgentAllow();
     this.refreshItems();
     this.title = this.datas.record.agency_name
 
-    if(this.datas.isLead == 'Supplier'){
+    if (this.datas.isLead == 'Supplier') {
       this.title = this.datas.record?.company_name;
     }
   }
-
+  
   leadConverter(): void {
-    const label: string = 'Convert to Travel Agent'
-    this.conformationService.open({
-      title: label,
-      message: 'Are you sure to ' + label.toLowerCase() + ' ?'
-    }).afterClosed().subscribe(res => {
-      if (res === 'confirmed') {
-        this.kycDashboardService.leadConvert(this.datas.record.id).subscribe({
-          next: (res) => {
-            // record.is_blocked = !record.is_blocked;
-            if (res.status == true) {
-              this.isLeadeConvert = true;
-            }
-            this.alertService.showToast('success', "Lead has been Converted to travel agent!", "top-right", true);
-            this.matDialogRef.close('confirmed')
-            this.refreshItems();
-          }, error: (err) => {
-            this.alertService.showToast('error', err, "top-right", true);
+    const label: string = 'Convert to Travel Agent';
+
+    // Case 1: If duplicate agency name found
+    if (this.kycDupAgentName?.status === true) {
+      this.conformationService.open({
+        title: 'Duplicate Agency Name Detected',
+        message: `An agency with this name already exists in the system.<br>
+                Would you like to proceed using the ${this.title} - Agency Code below?`,
+        actions: {
+          confirm: {
+            label: 'Yes, Continue'
           },
-        })
-      }
-    })
+          cancel: {
+            label: 'Cancel'
+          }
+        }
+      }).afterClosed().subscribe(result => {
+        if (result === 'confirmed') {
+          this.callLeadConvertApi();
+        }
+      });
+
+    } else {
+      //  Case 2: Normal confirmation when no duplicate found
+      this.conformationService.open({
+        title: label,
+        message: `Are you sure to ${label.toLowerCase()} ?`,
+        actions: {
+          confirm: {
+            label: 'Ok'
+          },
+          cancel: {
+            label: 'Cancel'
+          }
+        }
+      }).afterClosed().subscribe(result => {
+        if (result === 'confirmed') {
+          this.callLeadConvertApi();
+        }
+      });
+    }
   }
+
+
+  private callLeadConvertApi(): void {
+    const paylod = {
+       id: this.datas.record.id ,
+       is_duplicate_save : this.kycDupAgentName?.status 
+      };
+    this.kycDashboardService.leadConvert(paylod).subscribe({
+      next: (res) => {
+        if (res.status === true) {
+          this.isLeadeConvert = true;
+        }
+        this.alertService.showToast('success', 'Lead has been converted to Travel Agent!', 'top-right', true);
+        this.matDialogRef.close('confirmed');
+        this.refreshItems();
+      },
+      error: (err) => {
+        this.alertService.showToast('error', err, 'top-right', true);
+      }
+    });
+  }
+
 
   hasRequiredField(group: any[]): boolean {
     return group.some(dataRecord => dataRecord.is_required_group);
@@ -178,6 +223,26 @@ export class KycInfoComponent {
       });
     });
   }
+
+  // Get Duplicate Agent Name finding
+  getKYCIsDuplicateAgentAllow(): void {
+
+    if(this.datas?.isAgencyDuplicateName){
+      this.isLoading = true;
+      this.kycdocService.getKYCIsDuplicateAgentAllow(this.data.id).subscribe({
+        next: (response) => {
+          this.kycDupAgentName = response;   
+          this.isLoading = false;
+        },
+        error: (error) => {
+          this.alertService.showToast('error', error, "top-right", true);
+          this.isLoading = false;
+        }
+      });
+    }
+
+  }
+
 
   getColor(dataRecord): string {
     if (dataRecord.is_audited)
@@ -254,7 +319,7 @@ export class KycInfoComponent {
     }).afterClosed().subscribe({
       next: (res) => {
         if (res === 'confirmed') {
-          var model = { is_lead: this.datas.isLead === 'Lead' ? true : false , id : data.document_of_id};
+          var model = { is_lead: this.datas.isLead === 'Lead' ? true : false, id: data.document_of_id };
           this.kycdocService.verify(model).subscribe({
             next: (res: any) => {
               data.is_audited = true

@@ -18,7 +18,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router, RouterOutlet } from '@angular/router';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
-import { BaseListingComponent } from 'app/form-models/base-listing';
+import { BaseListingComponent, Column, Types } from 'app/form-models/base-listing';
 import { Security, bookingsHotelPermissions, filter_module_name, messages, module_name } from 'app/security';
 import { HotelBookingService } from 'app/services/hotel-booking.service';
 import { ToasterService } from 'app/services/toaster.service';
@@ -35,6 +35,7 @@ import { BusService } from 'app/services/bus.service';
 import { FlightTabService } from 'app/services/flight-tab.service';
 import { Subscription } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { cloneDeep } from 'lodash';
 
 @Component({
   selector: 'app-hotels-list',
@@ -81,8 +82,14 @@ export class HotelsListComponent extends BaseListingComponent {
   agentList: any[] = [];
   supplierListAll: any[] = [];
   statusList = ['Confirmation Pending', 'Pending', 'Failed', 'Confirmed', 'Cancellation Pending', 'Payment Failed', 'Rejected', 'Cancelled'];
-  cols = [];
+
   isFilterShow: boolean = false;
+
+  types = Types;
+  cols: Column[] = [];
+  selectedColumns: Column[] = [];
+  exportCol: Column[] = [];
+  activeFiltData: any = {};
 
   constructor(
     private conformationService: FuseConfirmationService,
@@ -116,6 +123,31 @@ export class HotelsListComponent extends BaseListingComponent {
 
     this.hotelFilter.FromDate.setDate(1);
     this.hotelFilter.FromDate.setMonth(this.hotelFilter.FromDate.getMonth() - 3);
+
+    this.selectedColumns = [
+      { field: 'booking_ref_no', header: 'Reference No.', type: Types.link, isFrozen: false, },
+      { field: 'status', header: 'Status', type: Types.select, isFrozen: false, isCustomColor: true },
+      { field: 'bookingDate', header: 'Date', type: Types.dateTime, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
+      { field: 'agent_name', header: 'Agent', type: Types.select },
+      { field: 'user_type', header: 'Type', type: Types.text },
+      { field: 'mop', header: 'MOP', type: Types.text },
+      { field: 'supplier_name', header: 'Supplier', type: Types.select },
+      { field: 'purchase_price', header: 'Purchase Price', type: Types.number, fixVal: 2, class: 'text-right' },
+      { field: 'from_city', header: 'Destination', type: Types.text },
+      { field: 'pax', header: 'Pax', type: Types.text, isHideFilter: true },
+      { field: 'hotel_name', header: 'Hotel', type: Types.text },
+      { field: 'check_in_date', header: 'Check In', type: Types.date, dateFormat: 'dd-MM-yyyy' },
+      { field: 'check_out_date', header: 'Check Out', type: Types.date, dateFormat: 'dd-MM-yyyy' },
+      { field: 'no_of_rooms', header: 'Rooms', type: Types.number, fixVal: 0 },
+      { field: 'no_of_nights', header: 'Nights', type: Types.number, fixVal: 0 },
+      { field: 'device', header: 'Device', type: Types.text },
+      { field: 'supplier_ref_no', header: 'Supplier Ref. No', type: Types.text },
+      { field: 'payment_gateway_name', header: 'PG', type: Types.text },
+      { field: 'ip_address', header: 'IP Address', type: Types.text }
+    ];
+
+    this.cols.unshift(...this.selectedColumns);
+    this.exportCol = cloneDeep(this.cols);
   }
 
   ngOnInit(): void {
@@ -138,10 +170,10 @@ export class HotelsListComponent extends BaseListingComponent {
       this.selectedSupplier = resp['table_config']['supplier_name']?.value;
       // this.sortColumn = resp['sortColumn'];
       // this.primengTable['_sortField'] = resp['sortColumn'];
-    
+
       if (resp['table_config']['bookingDate']?.value && Array.isArray(resp['table_config']['bookingDate']?.value)) {
-          this._filterService.selectionDateDropdown = 'custom_date_range';
-          this._filterService.rangeDateConvert(resp['table_config']['bookingDate']);
+        this._filterService.selectionDateDropdown = 'custom_date_range';
+        this._filterService.rangeDateConvert(resp['table_config']['bookingDate']);
       }
 
       if (resp['table_config']['check_in_date']?.value != null) {
@@ -152,6 +184,7 @@ export class HotelsListComponent extends BaseListingComponent {
       }
       this.primengTable['filters'] = resp['table_config'];
       this.isFilterShow = true;
+      this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
       this.primengTable._filter();
 
     });
@@ -173,8 +206,8 @@ export class HotelsListComponent extends BaseListingComponent {
       if (filterData['table_config']['bookingDate']?.value && Array.isArray(filterData['table_config']['bookingDate']?.value)) {
         this._filterService.selectionDateDropdown = 'custom_date_range';
         this._filterService.rangeDateConvert(filterData['table_config']['bookingDate']);
-    }
-    
+      }
+
       if (filterData['table_config']['check_in_date']?.value != null) {
         filterData['table_config']['check_in_date'].value = new Date(filterData['table_config']['check_in_date'].value);
       }
@@ -184,7 +217,35 @@ export class HotelsListComponent extends BaseListingComponent {
       // this.primengTable['_sortField'] = filterData['sortColumn'];
       // this.sortColumn = filterData['sortColumn'];
       this.primengTable['filters'] = filterData['table_config'];
+      this.selectedColumns = this.checkSelectedColumn(filterData['selectedColumns'] || [], this.selectedColumns);
+      this.onColumnsChange();
+    } else {
+      this.selectedColumns = this.checkSelectedColumn([], this.selectedColumns);
+      this.onColumnsChange();
     }
+  }
+
+  onColumnsChange(): void {
+    this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
+  }
+
+  checkSelectedColumn(col: any[], oldCol: Column[]): any[] {
+    if (col.length) return col;
+    else {
+      var Col = this._filterService.getSelectedColumns({ name: this.filter_table_name })?.columns || [];
+      if (!Col.length)
+        return oldCol;
+      else
+        return Col;
+    }
+  }
+
+  isDisplayHashCol(): boolean {
+    return this.selectedColumns.length > 0;
+  }
+
+  onSelectedColumnsChange(): void {
+    this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
   }
 
   getAgent(value: string) {
@@ -376,6 +437,16 @@ export class HotelsListComponent extends BaseListingComponent {
       this.settingsUpdatedSubscription.unsubscribe();
       this._filterService.activeFiltData = {};
     }
+  }
+
+  displayColCount(): number {
+    return this.selectedColumns.length + 1;
+  }
+
+
+  isValidDate(value: any): boolean {
+    const date = new Date(value);
+    return value && !isNaN(date.getTime());
   }
 
 }

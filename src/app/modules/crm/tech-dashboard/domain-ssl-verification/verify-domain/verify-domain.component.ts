@@ -67,7 +67,7 @@ export class VerifyDomainComponent {
 
   onDomainVerify() {
     this.isLoading = true;
-    this.domainVarifyService.pingAndBind(this.wlId, this.data?.subid).subscribe({
+    this.domainVarifyService.pingAndBind(this.wlId, this.data?.productPurchaseId).subscribe({
       next: (res) => {
         if (res) {
           if (res && res?.['pointed_domains']) {
@@ -91,7 +91,7 @@ export class VerifyDomainComponent {
   }
 
   onPreviousPage() {
-    if (this.data?.item_name?.toLowerCase().includes('android') || this.data?.item_name?.toLowerCase().includes('ios')) {
+    if (this.data?.itemName?.toLowerCase().includes('android') || this.data?.itemName?.toLowerCase().includes('ios')) {
       this.previousPage.emit(2);
       this.domainVarifyService.verifyButtonSubject.next(true);
     } else {

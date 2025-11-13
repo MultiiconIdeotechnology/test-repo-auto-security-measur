@@ -18,7 +18,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { AppConfig } from 'app/config/app-config';
-import { BaseListingComponent } from 'app/form-models/base-listing';
+import { BaseListingComponent, Column, Types } from 'app/form-models/base-listing';
 import { Security, filter_module_name, messages, module_name } from 'app/security';
 import { MasterService } from 'app/services/master.service';
 import { WithdrawService } from 'app/services/withdraw.service';
@@ -32,6 +32,8 @@ import { AgentService } from 'app/services/agent.service';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { UserService } from 'app/core/user/user.service';
 import { IndianNumberPipe } from '@fuse/pipes/indianNumberFormat.pipe';
+import { OverlayPanel } from 'primeng/overlaypanel';
+import { cloneDeep } from 'lodash';
 
 @Component({
   selector: 'app-waudited',
@@ -68,7 +70,7 @@ import { IndianNumberPipe } from '@fuse/pipes/indianNumberFormat.pipe';
   ],
 })
 export class WAuditedComponent extends BaseListingComponent {
-
+  @ViewChild('op') overlayPanel!: OverlayPanel;
   @Input() isFilterShowAudit: boolean;
   @Output() isFilterShowAuditedChange = new EventEmitter<boolean>();
 
@@ -96,7 +98,11 @@ export class WAuditedComponent extends BaseListingComponent {
     { label: 'Bank Withdraw', value: 'Bank Withdraw' },
   ];
 
-  cols = [];
+  types = Types;
+  selectedColumns: Column[] = [];
+  exportCol: Column[] = [];
+  activeFiltData: any = {};
+  cols: Column[] = [];
 
   protected masterService: MasterService;
   searchInputControlConverted: any;
@@ -124,6 +130,20 @@ export class WAuditedComponent extends BaseListingComponent {
 
     this.filter.FromDate.setDate(1);
     this.filter.FromDate.setMonth(this.filter.FromDate.getMonth());
+
+    this.selectedColumns = [
+
+      { field: 'withdraw_ref_no', header: 'Ref. No.', type: Types.text },
+      { field: 'entry_date_time', header: 'Date', type: Types.dateTime, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
+      { field: 'withdraw_amount', header: 'Amount', type: Types.number, fixVal: 0, class: 'text-right' },
+      { field: 'agent_Code', header: 'Agent Code', type: Types.number, fixVal: 0 },
+      { field: 'agent_name', header: 'Agency Name', type: Types.select },
+      { field: 'account_number', header: 'Bank', type: Types.link },
+      { field: 'withdraw_type', header: 'Withdraw Type', type: Types.select },
+    ];
+
+    this.cols.unshift(...this.selectedColumns);
+    this.exportCol = cloneDeep(this.cols);
   }
 
   ngOnInit(): void {
@@ -147,6 +167,7 @@ export class WAuditedComponent extends BaseListingComponent {
       }
       this.primengTable['filters'] = resp['table_config'];
       this.isFilterShowAudit = true;
+      this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
       this.isFilterShowAuditedChange.emit(this.isFilterShowAudit);
       this.primengTable._filter();
     });
@@ -176,8 +197,37 @@ export class WAuditedComponent extends BaseListingComponent {
       // this.primengTable['_sortField'] = filterData['sortColumn'];
       // this.sortColumn = filterData['sortColumn'];
       this.primengTable['filters'] = filterData['table_config'];
+      this.selectedColumns = this.checkSelectedColumn(filterData['selectedColumns'] || [], this.selectedColumns);
+      this.onColumnsChange();
+    } else {
+      this.selectedColumns = this.checkSelectedColumn([], this.selectedColumns);
+      this.onColumnsChange();
     }
 
+  }
+
+  onColumnsChange(): void {
+    this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
+  }
+
+  checkSelectedColumn(col: any[], oldCol: Column[]): any[] {
+    if (col.length) return col
+    else {
+      var Col = this._filterService.getSelectedColumns({ name: this.filter_table_name })?.columns || [];
+      if (!Col.length)
+        return oldCol;
+      else
+        return Col;
+    }
+  }
+
+  isDisplayHashCol(): boolean {
+    return this.selectedColumns.length > 0;
+  }
+
+
+  toggleOverlayPanel(event: MouseEvent) {
+    this.overlayPanel.toggle(event);
   }
 
   getAgentList(value: string) {
@@ -263,8 +313,8 @@ export class WAuditedComponent extends BaseListingComponent {
             });
           }
 
-           // Method to execute a function after verifying OTP if needed
-           this._userService.verifyAndExecute(
+          // Method to execute a function after verifying OTP if needed
+          this._userService.verifyAndExecute(
             { title: 'account_withdraw_reject' },
             () => executeMethod()
           );
@@ -317,6 +367,17 @@ export class WAuditedComponent extends BaseListingComponent {
       this.withdrawAuitedSubscription.unsubscribe();
       this._filterService.activeFiltData = {};
     }
+  }
+
+
+  displayColCount(): number {
+    return this.selectedColumns.length + 1;
+  }
+
+  isValidDate(value: any): boolean {
+    const date = new Date(value);
+    return value && !isNaN(date.getTime());
+
   }
 
 }

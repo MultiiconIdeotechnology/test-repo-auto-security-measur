@@ -31,13 +31,17 @@ import { techDashboardStatusChangedLogComponent } from '../techdashboard-status-
 import { PendingLinkComponent } from '../pending-link/pending-link.component';
 import { TechInfoTabsComponent } from '../info-tabs/info-tabs.component';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
-import { BaseListingComponent } from 'app/form-models/base-listing';
+import { BaseListingComponent, Column, Types } from 'app/form-models/base-listing';
 import { AgentService } from 'app/services/agent.service';
 import { Subscription } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { GlobalSearchService } from 'app/services/global-search.service';
 import { DomainSslVerificationComponent } from '../domain-ssl-verification/domain-ssl-verification.component';
 import { MobileProductActivateDialogComponent } from '../domain-ssl-verification/mobile-product-activate-dialog/mobile-product-activate-dialog.component';
+import { OverlayPanel } from 'primeng/overlaypanel';
+import { cloneDeep } from 'lodash';
+import { Excel } from 'app/utils/export/excel';
+import { DateTime } from 'luxon';
 
 @Component({
     selector: 'app-crm-tech-dashboard-pending',
@@ -83,12 +87,12 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
     @ViewChild('tabGroup') tabGroup;
     @ViewChild(MatPaginator) public _paginator: MatPaginator;
     @ViewChild(MatSort) public _sortInbox: MatSort;
+    @ViewChild('op') overlayPanel!: OverlayPanel;
 
     Mainmodule: any;
     module_name = module_name.techDashboard;
     filter_table_name = filter_module_name.tech_dashboard_pending;
     private settingsUpdatedSubscription: Subscription;
-    cols = [];
     dataList = [];
     getWLSettingList: any = [];
     searchInputControlPending = new FormControl('');
@@ -106,6 +110,12 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
     agentList: any[] = [];
     filter: any = {}
 
+    types = Types;
+    exportCol: Column[] = [];
+    activeFiltData: any = {};
+    cols: Column[] = [];
+    selectedColumns: Column[] = [];
+
     constructor(
         private crmService: CrmService,
         private conformationService: FuseConfirmationService,
@@ -116,17 +126,31 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
     ) {
         super(module_name.techDashboard);
         this.key = this.module_name;
-        this.sortColumn = 'entry_date_time';
+        this.sortColumn = 'entryDateTime';
         this.sortDirection = 'desc';
         this.Mainmodule = this;
         this._filterService.applyDefaultFilter(this.filter_table_name);
+
+        this.selectedColumns = [
+            { field: 'itemCode', header: 'Item Code', type: Types.text },
+            { field: 'itemName', header: 'Item', type: Types.select },
+            { field: 'productName', header: 'Product', type: Types.select },
+            { field: 'productServiceStatus', header: 'Status', type: Types.select, isCustomColor: true },
+            { field: 'agentCode', header: 'Agent Code', type: Types.number, fixVal: 0 },
+            { field: 'agencyName', header: 'Agency Name', type: Types.select },
+            { field: 'startIntegrationDateTime', header: 'Start Int. Date', type: Types.date, dateFormat: 'dd-MM-yyyy' },
+            { field: 'entryDateTime ', header: 'Entry Date', type: Types.date, dateFormat: 'dd-MM-yyyy' }
+        ];
+
+        this.cols.unshift(...this.selectedColumns);
+        this.exportCol = cloneDeep(this.cols);
     }
 
     ngOnInit(): void {
         this.agentList = this._filterService.agentListByValue;
 
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
-            this.selectedAgent = resp['table_config']['agency_name']?.value;
+            this.selectedAgent = resp['table_config']['agencyName']?.value;
             if (this.selectedAgent && this.selectedAgent.id) {
                 const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
                 if (!match) {
@@ -135,14 +159,15 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
             }
             // this.sortColumn = resp['sortColumn'];
             // this.primengTable['_sortField'] = resp['sortColumn'];
-            if (resp['table_config']['integration_start_date_time'].value) {
-                resp['table_config']['integration_start_date_time'].value = new Date(resp['table_config']['integration_start_date_time'].value);
+            if (resp['table_config']['startIntegrationDateTime'].value) {
+                resp['table_config']['startIntegrationDateTime'].value = new Date(resp['table_config']['startIntegrationDateTime'].value);
             }
-            if (resp['table_config']['entry_date_time'].value) {
-                resp['table_config']['entry_date_time'].value = new Date(resp['table_config']['entry_date_time'].value);
+            if (resp['table_config']['entryDateTime'].value) {
+                resp['table_config']['entryDateTime'].value = new Date(resp['table_config']['entryDateTime'].value);
             }
             this.primengTable['filters'] = resp['table_config'];
             this.isFilterShowPending = true;
+            this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
             this.isFilterShowPendingChange.emit(this.isFilterShowPending);
             this.primengTable._filter();
         });
@@ -155,7 +180,7 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
             this.isFilterShowPendingChange.emit(this.isFilterShowPending);
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
             setTimeout(() => {
-                this.selectedAgent = filterData['table_config']['agency_name']?.value;
+                this.selectedAgent = filterData['table_config']['agencyName']?.value;
                 if (this.selectedAgent && this.selectedAgent.id) {
                     const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
                     if (!match) {
@@ -164,16 +189,43 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
                 }
             }, 1000);
 
-            if (filterData['table_config']['integration_start_date_time'].value) {
-                filterData['table_config']['integration_start_date_time'].value = new Date(filterData['table_config']['integration_start_date_time'].value);
+            if (filterData['table_config']['startIntegrationDateTime'].value) {
+                filterData['table_config']['startIntegrationDateTime'].value = new Date(filterData['table_config']['startIntegrationDateTime'].value);
             }
-            if (filterData['table_config']['entry_date_time'].value) {
-                filterData['table_config']['entry_date_time'].value = new Date(filterData['table_config']['entry_date_time'].value);
+            if (filterData['table_config']['entryDateTime'].value) {
+                filterData['table_config']['entryDateTime'].value = new Date(filterData['table_config']['entryDateTime'].value);
             }
             this.primengTable['filters'] = filterData['table_config'];
-            // this.primengTable['_sortField'] = filterData['sortColumn'];
-            // this.sortColumn = filterData['sortColumn'];
+            this.selectedColumns = this.checkSelectedColumn(filterData['selectedColumns'] || [], this.selectedColumns);
+            this.onColumnsChange();
+        } else {
+            this.selectedColumns = this.checkSelectedColumn([], this.selectedColumns);
+            this.onColumnsChange();
         }
+    }
+
+    onColumnsChange(): void {
+        this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
+    }
+
+    checkSelectedColumn(col: any[], oldCol: Column[]): any[] {
+        if (col.length) return col
+        else {
+            var Col = this._filterService.getSelectedColumns({ name: this.filter_table_name })?.columns || [];
+            if (!Col.length)
+                return oldCol;
+            else
+                return Col;
+        }
+    }
+
+    isDisplayHashCol(): boolean {
+        return this.selectedColumns.length > 0;
+    }
+
+
+    toggleOverlayPanel(event: MouseEvent) {
+        this.overlayPanel.toggle(event);
     }
 
     refreshItems(event?: any): void {
@@ -181,7 +233,7 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
         const filterReq = this.getNewFilterReq(event);
         filterReq['Filter'] = this.searchInputControlPending.value;
 
-        this.crmService.getTechProductList(filterReq).subscribe({
+        this.crmService.getPendingProductList(filterReq).subscribe({
             next: (data) => {
                 this.isLoading = false;
                 this.dataList = data.data;
@@ -200,8 +252,8 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
             this.agentList = data;
 
             for (let i in this.agentList) {
-                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`;
-                this.agentList[i].id_by_value = this.agentList[i].agency_name;
+                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agencyName}-${this.agentList[i].email_address}`;
+                this.agentList[i].id_by_value = this.agentList[i].agencyName;
             }
         })
     }
@@ -215,18 +267,14 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
     }
 
     getStatusColor(status: string): string {
-        if (status == 'Sales Return' || status == 'Cancelled') {
+        if (status == 'Sales Return' || status == 'Cancelled' || status == 'Expired' || status == 'Blocked' || status == 'Rejected from Store') {
             return 'text-red-600';
         } else if (status == 'Inprocess' || status == 'Google Closed Testing') {
             return 'text-yellow-600';
         } else if (status == 'Delivered') {
             return 'text-green-600';
-        } else if (status == 'Waiting for Customer Update' || status == 'Pending') {
+        } else if (status == 'Waiting for Customer Update' || status == 'Pending' || status == 'Waiting for Account Activation') {
             return 'text-blue-600';
-        } else if (status == 'Waiting for Account Activation') {
-            return 'text-blue-600';
-        } else if (status == 'Rejected from Store') {
-            return 'text-red-600';
         }
         else {
             return '';
@@ -291,8 +339,8 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
         if (!Security.hasPermission(techDashPermissions.wlSettingPermissions)) {
             return this.alertService.showToast('error', messages.permissionDenied);
         }
-
-        this.crmService.getWLSettingListTwoParams(record?.code, record?.item_name).subscribe({
+        
+        this.crmService.getWLSettingListTwoParams(record?.agentId, record?.itemName).subscribe({
             next: (data) => {
                 this.isLoading = false;
                 this.getWLSettingList = data[0];
@@ -349,18 +397,18 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
             .subscribe((res) => {
                 if (res === 'confirmed') {
                     let newJson = {
-                        id: record.id,
-                        is_integration_started: true
+                        Id: record.id,
+                        IsStartIntegration: true
                     }
                     this.crmService.startIntegration(newJson).subscribe({
                         next: (res) => {
-                            this.alertService.showToast(
-                                'success',
-                                'Start Integration Successfully!',
-                                'top-right',
-                                true
-                            );
                             if (res) {
+                                this.alertService.showToast(
+                                    'success',
+                                    'Start Integration Successfully!',
+                                    'top-right',
+                                    true
+                                );
                                 this.refreshItems();
                             }
                         },
@@ -383,7 +431,7 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
         //     return this.alertService.showToast('error', messages.permissionDenied);
         // }
 
-        this.crmService.getWLSettingListTwoParams(record?.code, record?.item_name).subscribe({
+        this.crmService.getWLSettingListTwoParams(record?.agentId, record?.itemName).subscribe({
             next: (data) => {
                 this.isLoading = false;
                 this.getWLSettingList = data[0];
@@ -412,7 +460,7 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
             next: (data) => {
                 this.isLoading = false;
                 this.getWLSettingList = data;
-                const isRiseProduct = record?.item_name?.toLowerCase().includes('rise');
+                const isRiseProduct = record?.itemName?.toLowerCase().includes('rise');
                 if (isRiseProduct || (this.getWLSettingList && this.getWLSettingList.length > 0)) {
                     const label: string = 'Activate';
                     this.conformationService
@@ -425,19 +473,19 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
                         .subscribe((res) => {
                             if (res === 'confirmed') {
                                 let newJson = {
-                                    id: record.id ? record.id : "",
-                                    is_activated: true,
-                                    agent_id: record?.agentid ? record?.agentid : ""
+                                    ServiceId: record.id ? record.id : "",
+                                    // is_activated: true,
+                                    AgentId: record?.agentid ? record?.agentid : ""
                                 }
                                 this.crmService.activate(newJson).subscribe({
                                     next: (res) => {
-                                        this.alertService.showToast(
-                                            'success',
-                                            'Product activated Successfully!',
-                                            'top-right',
-                                            true
-                                        );
                                         if (res) {
+                                            this.alertService.showToast(
+                                                'success',
+                                                'Product activated Successfully!',
+                                                'top-right',
+                                                true
+                                            );
                                             this.dataList.splice(index, 1);
                                         }
                                     },
@@ -480,8 +528,8 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
                     }
                     this.crmService.googleClosedTesting(newJson).subscribe({
                         next: (res) => {
-                            this.alertService.showToast('success', 'Google closed testing successfully!');
                             if (res) {
+                                this.alertService.showToast('success', 'Google closed testing successfully!');
                                 this.refreshItems();
                             }
                         },
@@ -493,11 +541,50 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
             });
     }
 
+    exportExcel(event?: any): void {
+        if (!Security.hasExportDataPermission(this.module_name)) {
+            return this.alertService.showToast('error', messages.permissionDenied);
+        }
+        const filterReq = this.getNewFilterReq(event);
+        filterReq['Filter'] = this.searchInputControlPending.value;
+        filterReq['Take'] = this.totalRecords;
+
+        this.crmService.getPendingProductList(filterReq).subscribe(data => {
+            for (var dt of data.data) {
+                dt.startIntegrationDateTime = dt.startIntegrationDateTime ? DateTime.fromISO(dt.startIntegrationDateTime).toFormat('dd-MM-yyyy') : ''
+                dt.entryDateTime = dt.entryDateTime ? DateTime.fromISO(dt.entryDateTime).toFormat('dd-MM-yyyy') : ''
+            }
+            Excel.export(
+                'Pending',
+                [
+                    { header: 'Item Code', property: 'itemCode' },
+                    { header: 'Item', property: 'itemName' },
+                    { header: 'Product', property: 'productName' },
+                    { header: 'Status', property: 'productServiceStatus' },
+                    { header: 'Agent Code', property: 'agentCode' },
+                    { header: 'Agency Name', property: 'agencyName' },
+                    { header: 'Start Int. Date', property: 'startIntegrationDateTime' },
+                    { header: 'Entry Date', property: 'entryDateTime' },
+                ],
+                data.data, "Pending", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 5 } }]);
+        });
+    }
+
     ngOnDestroy(): void {
 
         if (this.settingsUpdatedSubscription) {
             this.settingsUpdatedSubscription.unsubscribe();
             this._filterService.activeFiltData = {};
         }
+    }
+
+    displayColCount(): number {
+        return this.selectedColumns.length + 1;
+    }
+
+    isValidDate(value: any): boolean {
+        const date = new Date(value);
+        return value && !isNaN(date.getTime());
+
     }
 }
