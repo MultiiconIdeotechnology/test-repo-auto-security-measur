@@ -508,46 +508,99 @@ export class PurchaseProductComponent {
             return this.alertService.showToast('error', messages.permissionDenied);
         }
 
-        const label: string = 'Cancel Purchase product';
-        this.confirmationService
-            .open({
-                title: label,
-                message: 'Do you want to Cancel?',
-                inputBox: 'Remark',
-                customShow: true,
-                dateCustomShow: false
-            })
-            .afterClosed()
-            .subscribe((res) => {
-                if (res?.action === 'confirmed') {
-                    let newJson = {
-                        id: record.id,
-                        CancelRemark: res?.statusRemark ? res?.statusRemark : ""
-                    }
-                    this.crmService.cancelPurchaseProduct(newJson).subscribe({
-                        next: (res) => {
-                            if (res) {
+        this.crmService.cancelAlert(record.id).subscribe({
+            next: (res) => {
+                if (res.isPendingInstallment) {
+                    const labelName: string = 'Cancel Alert'
+                    this.confirmationService.open({
+                        title: labelName,
+                        message: 'Outstanding exists. Do you want to continue with cancellation?'
+                    }).afterClosed().subscribe(res => {
+                        if (res === 'confirmed') {
 
-                                this.alertService.showToast(
-                                    'success',
-                                    'Purchase product has been cancelled!',
-                                    'top-right',
-                                    true
-                                );
-                                this.refreshItems()
+                            const label: string = 'Cancel Purchase product';
+                            this.confirmationService
+                                .open({
+                                    title: label,
+                                    message: 'Do you want to Cancel?',
+                                    inputBox: 'Remark',
+                                    customShow: true,
+                                    dateCustomShow: false
+                                })
+                                .afterClosed()
+                                .subscribe((res) => {
+                                    if (res?.action === 'confirmed') {
+                                        let newJson = {
+                                            id: record.id,
+                                            CancelRemark: res?.statusRemark ? res?.statusRemark : ""
+                                        }
+                                        this.crmService.cancelPurchaseProduct(newJson).subscribe({
+                                            next: (res) => {
+                                                this.alertService.showToast(
+                                                    'success',
+                                                    'Purchase product has been cancelled!',
+                                                    'top-right',
+                                                    true
+                                                );
+                                                this.refreshItems()
+                                            },
+                                            error: (err) => {
+                                                this.alertService.showToast(
+                                                    'error',
+                                                    err,
+                                                    'top-right',
+                                                    true
+                                                );
+                                            },
+                                        });
+                                    }
+                                });
+                        }
+                    })
+                } else {
+                    const label: string = 'Cancel Purchase product';
+                    this.confirmationService
+                        .open({
+                            title: label,
+                            message: 'Do you want to Cancel?',
+                            inputBox: 'Remark',
+                            customShow: true,
+                            dateCustomShow: false
+                        })
+                        .afterClosed()
+                        .subscribe((res) => {
+                            if (res?.action === 'confirmed') {
+                                let newJson = {
+                                    id: record.id,
+                                    CancelRemark: res?.statusRemark ? res?.statusRemark : ""
+                                }
+                                this.crmService.cancelPurchaseProduct(newJson).subscribe({
+                                    next: (res) => {
+                                        this.alertService.showToast(
+                                            'success',
+                                            'Purchase product has been cancelled!',
+                                            'top-right',
+                                            true
+                                        );
+                                        this.refreshItems()
+                                    },
+                                    error: (err) => {
+                                        this.alertService.showToast(
+                                            'error',
+                                            err,
+                                            'top-right',
+                                            true
+                                        );
+                                    },
+                                });
                             }
-                        },
-                        error: (err) => {
-                            this.alertService.showToast(
-                                'error',
-                                err,
-                                'top-right',
-                                true
-                            );
-                        },
-                    });
+                        });
                 }
-            });
+
+            }, error: (err) => {
+                this.alertService.showToast('error', err, 'top-right', true);
+            },
+        })
     }
 
     expiryProduct(record) {
