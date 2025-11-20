@@ -58,7 +58,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 export class SupplierTypeEntryComponent {
   @ViewChild('settingsDrawer') settingsDrawer: MatSidenav;
   private destroy$: Subject<any> = new Subject<any>();
-  title: string = 'Add Supplier Fare Type'
+  title: string = 'Create Supplier Fare Type'
   formGroup: FormGroup;
   buttonLabel: string = 'Create';
   referralData: any = {};
