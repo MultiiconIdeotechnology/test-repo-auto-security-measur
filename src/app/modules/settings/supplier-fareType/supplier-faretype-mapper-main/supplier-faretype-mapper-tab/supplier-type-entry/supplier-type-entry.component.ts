@@ -58,7 +58,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 export class SupplierTypeEntryComponent {
   @ViewChild('settingsDrawer') settingsDrawer: MatSidenav;
   private destroy$: Subject<any> = new Subject<any>();
-  title: string = 'Add'
+  title: string = 'Add Supplier Fare Type'
   formGroup: FormGroup;
   buttonLabel: string = 'Create';
   referralData: any = {};
@@ -152,14 +152,14 @@ export class SupplierTypeEntryComponent {
 
         if (res['type'] == 'supplier-fareType-create') {
           this.settingsDrawer.open();
-          this.title = 'Add';
+          this.title = 'Create Supplier Fare Type';
           this.resetForm();
           this.isEdit = false;
           this.buttonLabel = "Create";
 
         } else if (res['type'] == 'Supplier common-fareType-edit') {
           this.settingsDrawer.open();
-          this.title = 'Modify';
+          this.title = 'Modify Supplier Fare Type';
           this.buttonLabel = "Update";
           if (res?.data?.data?.id) {
             this.isEdit = true;

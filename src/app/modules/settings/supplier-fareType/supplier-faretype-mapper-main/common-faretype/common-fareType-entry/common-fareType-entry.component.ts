@@ -54,7 +54,7 @@ import { CacheLabel, CacheService } from 'app/services/cache.service';
 export class CommonFareTypeEntryComponent {
     @ViewChild('settingsDrawer') settingsDrawer: MatSidenav;
     private destroy$: Subject<any> = new Subject<any>();
-    title: string = 'Add'
+    title: string = 'Add Common Fare Type'
     formGroup: FormGroup;
     buttonLabel: string = 'Create';
     referralData: any = {};
@@ -89,12 +89,12 @@ export class CommonFareTypeEntryComponent {
             if (res) {
                 if (res['type'] == 'common-fareType-create') {
                     this.settingsDrawer.open();
-                    this.title = 'Add';
+                    this.title = 'Create Common Fare Type';
                     this.buttonLabel = "Create";
                     this.resetForm();
                 } else if (res['type'] == 'common-fareType-edit') {
                     this.settingsDrawer.open();
-                    this.title = 'Modify';
+                    this.title = 'Modify Common Fare Type'              
                     this.buttonLabel = "Update";
                     if (res?.data) {
                         this.isEdit = true;
