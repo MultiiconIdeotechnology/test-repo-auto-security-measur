@@ -172,7 +172,7 @@ export class ProductComponent {
     }
 
     editProduct(record) {
-         if (record.status != 'New') {
+        if (record.status != 'New') {
             this.alertService.showToast('error', 'Only new status product has been allow for modify.', 'top-right', true);
             return
         }
@@ -212,43 +212,99 @@ export class ProductComponent {
             return this.alertService.showToast('error', messages.permissionDenied);
         }
 
-        const label: string = 'Cancel Purchase product';
-        this.conformationService
-            .open({
-                title: label,
-                message: 'Do you want to Cancel?',
-                inputBox: 'Remark',
-                customShow: true,
-                dateCustomShow: false
-            })
-            .afterClosed()
-            .subscribe((res) => {
-                if (res?.action === 'confirmed') {
-                    let newJson = {
-                        id: record.id,
-                        CancelRemark: res?.statusRemark ? res?.statusRemark : ""
-                    }
-                    this.crmService.cancelPurchaseProduct(newJson).subscribe({
-                        next: (res) => {
-                            this.alertService.showToast(
-                                'success',
-                                'Purchase product has been cancelled!',
-                                'top-right',
-                                true
-                            );
-                            this.refreshItems()
-                        },
-                        error: (err) => {
-                            this.alertService.showToast(
-                                'error',
-                                err,
-                                'top-right',
-                                true
-                            );
-                        },
-                    });
+        this.crmService.cancelAlert(record.id).subscribe({
+            next: (res) => {
+                if (res.isPendingInstallment) {
+                    const labelName: string = 'Cancel Alert'
+                    this.conformationService.open({
+                        title: labelName,
+                        message: 'Outstanding exists. Do you want to continue with cancellation?'
+                    }).afterClosed().subscribe(res => {
+                        if (res === 'confirmed') {
+
+                            const label: string = 'Cancel Purchase product';
+                            this.conformationService
+                                .open({
+                                    title: label,
+                                    message: 'Do you want to Cancel?',
+                                    inputBox: 'Remark',
+                                    customShow: true,
+                                    dateCustomShow: false
+                                })
+                                .afterClosed()
+                                .subscribe((res) => {
+                                    if (res?.action === 'confirmed') {
+                                        let newJson = {
+                                            id: record.id,
+                                            CancelRemark: res?.statusRemark ? res?.statusRemark : ""
+                                        }
+                                        this.crmService.cancelPurchaseProduct(newJson).subscribe({
+                                            next: (res) => {
+                                                this.alertService.showToast(
+                                                    'success',
+                                                    'Purchase product has been cancelled!',
+                                                    'top-right',
+                                                    true
+                                                );
+                                                this.refreshItems()
+                                            },
+                                            error: (err) => {
+                                                this.alertService.showToast(
+                                                    'error',
+                                                    err,
+                                                    'top-right',
+                                                    true
+                                                );
+                                            },
+                                        });
+                                    }
+                                });
+                        }
+                    })
+                } else {
+                    const label: string = 'Cancel Purchase product';
+                    this.conformationService
+                        .open({
+                            title: label,
+                            message: 'Do you want to Cancel?',
+                            inputBox: 'Remark',
+                            customShow: true,
+                            dateCustomShow: false
+                        })
+                        .afterClosed()
+                        .subscribe((res) => {
+                            if (res?.action === 'confirmed') {
+                                let newJson = {
+                                    id: record.id,
+                                    CancelRemark: res?.statusRemark ? res?.statusRemark : ""
+                                }
+                                this.crmService.cancelPurchaseProduct(newJson).subscribe({
+                                    next: (res) => {
+                                        this.alertService.showToast(
+                                            'success',
+                                            'Purchase product has been cancelled!',
+                                            'top-right',
+                                            true
+                                        );
+                                        this.refreshItems()
+                                    },
+                                    error: (err) => {
+                                        this.alertService.showToast(
+                                            'error',
+                                            err,
+                                            'top-right',
+                                            true
+                                        );
+                                    },
+                                });
+                            }
+                        });
                 }
-            });
+
+            }, error: (err) => {
+                this.alertService.showToast('error', err, 'top-right', true);
+            },
+        })
     }
 
     purchaseProductInfo(record): void {
@@ -280,7 +336,7 @@ export class ProductComponent {
         //     return this.alertService.showToast('error', messages.permissionDenied);
         // }
 
-         if (!Security.hasPermission(agentPermissions.blockUnblockPermissions)) {
+        if (!Security.hasPermission(agentPermissions.blockUnblockPermissions)) {
             return this.alertService.showToast('error', messages.permissionDenied);
         }
 
@@ -340,7 +396,7 @@ export class ProductComponent {
         if (!Security.hasPermission(agentPermissions.shiftProductPermissions)) {
             return this.alertService.showToast('error', messages.permissionDenied);
         }
-        
+
         this.matDialog.open(MasterAgentComponent, {
             data: record,
             disableClose: true
