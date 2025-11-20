@@ -39,7 +39,7 @@ import { Subject, Subscription, takeUntil } from 'rxjs';
 export class SupplierFaretypeMapperTabComponent extends BaseListingComponent {
   @Input() selectedColumns: Column[];
   @Input() isFilterShowSupplierFareType: boolean;
-  @Output() isFilterShowCommonFarTypeChange = new EventEmitter<boolean>();
+  @Output() isFilterShowSupplierFarTypeChange = new EventEmitter<boolean>();
   searchInputControlSupplierFareTypeMapper = new FormControl('');
 
   isLoading = false;
@@ -87,7 +87,7 @@ export class SupplierFaretypeMapperTabComponent extends BaseListingComponent {
     this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
       this.primengTable['filters'] = resp['table_config'];
       this.isFilterShowSupplierFareType = true;
-      this.isFilterShowCommonFarTypeChange.emit(this.isFilterShowSupplierFareType);
+      this.isFilterShowSupplierFarTypeChange.emit(this.isFilterShowSupplierFareType);
       this.primengTable._filter();
     });
 
@@ -109,7 +109,7 @@ export class SupplierFaretypeMapperTabComponent extends BaseListingComponent {
     // Defult Active filter show
     if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
       this.isFilterShowSupplierFareType = true;
-      this.isFilterShowCommonFarTypeChange.emit(this.isFilterShowSupplierFareType);
+      this.isFilterShowSupplierFarTypeChange.emit(this.isFilterShowSupplierFareType);
       let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
       this.primengTable['filters'] = filterData['table_config'];
       // this.primengTable['_sortField'] = filterData['sortColumn'];
