@@ -137,7 +137,6 @@ export class ProfileInventoryInfoComponent implements OnInit, OnDestroy {
       item.data = this.convertDateFields(item.data, dateFields); // 👈 Convert date strings to Date objects
 
       this.data = item.data;
-      console.log("info data",this.data);
       
       this.tempInfoList = item.data;
       this.title = this.data.profile_name;
