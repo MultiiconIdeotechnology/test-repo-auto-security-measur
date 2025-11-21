@@ -228,6 +228,10 @@ export class CrmService {
         return this.http.get<any>(`${this.baseUrl}Dashboard/TecDashboard/GetWlSetting?agent_id=${agentId}`);
     }
 
+    cancelAlert(agentId: any): Observable<any> {
+        return this.http.get<any>(`${this.baseUrl}ProductPurchase/cancelAlert?id=${agentId}`);
+    }
+
     getWLSettingListTwoParams(agentId: any, item_name: any) {
         const params = new HttpParams()
             .set('agent_id', agentId)
