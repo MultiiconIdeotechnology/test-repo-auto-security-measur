@@ -12,7 +12,6 @@ import { MatSelectModule } from '@angular/material/select';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { debounceTime, distinctUntilChanged, filter, map, Observable, startWith, switchMap } from 'rxjs';
 import { AgentService } from 'app/services/agent.service';
-import { PspSetupService } from 'app/services/psp-setup.service';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 
@@ -48,7 +47,6 @@ export class TransferB2CDialogComponent implements OnInit {
     public alertService: ToasterService,
     private _filterService: CommonFilterService,
     private agentService: AgentService,
-    private toasterService: ToasterService,
     private conformationService: FuseConfirmationService,
     @Inject(MAT_DIALOG_DATA) public data: any = {}
   ) {
