@@ -94,7 +94,7 @@
                                         <span class="truncate" *ngIf="!col.is_boolean && !col.isicon"
                                             [matTooltip]="col.tooltip ? ListItem[col.key] : ''">
                                             {{ col.is_date ? (ListItem[col.key] | date: col.date_formate) || " - " :
-                                            ListItem[col.key] || " " }}
+                                            (ListItem[col.key] !== null && ListItem[col.key] !== undefined ? ListItem[col.key] : " - ") }}
                                         </span>
                                     </div>
                                 </div>
