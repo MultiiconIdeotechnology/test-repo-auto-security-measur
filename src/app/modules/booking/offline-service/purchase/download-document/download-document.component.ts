@@ -96,6 +96,8 @@ export class DownloadDocumentComponent {
       supplierFilter: [''],
       supplier_booking_ref_no: [''],
       purchase_amount: [''],
+      service_charge: [''],
+      service_charge_gst: [''],
       supplier_invoice: [''],
       supplier_confirmation_proof: [''],
       roe: [''],
