@@ -30,7 +30,7 @@ import { cloneDeep } from 'lodash';
   styleUrls: ['./purchase.component.scss'],
   styles: [`
   .tbl-grid {
-    grid-template-columns: 40px 80px 140px 150px 140px 130px 140px;
+    grid-template-columns: 40px 80px 140px 150px 140px 130px 146px 130px 140px;
   }
   `],
   standalone: true,
@@ -81,6 +81,8 @@ export class PurchaseComponent extends BaseListingComponent implements AfterView
     { key: 'service_type', name: 'Service Type', is_date: false, date_formate: '', is_sortable: true, class: '', tooltip: false },
     { key: 'supplier_name', name: 'Supplier', is_date: false, date_formate: '', is_sortable: true, class: '', tooltip: true },
     { key: 'purchase_amount', name: 'Amount', is_date: false, date_formate: '', is_sortable: true, class: 'header-right-view', tooltip: false },
+    { key: 'service_charge', name: 'Service Charge', is_date: false, date_formate: '', is_sortable: true, class: 'header-center-view', tooltip: false },
+    { key: 'service_charge_gst', name: 'Service Charge GST', is_date: false, date_formate: '', is_sortable: true, class: 'header-center-view', tooltip: false },
     { key: 'roe', name: 'ROE', is_date: false, date_formate: '', is_sortable: true, class: 'header-center-view', tooltip: false },
     { key: 'entry_date_time', name: 'Entry Date', is_date: true, date_formate: 'dd-MM-yyyy HH:mm', is_sortable: true, class: '' },
   ]
@@ -103,11 +105,12 @@ export class PurchaseComponent extends BaseListingComponent implements AfterView
     this.refreshItems();
 
     this.mysearchInputControl.valueChanges.subscribe(val => {
-      if (!val || val.trim() == '')
+      if (!val || val.trim() == ''){
         this.dataList = this.AlldataList
-      else
+      }else{
         this.dataList = this.AlldataList.filter(x => x.service_type.toLowerCase().includes(val.toLowerCase()) || x.supplier_name.toLowerCase().includes(val.toLowerCase()) ||
-          x.purchase_amount.toLowerCase().includes(val.toLowerCase()) || x.roe.toString().toLowerCase().includes(val.toLowerCase()) || x.entry_date_time.toString().toLowerCase().includes(val.toLowerCase()))
+          x.purchase_amount.toLowerCase().includes(val.toLowerCase()) || (x.service_charge !== null && x.service_charge !== undefined && x.service_charge.toString().toLowerCase().includes(val.toLowerCase())) || (x.service_charge_gst !== null && x.service_charge_gst !== undefined && x.service_charge_gst.toString().toLowerCase().includes(val.toLowerCase())) || x.roe.toString().toLowerCase().includes(val.toLowerCase()) || x.entry_date_time.toString().toLowerCase().includes(val.toLowerCase()))
+      }
     })
   }
 
@@ -119,9 +122,12 @@ export class PurchaseComponent extends BaseListingComponent implements AfterView
         next: data => {
           this.isLoading = false;
           this.dataList = data.data;
-
+          
           this.dataList.forEach(x => {
-            x.purchase_amount = x.currency_short_code + " " + x.purchase_amount
+            x.purchase_amount = x.currency_short_code + " " + x.purchase_amount;
+            // Ensure service_charge and service_charge_gst are displayed even when 0
+            x.service_charge = x.service_charge !== null && x.service_charge !== undefined ? x.service_charge : 0;
+            x.service_charge_gst = x.service_charge_gst !== null && x.service_charge_gst !== undefined ? x.service_charge_gst : 0;
           });
 
           this.AlldataList = cloneDeep(this.dataList);
