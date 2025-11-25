@@ -48,14 +48,10 @@
                     <span class="text-base truncate" [matTooltip]="record?.city_name">{{record?.city_name || "-"}}</span>
                 </div>
 
+                <!-- Note : Address Line 1 & Address Line 2 display in one field address-->
                 <div class="flex flex-col mb-4 w-full break-words">
-                    <span class="text-md font-semibold text-secondary">Address Line 1</span>
-                    <span class="text-base ">{{record?.address_line1 || '-'}}</span>
-                </div>
-
-                <div class="flex flex-col mb-4 w-full break-words">
-                    <span class="text-md font-semibold text-secondary">Address Line 2</span>
-                    <span class="text-base ">{{record?.address_line2 || '-'}}</span>
+                    <span class="text-md font-semibold text-secondary">Address</span>
+                    <span class="text-base ">{{record?.address || '-'}}</span>
                 </div>
 
                 <div class="flex flex-col mb-4 truncate w-1/2">
