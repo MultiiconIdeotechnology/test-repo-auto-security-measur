@@ -624,7 +624,7 @@ export const agentsPermissions = {
 
     changeEmailPermissions: { module_name: module_name.agent, group_name: group_name.listingPage, operation_type: 'Change Email', category_name: category_name.operation },
     changeNumberPermissions: { module_name: module_name.agent, group_name: group_name.listingPage, operation_type: 'Change Number', category_name: category_name.operation },
-
+    modifyPermissions: { module_name: module_name.agent, group_name: group_name.listingPage, operation_type: 'Modify', category_name: category_name.entry },
 }
 
 export const saleProductPermissions = {
