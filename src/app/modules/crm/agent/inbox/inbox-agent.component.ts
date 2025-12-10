@@ -84,12 +84,19 @@ export class InboxAgentComponent extends BaseListingComponent {
     private selectedOptionTwoSubjectFour = new BehaviorSubject<any>('');
     selectionDateDropdownFour$ = this.selectedOptionTwoSubjectFour.asObservable();
 
+    private selectedOptionTwoSubjectFive = new BehaviorSubject<any>('');
+    selectionDateDropdownFive$ = this.selectedOptionTwoSubjectFive.asObservable();
+
     updateSelectedOptionThree(option: string): void {
         this.selectedOptionTwoSubjectThree.next(option);
     }
 
     updateSelectedOptionFour(option: string): void {
         this.selectedOptionTwoSubjectFour.next(option);
+    }
+
+     updateSelectedOptionFive(option: string): void {
+        this.selectedOptionTwoSubjectFive.next(option);
     }
 
     module_name = module_name.crmagent;
@@ -141,6 +148,7 @@ export class InboxAgentComponent extends BaseListingComponent {
         this._filterService.updatedSelectedContracting('');
         this.updateSelectedOptionThree('');
         this.updateSelectedOptionFour('');
+        this.updateSelectedOptionFive('');
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
             this.selectedAgent = resp['table_config']['agencyName']?.value;
             if (this.selectedAgent && this.selectedAgent.id) {
@@ -172,6 +180,11 @@ export class InboxAgentComponent extends BaseListingComponent {
                 this._filterService.rangeDateConvert(resp['table_config']['first_login_date_time']);
             }
 
+             if (resp['table_config']['lastLoginDateTime']?.value != null && resp['table_config']['lastLoginDateTime'].value.length) {
+                this.updateSelectedOptionFive('custom_date_range');
+                this._filterService.rangeDateConvert(resp['table_config']['lastLoginDateTime']);
+            }
+
             if (resp['table_config']['first_transaction_date_time']?.value != null && resp['table_config']['first_transaction_date_time'].value.length) {
                 this.updateSelectedOptionFour('custom_date_range');
                 this._filterService.rangeDateConvert(resp['table_config']['first_transaction_date_time']);
@@ -190,6 +203,7 @@ export class InboxAgentComponent extends BaseListingComponent {
         this._filterService.updatedSelectedContracting('');
         this.updateSelectedOptionThree('');
         this.updateSelectedOptionFour('');
+        this.updateSelectedOptionFive('');
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             this.isFilterShowInbox = true;
             this.isFilterShowInboxChange.emit(this.isFilterShowInbox);
@@ -458,6 +472,14 @@ export class InboxAgentComponent extends BaseListingComponent {
 
     onOptionClickFour(option: any, primengTable: any, field: any, key?: any) {
         this.selectedOptionTwoSubjectFour.next(option.id_by_value);
+        
+        if( option.id_by_value &&  option.id_by_value != 'custom_date_range'){
+            primengTable.filter(option, field, 'custom');
+        } 
+    }
+
+     onOptionClickFive(option: any, primengTable: any, field: any, key?: any) {
+        this.selectedOptionTwoSubjectFive.next(option.id_by_value);
         
         if( option.id_by_value &&  option.id_by_value != 'custom_date_range'){
             primengTable.filter(option, field, 'custom');
