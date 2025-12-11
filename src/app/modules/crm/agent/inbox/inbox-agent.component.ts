@@ -132,7 +132,7 @@ export class InboxAgentComponent extends BaseListingComponent {
     ) {
         super(module_name.crmagent);
         this.key = this.module_name;
-        this.sortColumn = 'priorityid';
+        this.sortColumn = 'createdDate';
         this.sortDirection = 'desc';
         this.Mainmodule = this;
         this._filterService.applyDefaultFilter(this.filter_table_name);
