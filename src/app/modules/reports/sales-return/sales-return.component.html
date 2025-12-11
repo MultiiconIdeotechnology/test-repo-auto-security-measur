@@ -155,12 +155,24 @@
                                 [ariaLabel]="'Filter '+ col.header" locale="en-US" minFractionDigits="2"
                                 maxFractionDigits="2">
                             </p-columnFilter>
+                            
+                            <p-columnFilter *ngIf="col.type == types.select && col.field == 'mop'" [field]="col.field" matchMode="equals" [showMenu]="false">
+                                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                    <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="mopList"
+                                        (onChange)="filter($event.value)" placeholder="Select MOP" [showClear]="true"
+                                        appendTo="body">
+                                        <ng-template let-option pTemplate="item">
+                                            <p>{{option.label}}</p>
+                                        </ng-template>
+                                    </p-dropdown>
+                                </ng-template>
+                            </p-columnFilter>
                         </ng-container>
+                        
                     </th>
-                    <th class="w-auto">
-                        <!-- <p-columnFilter type="text" field="mop" placeholder="Search by MOP"
-                            ariaLabel="Filter MOP" /> -->
-                        <p-columnFilter field="mop" matchMode="equals" [showMenu]="false">
+                    <!-- <th class="w-auto">
+                       
+                        <p-columnFilter *ngIf="col.type == types.select && col.field == 'mop'" [field]="col.field" matchMode="equals" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="mopList"
                                     (onChange)="filter($event.value)" placeholder="Select MOP" [showClear]="true"
@@ -171,7 +183,7 @@
                                 </p-dropdown>
                             </ng-template>
                         </p-columnFilter>
-                    </th>
+                    </th> -->
                 </tr>
             </ng-template>
 
