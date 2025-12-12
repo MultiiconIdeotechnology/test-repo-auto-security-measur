@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -48,6 +48,7 @@ export class TransferB2CDialogComponent implements OnInit {
     private _filterService: CommonFilterService,
     private agentService: AgentService,
     private conformationService: FuseConfirmationService,
+    private cdr: ChangeDetectorRef,
     @Inject(MAT_DIALOG_DATA) public data: any = {}
   ) {
     this.record = data.record;
@@ -65,26 +66,66 @@ export class TransferB2CDialogComponent implements OnInit {
 
     /** FROM Agent Search */
     this.formGroup.get('fromAgentfilter')!.valueChanges.pipe(
-      filter(x => !!x),
       startWith(''),
       debounceTime(400),
       distinctUntilChanged(),
-      switchMap((value: string) => this.agentService.getAgentComboMaster(value, true))
+      switchMap((value: string) => this.agentService.getAgentComboMaster(value || '', true))
     )
       .subscribe({
         next: (data) => {
+          // 1. Capture current selected value
+          const currentVal = this.formGroup.get('from_agent_id')?.value;
+          // Find the object in the OLD list (before overwrite) if it exists
+          let currentAgentObj = currentVal ? this.fromAgentList.find(a => a.id == currentVal) : null;
+
+          // 2. Update list with new data
           this.fromAgentList = data || [];
+
+          // 3. Ensure the selected agent (or record agent) is in the new list
+          if (currentAgentObj) {
+            // Check if it exists in new list
+            const exists = this.fromAgentList.find(a => a.id == currentAgentObj.id);
+            if (!exists) {
+              this.fromAgentList = [currentAgentObj, ...this.fromAgentList];
+            }
+          } else if (this.record?.id) {
+            // Fallback: Check if record ID exists (initial load case or if value not set yet)
+            const exists = this.fromAgentList.find(agent => agent.id == this.record.id);
+            if (!exists) {
+              let recordAgent = { ...this.record };
+              if (!recordAgent.code && recordAgent.agent_code) {
+                recordAgent.code = recordAgent.agent_code;
+              }
+              this.fromAgentList = [recordAgent, ...this.fromAgentList];
+            }
+          }
+
           this.updateFromAgentList(this.formGroup.get('to_agent_id')?.value);
+
+          // Auto-select agent in FROM field if not set
+          if (this.record?.id && !this.formGroup.get('from_agent_id')?.value) {
+            const matchingAgent = this.fromAgentList.find(agent => agent.id == this.record.id);
+            if (matchingAgent) {
+              setTimeout(() => {
+                this.formGroup.patchValue({
+                  from_agent_id: matchingAgent.id
+                });
+                this.cdr.detectChanges();
+              }, 150);
+            }
+          } else {
+            // Ensure view updates for search results
+            this.cdr.detectChanges();
+          }
         }
       });
 
     /** TO Agent Search */
     this.formGroup.get('toAgentfilter')!.valueChanges.pipe(
-      filter(x => !!x),
       startWith(''),
       debounceTime(400),
       distinctUntilChanged(),
-      switchMap((value: string) => this.agentService.getAgentComboMaster(value, true))
+      switchMap((value: string) => this.agentService.getAgentComboMaster(value || '', true))
     )
       .subscribe({
         next: (data) => {
@@ -130,7 +171,8 @@ export class TransferB2CDialogComponent implements OnInit {
   }
 
   public compareWith(v1: any, v2: any) {
-    return v1 && v2 && v1.id === v2.id;
+    // Compare IDs, using == to handle string/number type differences
+    return v1 == v2;
   }
 
   /** Confirmation + API call */
@@ -159,9 +201,9 @@ export class TransferB2CDialogComponent implements OnInit {
           next: () => {
             this.alertService.showToast('success', 'All B2C customers transferred successfully!', 'top-right', true);
             this.formGroup.reset();
-      
-          // Refresh both lists after success
-          this.reloadAgentLists();
+
+            // Refresh both lists after success
+            this.reloadAgentLists();
           },
           error: (err) => {
             this.alertService.showToast('error', 'Failed to transfer B2C customers: ' + err, 'top-right', true);
@@ -181,4 +223,3 @@ export class TransferB2CDialogComponent implements OnInit {
   }
 
 }
-

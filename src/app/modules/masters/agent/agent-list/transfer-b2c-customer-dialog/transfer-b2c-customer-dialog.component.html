@@ -11,7 +11,7 @@
         <!-- FROM AGENT -->
         <mat-form-field class="w-full">
             <mat-label>From</mat-label>
-            <mat-select formControlName="from_agent_id" required>
+            <mat-select formControlName="from_agent_id" required [compareWith]="compareWith">
                 <mat-option>
                     <ngx-mat-select-search placeholderLabel="Search" noEntriesFoundLabel="No matching agent found"
                         [formControl]="formGroup.get('fromAgentfilter')">
