@@ -132,8 +132,24 @@ export class TransferB2CDialogComponent implements OnInit {
     )
       .subscribe({
         next: (data) => {
+          // 1. Capture current selected value
+          const currentVal = this.formGroup.get('to_agent_id')?.value;
+          // Find the object in the OLD list (before overwrite) if it exists
+          let currentAgentObj = currentVal ? this.toAgentList.find(a => a.id == currentVal) : null;
+
+          // 2. Update list with new data
           this.toAgentList = data || [];
+
+          // 3. Ensure the selected agent is in the new list
+          if (currentAgentObj) {
+            const exists = this.toAgentList.find(a => a.id == currentAgentObj.id);
+            if (!exists) {
+              this.toAgentList = [currentAgentObj, ...this.toAgentList];
+            }
+          }
+
           this.updateToAgentList(this.formGroup.get('from_agent_id')?.value);
+          this.cdr.detectChanges();
         }
       });
 
