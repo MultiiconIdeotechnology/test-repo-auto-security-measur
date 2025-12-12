@@ -575,7 +575,10 @@ export class AgentListComponent extends BaseListingComponent {
     //   this.router.navigate([Routes.customers.agent_entry_route])
     // }
 
-    editInternal(record): void {
+    edit(record): void {
+        if (!Security.hasPermission(agentsPermissions.modifyPermissions)) {
+            return this.alertService.showToast('error', messages.permissionDenied);
+        }
         this.matDialog
             .open(AgentEditComponent, {
                 data: { data: record },

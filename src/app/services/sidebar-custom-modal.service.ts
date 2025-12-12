@@ -8,6 +8,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 
 export class SidebarCustomModalService {
   private modalSubject = new BehaviorSubject<{ type: string; data?: any } | null>(null);
+  private closeSubject = new BehaviorSubject<{ type: string; data?: any } | null>(null);
 
   openModal(type: string, data?: any): void {
     this.modalSubject.next({ type, data });
@@ -19,6 +20,14 @@ export class SidebarCustomModalService {
 
   close(data: any) {
     this.modalSubject.next(data);
+  }
+
+  CloseSubject(data: any) {
+    this.closeSubject.next(data);
+  }
+
+  onCloseSubjectChange(): Observable<any> {
+    return this.closeSubject.asObservable();
   }
 
   onModalChange(): Observable<{ type: string; data?: any } | null> {

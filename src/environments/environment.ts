@@ -1,9 +1,10 @@
 export const environment = {
     production: false,
-    // apiUrl: 'https://boapi.bontontech.com/api/',
-      apiUrl: 'https://localhost:50036/api/',
-    // apiUrl: 'https://localhost:44333/api/',
-    //apiUrl: 'https://developer.api.bontonholidays.com/api/',
+    //apiUrl: 'https://boapi.bontontech.com/api/',
+    //apiUrl: 'https://localhost:51672/api/',
+    // apiUrl: 'https://localhost:60230/api/',
+    //apiUrl: 'https://sandbox.api.bontonholidays.com/api/',
+    apiUrl: 'https://developer.api.bontonholidays.com/api/',
 
     stagingUrl: 'https://sandbox.partner.bontonholidays.com/',
     isEnvironment: 'staging'

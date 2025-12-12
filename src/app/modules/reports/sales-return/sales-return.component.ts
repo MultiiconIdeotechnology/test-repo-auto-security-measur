@@ -182,7 +182,7 @@ export class SalesReturnComponent extends BaseListingComponent implements OnDest
             { field: 'net_commission', header: 'Net Commission', type: Types.number, fixVal: 2, class: 'text-right' },
             { field: 'cashback', header: 'Cashback', type: Types.number, fixVal: 2, class: 'text-right' },
             { field: 'cashback_tds', header: 'Cashback TDS', type: Types.number, fixVal: 2, class: 'text-right' },
-            { field: 'mop', header: 'MOP', type: Types.text },
+            { field: 'mop', header: 'MOP', type: Types.select },
         ];
         this.cols.unshift(...this.selectedColumns);
         this.exportCol = cloneDeep(this.cols);
@@ -262,8 +262,6 @@ export class SalesReturnComponent extends BaseListingComponent implements OnDest
     }
 
     checkSelectedColumn(col: any[], oldCol: Column[]): any[] {  
-    console.log("selected columns = ", col);
-    console.log("old selected columns = ", oldCol);
     if (col.length) return col;
     else {
         var Col = this._filterService.getSelectedColumns({ name: this.filter_table_name })?.columns || [];
@@ -359,7 +357,6 @@ export class SalesReturnComponent extends BaseListingComponent implements OnDest
                 }
                 this.totalRecords = res?.total;
                 this.loading = false;
-                console.log("data list = ",this.dataList);
             }, error: err => {
                 this.alertService.showToast('error', err);
                 this.loading = false;

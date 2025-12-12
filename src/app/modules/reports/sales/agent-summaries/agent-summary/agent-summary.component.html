@@ -42,10 +42,10 @@
                 [disabled]="isLoading" (click)="op.toggle($event)">
                 <img class="w-5 cursor-pointer ml-1 pt-1" src="assets/icons/column.svg" alt="c">
             </button>
-            <p-overlayPanel #op>
+            <p-overlayPanel #op [dismissable]="false">
                 <p-multiSelect [options]="cols" [(ngModel)]="selectedColumns" optionLabel="header" class="overlay-panel"
                     [style]="{'max-width': '220px'}" display="chip" placeholder="Choose Columns"
-                    (onChange)="onSelectedColumnsChange()" />
+                    (onChange)="onSelectedColumnsChange()" (onPanelHide)="op.hide()" [appendTo]="'body'" />
             </p-overlayPanel>
 
 

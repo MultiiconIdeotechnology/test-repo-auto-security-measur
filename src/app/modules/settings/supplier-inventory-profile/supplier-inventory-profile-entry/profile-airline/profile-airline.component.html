@@ -1,0 +1,297 @@
+<div class="p-2">
+    <form [formGroup]="airlineForm">
+        <div class="grid grid-cols-4 gap-4">
+            <!-- Supplier Combo -->
+            <mat-form-field class="flex-grow">
+                <mat-label>Supplier</mat-label>
+                <mat-select required formControlName="supplier_id" [compareWith]="compareWith"
+                    (selectionChange)="onSupplierChange($event.value)">
+                    <mat-option>
+                        <ngx-mat-select-search placeholderLabel="Search" noEntriesFoundLabel="'no matching found'"
+                            formControlName="sup_type">
+                        </ngx-mat-select-search>
+                    </mat-option>
+                    <mat-option *ngFor="let ct of supplierList" [value]="ct">
+                        <span>{{ ct.company_name }}</span>
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <mat-form-field class="w-full">
+                <mat-label>User Type</mat-label>
+                <mat-select formControlName="user_type" required>
+                    <mat-option *ngFor="let type of userType" [value]="type">
+                        {{ type }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <mat-form-field class="w-full">
+                <mat-label>Trip Type</mat-label>
+                <mat-select formControlName="trip_type" required>
+                    <mat-option *ngFor="let type of tripTypeList" [value]="type">
+                        {{ type }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <mat-form-field class="w-full">
+                <mat-label>Trip Type Visibility</mat-label>
+                <mat-select formControlName="trip_type_visible" required>
+                    <mat-option *ngFor="let type of tripTypeVisibleTypeList" [value]="type">
+                        {{ type }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <mat-form-field class="w-full">
+                <mat-label>Route Type</mat-label>
+                <mat-select formControlName="route_type" required>
+                    <mat-option *ngFor="let type of routeTypeList" [value]="type">
+                        {{ type }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <mat-form-field class="w-full">
+                <mat-label>Route Type Visibility</mat-label>
+                <mat-select formControlName="route_type_visible" required>
+                    <mat-option *ngFor="let type of routeTypeVisibleTypeList" [value]="type">
+                        {{ type }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <mat-form-field class="w-full">
+                <mat-label>Airline</mat-label>
+
+                <mat-select multiple formControlName="airline_id" required>
+                    <!-- Search -->
+                    <mat-option>
+                        <ngx-mat-select-search formControlName="airlineFilter" placeholderLabel="Search airline"
+                            noEntriesFoundLabel="No matching Airline found">
+                        </ngx-mat-select-search>
+                    </mat-option>
+
+                    <!-- All option -->
+                    <mat-option [value]="'All'" [selected]="airlineForm.get('airline_id')?.value?.includes('All')"
+                        (onSelectionChange)="clickAllAirline($event)">
+                        All
+                    </mat-option>
+
+                    <!-- Airline list -->
+                    <mat-option *ngFor="let ct of AirlineList" [value]="ct.id"
+                        (onSelectionChange)="clickOtherAirline($event)">
+                        {{ ct.short_code }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+
+
+
+            <mat-form-field class="w-full">
+                <mat-label>Airport Codes</mat-label>
+                <mat-select multiple required formControlName="airport_code_id" required>
+                    <mat-option>
+                        <ngx-mat-select-search placeholderLabel="Search"
+                            noEntriesFoundLabel="'no matching Airport Codes found'"
+                            formControlName="airport_code_filter">
+                        </ngx-mat-select-search>
+                    </mat-option>
+
+                    <mat-option [value]="'All'" [selected]="airlineForm.get('airport_code_id')?.value?.includes('All')"
+                        (onSelectionChange)="clickAllCodes($event)">
+                        All
+                    </mat-option>
+
+                    <mat-option *ngFor="let ct of airPortcodeList" [value]="ct.id"
+                        (onSelectionChange)="clickOtherCodes($event)">
+                        {{ ct.display_name }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+
+
+            <mat-form-field class="w-full">
+                <mat-label>Airport Codes Visibility</mat-label>
+                <mat-select formControlName="airport_codes_visible_type" required>
+                    <mat-option *ngFor="let type of fareTypeClassVisibleTypeList" [value]="type">
+                        {{ type }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+
+
+            <mat-form-field class="w-full">
+                <mat-label>Fare Class</mat-label>
+                <mat-select multiple formControlName="fare_class" required>
+
+                    <!-- All option -->
+                    <mat-option [value]="'All'" [selected]="airlineForm.get('fare_class')?.value?.includes('All')"
+                        (onSelectionChange)="onSelectAllFareClass($event)">
+                        All
+                    </mat-option>
+
+                    <!-- Normal items -->
+                    <mat-option *ngFor="let item of fareClassList" [value]="item"
+                        (selectionChange)="onFareClassChange($event)">
+                        {{ item }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+
+
+            <mat-form-field class="w-full">
+                <mat-label>Fare Type</mat-label>
+                <mat-select formControlName="fare_type" required>
+                    <mat-option *ngFor="let fare of fareTypeList" [value]="fare">
+                        {{ fare }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <!-- Supplier Fare Type class Combo -->
+            <mat-form-field class="w-full">
+                <mat-label>Fare Type Class</mat-label>
+                <mat-select multiple required formControlName="fare_type_class">
+
+                    <!-- Search -->
+                    <mat-option>
+                        <ngx-mat-select-search placeholderLabel="Search"
+                            noEntriesFoundLabel="'No matching fare type found'"
+                            formControlName="supplier_fare_type_filter">
+                        </ngx-mat-select-search>
+                    </mat-option>
+
+                    <mat-option [value]="'All'" [selected]="airlineForm.get('fare_type_class')?.value?.includes('All')"
+                        (onSelectionChange)="clickAllFareTypeClass($event)">
+                        All
+                    </mat-option>
+
+                    <mat-option *ngFor="let ct of supplierFareTypeList" [value]="ct.id"
+                        (selectionChange)="clickOtherFareTypeClass($event)">
+                        {{ ct.fare_type }}
+                    </mat-option>
+
+                </mat-select>
+            </mat-form-field>
+
+            <mat-form-field class="w-full">
+                <mat-label>Fare Type Class Visibility</mat-label>
+                <mat-select formControlName="fare_type_class_visible_type" required>
+                    <mat-option *ngFor="let type of fareTypeClassVisibleTypeList" [value]="type">
+                        {{ type }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <!-- <mat-form-field class="w-full">
+                <mat-label>Stops</mat-label>
+                <mat-select multiple formControlName="stops" required>
+
+                    <mat-option value="All" [selected]="airlineForm.get('stops')?.value?.includes('All')" (onSelectionChange)="onSelectAllStops($event)">
+                        All
+                    </mat-option>
+
+                    <mat-option *ngFor="let stop of stopList"  [value]="stop"  (selectionChange)="onStopsChange($event)">
+                        {{ stop }} Stop{{ stop > 1 ? 's' : '' }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field> -->
+            <mat-form-field class="w-full">
+                <mat-label>Stops</mat-label>
+                <mat-select multiple formControlName="stops" required>           
+                    <mat-option *ngFor="let stop of stopList" [value]="stop">
+                        {{ stop }} Stop{{ stop > 1 ? 's' : '' }}
+                    </mat-option>
+
+                </mat-select>
+            </mat-form-field>
+
+
+            <div class="flex flex-row">
+                <mat-checkbox class="example-margin ml-[-8px]" formControlName="is_enable">
+                    Is Enabled</mat-checkbox>
+            </div>
+
+        </div>
+
+        <!-- Save Button -->
+        <div class="flex justify-end mt-6">
+            <button mat-flat-button color="primary" (click)="submit()" [disabled]="isButtonDisabled">
+                Save
+            </button>
+        </div>
+    </form>
+
+
+    <mat-divider class="my-6"></mat-divider>
+    <!-- Search & Refresh -->
+    <div>
+        <!-- Divider -->
+
+        <div class="flex justify-between items-center mb-3">
+            <div class="flex items-center gap-2">
+                <span class="text-sm font-medium">Search:</span>
+                <input type="text" pInputText [(ngModel)]="globalFilter"
+                    (input)="tableRef.filterGlobal($event.target.value, 'contains')" placeholder="Search..."
+                    class="w-64 h-9 px-2" />
+            </div>
+
+            <button class="ml-4" mat-flat-button [color]="'primary'" (click)="onRefresh()" matTooltip="Refresh">
+                <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
+            </button>
+
+        </div>
+
+        <!-- Table -->
+
+        <p-table #tableRef [value]="dataList" [dataSource]="dataList" [paginator]="true" [rows]="5"
+            [rowsPerPageOptions]="[5,10, 20, 50]" [globalFilterFields]="['supplier_name', 'user_type', 'trip_type']"
+            [scrollable]="true" [scrollHeight]="scrollHeight" [resizableColumns]="true" columnResizeMode="fit"
+            styleClass="p-datatable-sm p-datatable-gridlines">
+
+            <!-- Header -->
+            <ng-template pTemplate="header">
+                <tr>
+                    <th style="width: 60px" class="text-center">#</th>
+                    <th pResizableColumn>Supplier</th>
+                    <th pResizableColumn>User Type</th>
+                    <th pResizableColumn>Is Enable</th>
+                    <th pResizableColumn>Trip Type</th>
+                </tr>
+            </ng-template>
+
+            <!-- Body -->
+            <ng-template pTemplate="body" let-row let-rowIndex="rowIndex">
+                <tr>
+                    <td class="flex flex-row items-center gap-2">
+                        <!-- Edit button -->
+                        <button *ngIf="!isAdd" pButton icon="pi pi-pencil"
+                            class="p-button-text p-button-sm text-blue-500" (click)="onEdit(row, rowIndex)"></button>
+
+                        <!-- Delete button -->
+                        <button pButton icon="pi pi-trash" class="p-button-text p-button-sm text-red-500"
+                            (click)="onDelete(row ,rowIndex)"></button>
+
+                    </td>
+                    <td>{{ row.supplier_name }}</td>
+                    <td>{{ row.user_type }}</td>
+                    <td>{{ row.is_enable ? 'True' : 'False' }}</td>
+                    <td>{{ row.trip_type }}</td>
+                </tr>
+            </ng-template>
+
+
+            <!-- Empty Message -->
+            <ng-template pTemplate="emptymessage">
+                <tr>
+                    <td colspan="5" class="text-center text-gray-500 py-4">No data available</td>
+                </tr>
+            </ng-template>
+
+        </p-table>
+
+    </div>
+
+</div>

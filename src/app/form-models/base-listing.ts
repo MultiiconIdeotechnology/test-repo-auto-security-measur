@@ -28,7 +28,6 @@ import { CommonFilterService } from "app/core/common-filter/common-filter.servic
 //     field: string;
 //     header: string;
 // }
-
 export interface Column {
     field: string;
     header: string;

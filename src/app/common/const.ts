@@ -524,6 +524,11 @@ export const Routes = {
         cashback_parameters_path: 'settings/cashback_parameters',
         cashback_parameters_route: '/settings/cashback_parameters',
 
+        supplier_inventory_profile_path: 'settings/supplier_inventory-profile',
+        supplier_inventory_profile_route: '/settings/supplier_inventory-profile',
+        supplier_faretype_mapper_path: 'settings/supplier_faretype_mapper',
+        supplier_faretype_mapper_route: '/settings/supplier_faretype_mapper',
+        
         psp_setup_path: 'settings/psp-setup',
         psp_setup_route: '/settings/psp-setup',
         psp_setup_entry_path: 'settings/psp-setup/entry',

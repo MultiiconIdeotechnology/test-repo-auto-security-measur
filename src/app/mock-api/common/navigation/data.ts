@@ -1165,7 +1165,24 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 pid: 'SETTINGS_PSPSETUP_VIEW',
                 icon: 'heroicons_outline:server',
                 link: Routes.settings.psp_setup_route
-            }
+            },
+            {
+                id: 'settings.supplierinventoryprofile',
+                title: 'Supplier Inventory Profile',
+                type: 'basic',
+                pid: 'SETTINGS_SUPPLIERINVENTORYPROFILE_VIEW',
+                icon: 'heroicons_outline:document-plus',
+                link: Routes.settings.supplier_inventory_profile_route
+            },
+            {
+                id: 'settings.supplierfaretypemapper',
+                title: 'Supplier Fare Type Mapper',
+                type: 'basic',
+                pid: 'SETTINGS_FARETYPEMAPPER_VIEW',
+                icon: 'heroicons_outline:inbox-arrow-down',
+                link: Routes.settings.supplier_faretype_mapper_route
+            },
+          
         ]
     }
 ];

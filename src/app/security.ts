@@ -211,6 +211,7 @@ export const module_name = {
     city: "City",
     cachingparameters: "Caching Parameters",
     cashbackparameters: "Cashback Parameters",
+    supplierinventoryprofile: 'Supplier Inventory Profile',
     department: "Department",
     document: 'Types of Documents',
     kycprofile: 'KYC Profile',
@@ -329,10 +330,17 @@ export const module_name = {
     tech_rm_monthly_report: 'RM Monthly Anaytics',
     tech_product_monthly_report: 'Product Monthly Analytics',
     cab_inventory: 'Cab',
-    psp_setup: 'PSP Setup',
+    fare_type_mapper: 'Fare Type Mapper',
+
 
     // account2.0
     purchase_register_2: 'Purchase Register-2',
+    supplier_inventory_profile: 'Supplier Inventory Profile',
+
+    psp_setup: 'PSP Setup',
+
+    // account2.0
+   // purchase_register_2: 'Purchase Register-2',
     sale_register_2: 'Sale Register-2',
 
 };
@@ -353,6 +361,11 @@ export const filter_module_name = {
     tech_dashboard_cancelled: "tech_dashboard_cancelled",
     tech_dashboard_domain: "tech_dashboard_domain",
     referral_link: "referral_link",
+
+
+    //  Fare Type Mapper
+    fare_type_mapper_common_fare_type: "fare_type_mapper_common_fare_type",
+    fare_type_mapper_supplier_fare_type_mapper: "fare_type_mapper_supplier_fare_type_mapper",
 
     // masters
     city_master: "city_master",
@@ -476,6 +489,7 @@ export const filter_module_name = {
     markup_profile: "markup_profile",
     erp_settings: "erp_settings",
     cashback_parameters_master: "cashback_parameters_master",
+    supplier_inventory_profile: "supplier_inventory_profile",
 
 }
 
@@ -610,7 +624,7 @@ export const agentsPermissions = {
 
     changeEmailPermissions: { module_name: module_name.agent, group_name: group_name.listingPage, operation_type: 'Change Email', category_name: category_name.operation },
     changeNumberPermissions: { module_name: module_name.agent, group_name: group_name.listingPage, operation_type: 'Change Number', category_name: category_name.operation },
-
+    modifyPermissions: { module_name: module_name.agent, group_name: group_name.listingPage, operation_type: 'Modify', category_name: category_name.entry },
 }
 
 export const saleProductPermissions = {
@@ -860,6 +874,17 @@ export const supplierAPIPermissions = {
 export const PSPPermissions = {
     setDefaultPermissions: { module_name: module_name.pspsetting, group_name: group_name.listingPage, operation_type: 'Set Default', category_name: category_name.action },
     enableDisablePermissions: { module_name: module_name.pspsetting, group_name: group_name.listingPage, operation_type: 'Enable Disable', category_name: category_name.enableDisable },
+}
+
+export const fareTypeMApperPermissions = {
+    commonFareTypeTabTabPermissions: { module_name: module_name.fare_type_mapper, group_name: group_name.listingPage, operation_type: 'Common Fare Type Tab', category_name: category_name.view },
+    deleteFareTypePermissions: { module_name: module_name.fare_type_mapper, group_name: group_name.listingPage, operation_type: 'Common Fare Type Tab Delete', category_name: category_name.delete },
+    supplierFareTypeMapperTabPermissions: { module_name: module_name.fare_type_mapper, group_name: group_name.listingPage, operation_type: 'Supplier Fare Type Mapper Tab', category_name: category_name.view },
+
+}
+
+export const supplierInventoryProfilePermissions = {
+    setasDefaultPermissions: { module_name: module_name.supplier_inventory_profile, group_name: group_name.listingPage, operation_type: 'Set as Default', category_name: category_name.action },
 }
 
 export const PSPSetupPermissions = {

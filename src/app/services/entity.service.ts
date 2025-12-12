@@ -48,11 +48,20 @@ export class EntityService {
 
     private userSupplierEntityCall = new ReplaySubject<any>();
     private refreshUserSupplierEntityCall = new ReplaySubject<any>();
-
+    
+    private supplierInventoryProfile = new ReplaySubject<any>();
 
     constructor() { }
 
     /********Supplier***********/
+    public onsupplierInventoryProfile(): Observable<any> {
+        return this.supplierInventoryProfile.asObservable();
+    }
+
+    public reisesupplierInventoryProfile(item): void {
+        this.supplierInventoryProfile.next(item);
+    }
+    
     public onsupplierEntityCall(): Observable<any> {
         return this.supplierEntityCall.asObservable();
     }

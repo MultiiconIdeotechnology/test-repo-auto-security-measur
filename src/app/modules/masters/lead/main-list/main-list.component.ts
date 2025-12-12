@@ -1,6 +1,6 @@
 import { Security, filter_module_name, leadsPermissions, messages, module_name } from './../../../../security';
 import { NgIf, NgFor, DatePipe, CommonModule } from '@angular/common';
-import { Component, OnDestroy, ViewChild } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -72,11 +72,10 @@ import { cloneDeep } from 'lodash';
     LeadListComponent,
     ConvertedListComponent,
     PrimeNgImportsModule,
-    MatTooltipModule
+    MatTooltipModule,
   ],
 })
 export class MainListComponent extends BaseListingComponent {
-
   module_name = module_name.newSignup;
   filter_table_name = filter_module_name.newsignup_customer;
   private settingsUpdatedSubscription: Subscription;
@@ -128,11 +127,12 @@ export class MainListComponent extends BaseListingComponent {
     this.selectedColumns = [
       { field: 'agency_name', header: 'Agent', type: Types.text },
       { field: 'lead_status', header: 'Status', type: Types.select, isCustomColor: true },
-      { field: 'entry_date_time', header: 'Date', type: Types.date, dateFormat: 'dd-MM-yyyy' },
+      { field: 'kyc_complete_date', header: 'Date', type: Types.dateTime, dateFormat: 'dd-MM-yyyy' },
       { field: 'relation_manager', header: 'RM', type: Types.select },
       { field: 'email_address', header: 'Email', type: Types.text },
       { field: 'mobile_number', header: 'Mobile', type: Types.text },
-      { field: 'city_name', header: 'City', type: Types.text }
+      { field: 'city_name', header: 'City', type: Types.text },
+      { field: 'entry_date_time', header: 'Entry', type: Types.dateTime, dateFormat: 'dd-MM-yyyy' },
     ];
     this.cols.unshift(...this.selectedColumns);
     this.exportCol = cloneDeep(this.cols);
@@ -155,6 +155,7 @@ export class MainListComponent extends BaseListingComponent {
       this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
       this.primengTable._filter();
     });
+    
   }
 
   ngAfterViewInit() {
@@ -195,6 +196,7 @@ export class MainListComponent extends BaseListingComponent {
   isDisplayHashCol(): boolean {
     return this.selectedColumns.length > 0;
   }
+  
 
   onSelectedColumnsChange(): void {
     this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });

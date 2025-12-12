@@ -1393,3 +1393,7 @@ div:where(.swal2-container) button:where(.swal2-close) {
 .mat-mdc-select-panel.supplier-panel .mat-pseudo-checkbox-checked::after {
   color: white !important;  /* tick mark color */
 }
+
+.p-overlay.p-component{
+    width: 220px !important;
+}

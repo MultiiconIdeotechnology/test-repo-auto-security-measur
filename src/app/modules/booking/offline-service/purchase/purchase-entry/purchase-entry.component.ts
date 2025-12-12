@@ -118,6 +118,8 @@ export class PurchaseEntryComponent {
       supplierFilter: [''],
       supplier_booking_ref_no: [''],
       purchase_amount: [''],
+      service_charge: [''],
+      service_charge_gst: [''],
       supplier_invoice: [''],
       supplier_confirmation_proof: [''],
       roe: [''],
@@ -164,6 +166,8 @@ export class PurchaseEntryComponent {
               { name: 'Service Type', value: data.service_type ,isTooltip : true},
               { name: 'Supplier', value: data.supplier_name },
               { name: 'Purchase Amount', value: data.purchase_amount + data.currency },
+              { name: 'Service Charge', value: data.service_charge || '--' },
+              { name: 'Service Charge GST', value: data.service_charge_gst || '--' },
               { name: 'ROE', value: data.roe },
               { name: 'Service Date', value: data.service_date ? DateTime.fromISO(data.service_date).toFormat('dd-MM-yyyy') : '' },
               { name: 'Supplier Reference No.', value: data.supplier_booking_ref_no ,isTooltip : true },
@@ -308,5 +312,20 @@ export class PurchaseEntryComponent {
 
   public compareWith(v1: any, v2: any) {
     return v1 && v2 && v1.id === v2.id;
+  }
+
+  onKeyPressNumberDecimal(event: KeyboardEvent): boolean {
+    const input = event.target as HTMLInputElement;
+    const key = event.key;
+  
+    // Allow digits 0–9
+    if (/^\d$/.test(key)) return true;
+  
+    // Allow one decimal point
+    if (key === '.' && !input.value.includes('.')) return true;
+  
+    // Block everything else
+    event.preventDefault();
+    return false;
   }
 }

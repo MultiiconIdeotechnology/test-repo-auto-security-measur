@@ -124,7 +124,7 @@ export class InboxComponent extends BaseListingComponent {
     ) {
         super(module_name.lead);
         this.key = this.module_name;
-        this.sortColumn = 'priority_id';
+        this.sortColumn = 'entry_date_time';
         this.sortDirection = 'desc';
         this.Mainmodule = this;
         this._filterService.applyDefaultFilter(this.filter_table_name);

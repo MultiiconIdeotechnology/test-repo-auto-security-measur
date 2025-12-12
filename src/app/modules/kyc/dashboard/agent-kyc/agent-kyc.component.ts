@@ -136,6 +136,7 @@ export class AgentKycComponent extends BaseListingComponent implements OnDestroy
       { field: 'mobile_no', header: 'Mobile', type: Types.text },
       { field: 'city_name', header: 'City', type: Types.text },
       { field: 'pincode', header: 'Pincode', type: Types.text },
+      { field: 'address', header: 'Address', type: Types.text },
       { field: 'entry_date_time', header: 'Date', type: Types.date, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
       { field: 'update_date_time', header: 'Update Date', type: Types.date, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
       { field: 'is_rejected', header: 'Status', type: Types.select }

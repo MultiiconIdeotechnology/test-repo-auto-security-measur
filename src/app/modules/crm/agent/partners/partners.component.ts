@@ -86,12 +86,19 @@ export class PartnersComponent extends BaseListingComponent {
     private selectedOptionTwoSubjectFour = new BehaviorSubject<any>('');
     selectionDateDropdownFour$ = this.selectedOptionTwoSubjectFour.asObservable();
 
+    private selectedOptionTwoSubjectFive = new BehaviorSubject<any>('');
+    selectionDateDropdownFive$ = this.selectedOptionTwoSubjectFive.asObservable();
+
     updateSelectedOptionThree(option: string): void {
         this.selectedOptionTwoSubjectThree.next(option);
     }
 
     updateSelectedOptionFour(option: string): void {
         this.selectedOptionTwoSubjectFour.next(option);
+    }
+
+     updateSelectedOptionFive(option: string): void {
+        this.selectedOptionTwoSubjectFive.next(option);
     }
 
     Mainmodule: any;
@@ -138,6 +145,7 @@ export class PartnersComponent extends BaseListingComponent {
         this._filterService.updatedSelectionOptionTwo('');
         this.updateSelectedOptionThree('');
         this.updateSelectedOptionFour('');
+        this.updateSelectedOptionFive('');
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
             this.selectedAgent = resp['table_config']['agencyName']?.value;
             const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
@@ -165,6 +173,11 @@ export class PartnersComponent extends BaseListingComponent {
                 this.updateSelectedOptionFour('custom_date_range');
                 this._filterService.rangeDateConvert(resp['table_config']['first_transaction_date_time']);
             }
+
+             if (resp['table_config']['lastLoginDateTime']?.value != null && resp['table_config']['lastLoginDateTime'].value.length) {
+                this.updateSelectedOptionFive('custom_date_range');
+                this._filterService.rangeDateConvert(resp['table_config']['lastLoginDateTime']);
+            }
             this.primengTable['filters'] = resp['table_config'];
             this.isFilterShowPartners = true;
             this.isFilterShowPartnersChange.emit(this.isFilterShowPartners);
@@ -178,6 +191,7 @@ export class PartnersComponent extends BaseListingComponent {
         this._filterService.updatedSelectionOptionTwo('');
         this.updateSelectedOptionThree('');
         this.updateSelectedOptionFour('');
+        this.updateSelectedOptionFive('');
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             this.isFilterShowPartners = true;
             this.isFilterShowPartnersChange.emit(this.isFilterShowPartners);
@@ -476,6 +490,14 @@ export class PartnersComponent extends BaseListingComponent {
 
     onOptionClickFour(option: any, primengTable: any, field: any, key?: any) {
         this.selectedOptionTwoSubjectFour.next(option.id_by_value);
+        
+        if( option.id_by_value &&  option.id_by_value != 'custom_date_range'){
+            primengTable.filter(option, field, 'custom');
+        } 
+    }
+
+    onOptionClickFive(option: any, primengTable: any, field: any, key?: any) {
+        this.selectedOptionTwoSubjectFive.next(option.id_by_value);
         
         if( option.id_by_value &&  option.id_by_value != 'custom_date_range'){
             primengTable.filter(option, field, 'custom');

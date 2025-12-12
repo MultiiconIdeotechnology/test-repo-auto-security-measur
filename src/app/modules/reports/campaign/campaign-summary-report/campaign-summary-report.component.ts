@@ -316,7 +316,8 @@ export class CampaignSummaryReportComponent extends BaseListingComponent {
           id: el.id,
           campaignName: el.campaignName,
           campaignCategory: el.campaignCategory,
-          totalSpent: el.totalSpent,
+          referralCode: el.referralCode,
+          totalSpents: el.totalSpents,
           leads: el.leads,
           signUp: el.signUp,
           techGP: el.techGP,
@@ -332,7 +333,8 @@ export class CampaignSummaryReportComponent extends BaseListingComponent {
               id: month.id,
               campaignName: month.monthName,
               campaignCategory: month.campaignCategory,
-              totalSpent: month.totalSpent,
+              referralCode: month.referralCode,
+              totalSpents: month.totalSpents,
               leads: month.leads,
               signUp: month.signUp,
               techGP: month.techGP,
@@ -347,10 +349,11 @@ export class CampaignSummaryReportComponent extends BaseListingComponent {
         [
           { header: 'Name', property: 'campaignName' },
           { header: 'Category', property: 'campaignCategory' },
+          { header: 'Campaign Code', property: 'referralCode' },
           { header: 'Leads', property: 'leads' },
           { header: 'Signup', property: 'signUp' },
           { header: 'Tech GP', property: 'techGP' },
-          { header: 'Total Spent', property: 'totalSpent' },
+          { header: 'Total Spent', property: 'totalSpents' },
         ],
         exportData, "Campaign Summary", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 9 } }]);
 

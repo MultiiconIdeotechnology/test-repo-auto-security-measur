@@ -200,9 +200,18 @@ export class CommonFilterService {
         this.filterDrawerVisible = false;
     }
 
-    // Date Range dropdown onselect 
-    onOptionClick(option: any, primengTable: any, field: any, key?: any) {
-        // this.selectionDateDropdown = option.id_by_value;
+    // // Date Range dropdown onselect 
+    // onOptionClick(option: any, primengTable: any, field: any, key?: any) {
+    //     // this.selectionDateDropdown = option.id_by_value;
+    //     this.selectedOptionSubject.next(option.id_by_value);
+
+    //     if( option.id_by_value &&  option.id_by_value != 'custom_date_range'){
+    //         primengTable.filter(option, field, 'custom');
+    //     } 
+    // }
+
+    // Date Range dropdown onselect
+    onOptionClick(option: any, primengTable: any, field: any) {
         this.selectedOptionSubject.next(option.id_by_value);
 
         if (option.id_by_value && option.id_by_value != 'custom_date_range') {
@@ -265,7 +274,6 @@ export class CommonFilterService {
     }
 
     //Dynamic column
-
     private getAllSelectedColumns(): any[] {
         const data = localStorage.getItem(this.key);
         if (data && data?.trim() != '' && data != undefined) {
@@ -298,11 +306,5 @@ export class CommonFilterService {
     clearSelectedColumns(): void {
         localStorage.removeItem(this.key);
     }
-
-
-
-
-
-
 
 }

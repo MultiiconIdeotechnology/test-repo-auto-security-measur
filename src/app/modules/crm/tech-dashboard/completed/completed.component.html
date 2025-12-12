@@ -2,10 +2,10 @@
 
 <div class="flex flex-col flex-auto min-w-0 sm:overflow-hidden dark:bg-transparent">
 
-    <p-overlayPanel #op>
+    <p-overlayPanel #op [dismissable]="false">
         <p-multiSelect [options]="cols" [(ngModel)]="selectedColumns" optionLabel="header" class="overlay-panel"
             [style]="{'max-width': '220px'}" display="chip" placeholder="Choose Columns"
-            (onChange)="onColumnsChange()" />
+            (onChange)="onColumnsChange()" (onPanelHide)="op.hide()" [appendTo]="'body'" />
     </p-overlayPanel>
 
     <div class="table-container paginator-bottom">
