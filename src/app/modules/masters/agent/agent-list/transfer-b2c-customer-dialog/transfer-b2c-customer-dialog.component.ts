@@ -41,6 +41,8 @@ export class TransferB2CDialogComponent implements OnInit {
   toAgentList: any[] = [];
   record: any;
 
+  isLoading = false;
+
   constructor(
     public matDialogRef: MatDialogRef<TransferB2CDialogComponent>,
     private builder: FormBuilder,
@@ -54,6 +56,7 @@ export class TransferB2CDialogComponent implements OnInit {
     this.record = data.record;
     this.title = data.title;
   }
+
 
   ngOnInit(): void {
     this.formGroup = this.builder.group({
@@ -197,15 +200,18 @@ export class TransferB2CDialogComponent implements OnInit {
           is_b2c_user: true
         };
 
+        this.isLoading = true;
+
         this.agentService.transferB2Customer(requestDto).subscribe({
           next: () => {
+            this.isLoading = false;
             this.alertService.showToast('success', 'All B2C customers transferred successfully!', 'top-right', true);
             this.formGroup.reset();
-
             // Refresh both lists after success
             this.reloadAgentLists();
           },
           error: (err) => {
+            this.isLoading = false;
             this.alertService.showToast('error', 'Failed to transfer B2C customers: ' + err, 'top-right', true);
           }
         });

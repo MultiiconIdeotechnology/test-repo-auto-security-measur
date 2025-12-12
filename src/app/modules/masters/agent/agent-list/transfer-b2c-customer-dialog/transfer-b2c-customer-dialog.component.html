@@ -54,7 +54,7 @@
 
     <!-- ACTION BUTTON -->
     <div class="flex items-center justify-end pt-0 sm:mt-0 pr-6 pb-4 space-x-3">
-        <button mat-flat-button color="primary" class="min-w-[200px]" [disabled]="formGroup.invalid"
+        <button mat-flat-button color="primary" class="min-w-[200px]" [disabled]="formGroup.invalid || isLoading"
             (click)="confirmTransfer()">
             Transfer
         </button>
