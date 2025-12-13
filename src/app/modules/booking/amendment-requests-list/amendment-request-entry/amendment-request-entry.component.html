@@ -14,7 +14,12 @@
             </div>
         </div>
 
-        <div class="px-5">
+        <div class="flex flex-col items-center justify-center p-10" *ngIf="isLoading">
+            <mat-progress-spinner mode="indeterminate" diameter="40"></mat-progress-spinner>
+            <div class="mt-4 text-secondary font-medium">Loading...</div>
+        </div>
+
+        <div class="px-5" *ngIf="!isLoading">
             <div class="text-lg font-semibold pt-3 text-primary">Agent Info</div>
             <div class="flex flex-wrap pt-2 pb-2 bg-card rounded-2xl">
                 <div class="flex flex-col mb-3" *ngFor="let af of agentInfoList"
@@ -119,7 +124,7 @@
                     </div>
                 </ng-container>
 
-                <div *ngIf="recordList.paymentbyInfo">
+                <div *ngIf="recordList?.paymentbyInfo">
                     <div class="border border-dashed"></div>
                     <div class="text-lg font-semibold pt-4 text-primary">Payment Info</div>
                     <div class="flex flex-wrap pt-2 pb-2 bg-card rounded-2xl">
@@ -146,8 +151,10 @@
                             </div>
 
                             <mat-icon svgIcon="heroicons_mini:arrow-down-tray"
-                                *ngIf="af.name == 'Your Credit Invoice' || af.name == 'Credit Invoice' || af.name == 'Debit Invoice' || af.name == 'Your Debit Invoice'"                               
-                                 (click)="af.value ? invoice(af.value, getInvoiceParam(af)) : null" class="icon-size-5 cursor-pointer" [ngClass]="af.value ? 'text-blue-500' : 'text-gray-500' "
+                                *ngIf="af.name == 'Your Credit Invoice' || af.name == 'Credit Invoice' || af.name == 'Debit Invoice' || af.name == 'Your Debit Invoice'"
+                                (click)="af.value ? invoice(af.value, getInvoiceParam(af)) : null"
+                                class="icon-size-5 cursor-pointer"
+                                [ngClass]="af.value ? 'text-blue-500' : 'text-gray-500' "
                                 [ngClass]="af.value ? 'text-blue-500' : 'text-gray-500' "
                                 [matTooltip]="af.value ? 'Download' : ''"></mat-icon>
 
@@ -162,7 +169,8 @@
                             </span>
 
                             <span class="text-base truncate"
-                                *ngIf=" af.name != 'Your Credit Invoice' && af.name != 'Your Debit Invoice' && af.name != 'Credit Invoice' && af.name != 'Debit Invoice'">{{(af.value ||
+                                *ngIf=" af.name != 'Your Credit Invoice' && af.name != 'Your Debit Invoice' && af.name != 'Credit Invoice' && af.name != 'Debit Invoice'">{{(af.value
+                                ||
                                 af.value == 0)
                                 ? af.value : '--'}}</span>
                         </div>
@@ -188,8 +196,8 @@
         </div>
     </div>
 
-    <div
-        class="flex items-center justify-end pt-4 px-5 h-15 sm:mt-0 pb-4 space-x-3 fixed bottom-0 w-full pr-4 dark:bg-[#1e293b] bg-white border-t m-auto">
+    <div class="flex items-center justify-end pt-4 px-5 h-15 sm:mt-0 pb-4 space-x-3 fixed bottom-0 w-full pr-4 dark:bg-[#1e293b] bg-white border-t m-auto"
+        *ngIf="!isLoading && recordList">
         <div class="w-full flex justify-end gap-3">
 
             <ng-container
@@ -241,7 +249,6 @@
                 </button>
             </ng-container>
 
-            <!-- *ngIf="recordList && (recordList?.amendment_info?.status?.toLowerCase() == 'request sent to supplier' || recordList?.amendment_info?.status?.toLowerCase() == 'request to supplier failed' || recordList?.amendment_info?.status?.toLowerCase() == 'quotation sent')"> -->
             <ng-container
                 *ngIf="recordList && (recordList?.amendment_info?.status?.toLowerCase() == 'request to supplier failed' || recordList?.amendment_info?.status?.toLowerCase() == 'request sent to supplier')">
                 <button mat-stroked-button (click)="sendMail()">

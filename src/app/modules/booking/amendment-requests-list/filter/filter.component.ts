@@ -62,7 +62,7 @@ export class FilterComponent {
 
 
   StatusList = ['All', 'Pending', 'Inprocess', 'Cancelled','Confirm', 'Rejected', 'Completed', 'Quotation Sent','Partial Cancellation Pending', 'Expired'];
-  TypeList = ['All', 'Cancellation Quotation', 'Instant Cancellation', 'Full Refund', 'Reissue Quotation', 'Miscellaneous', 'No Show', 'Void', 'Correction Quotation', 'Wheel Chair', 'Meal Quotation(SSR)', 'Baggage Quotation(SSR)'];
+  TypeList = ['All', 'Cancellation Quotation', 'Instant Cancellation', 'Full Refund', 'Reissue Quotation', 'Miscellaneous', 'No Show', 'Void', 'Correction Quotation', 'Wheel Chair Request', 'Meal Quotation(SSR)', 'Baggage Quotation(SSR)'];
 
   constructor(
     public matDialogRef: MatDialogRef<FlightComponent>,

@@ -54,7 +54,7 @@ export class AmendmentRequestComponent {
   amendmentfilter: string = '';
   title: string = 'Mr';
   is_manual_entry: boolean = false;
-  is_flight_active:boolean = false;
+  is_flight_active: boolean = false;
   note: string = '';
   amendmentData: any;
   formDataList: any[] = [];
@@ -131,7 +131,9 @@ export class AmendmentRequestComponent {
 
       this.segmentsData = res.data.segments;
       this.Loading = false;
-      this.segmentsData[0].is_selected = true;
+      if (this.segmentsData && this.segmentsData.length > 0) {
+        this.segmentsData[0].is_selected = true;
+      }
 
       let travellerForm: travellerDTO[] = []
 
@@ -278,13 +280,13 @@ export class AmendmentRequestComponent {
       agent_remark: this.note,
       is_partial_seg: false,
       is_manual_entry: this.is_manual_entry,
-    
+
       // old_date: this.old_date,
       // new_date: this.concatenateTime(this.new_date, this.new_date_time),
       trip_segments: [],
     }
 
-    if(this.amendmentType == "Miscellaneous Quotation - Refund"){
+    if (this.amendmentType == "Miscellaneous Quotation - Refund") {
       json['is_flight_active'] = this.is_flight_active;
     }
 
@@ -301,7 +303,7 @@ export class AmendmentRequestComponent {
         var dateSegment = this.reissueQuotationList.find(x => x.segments_id == fd.segments_id);
         var oldDate = !this.isInternationalreturn ? this.old_date : dateSegment.old_date;
         var newDate = !this.isInternationalreturn ? this.concatenateTime(this.new_date, this.new_date_time) : this.concatenateTime(dateSegment.new_date, dateSegment.new_date_time)
-      
+
         json.trip_segments.push({
           segment: fd.segments_id,
           old_date: oldDate,

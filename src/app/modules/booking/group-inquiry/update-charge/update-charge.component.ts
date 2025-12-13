@@ -11,6 +11,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { FlightTabService } from 'app/services/flight-tab.service';
 import { KycDocumentService } from 'app/services/kyc-document.service';
 import { ToasterService } from 'app/services/toaster.service';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
@@ -47,9 +48,9 @@ export class UpdateChargeComponent {
     constructor(
         public matDialogRef: MatDialogRef<UpdateChargeComponent>,
         private builder: FormBuilder,
-        private kycDocumentService: KycDocumentService,
         private groupInquiryService: GroupInquiryService,
         private alertService: ToasterService,
+        private flighttabService: FlightTabService,
         @Inject(MAT_DIALOG_DATA) public data: any = {}
     ) {
     }
@@ -71,7 +72,7 @@ export class UpdateChargeComponent {
             debounceTime(400),
             distinctUntilChanged(),
             switchMap((value: any) => {
-                return this.kycDocumentService.getSupplierCombo(value, 'Airline');
+                return this.flighttabService.getSupplierBoCombo('Airline');
             })).subscribe(data => {
                 this.SupplierList.next(data);
                 if (this.IsFirst) {

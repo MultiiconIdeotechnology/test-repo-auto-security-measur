@@ -29,6 +29,7 @@ import { Subscription } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { RejectResonComponent } from 'app/modules/account/withdraw/reject-reson/reject-reson.component';
 import { cloneDeep } from 'lodash';
+import { FlightTabService } from 'app/services/flight-tab.service';
 
 @Component({
     selector: 'app-group-inquiry-list',
@@ -88,7 +89,8 @@ export class GroupInquiryListComponent
         private matDialog: MatDialog,
         private agentService: AgentService,
         private kycDocumentService: KycDocumentService,
-        public _filterService: CommonFilterService
+        public _filterService: CommonFilterService,
+        private flightTabService : FlightTabService
     ) {
         super(module_name.groupInquiry);
         this.key = this.module_name;
@@ -228,7 +230,7 @@ export class GroupInquiryListComponent
     }
 
     getSupplier(value: string, bool: boolean = true) {
-        this.kycDocumentService.getSupplierCombo(value, 'Airline').subscribe((data) => {
+        this.flightTabService.getSupplierBoCombo('Airline').subscribe((data) => {
             this.supplierList = data;
 
             for (let i in this.supplierList) {

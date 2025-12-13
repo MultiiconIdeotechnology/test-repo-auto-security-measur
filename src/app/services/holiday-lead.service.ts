@@ -35,4 +35,8 @@ export class HolidayLeadService {
   getSupplierCombo(filter: string, type?: string): Observable<any[]> {
     return this.http.post<any[]>(environment.apiUrl + 'Supplier/getSupplierCombo', { filter: filter, type: type });
   }
+
+    getSupplierBoCombo(type?: string): Observable<any> {
+    return this.http.post<any>(environment.apiUrl + "Supplier/getSupplierBoCombo", { type: type });
+  }
 }

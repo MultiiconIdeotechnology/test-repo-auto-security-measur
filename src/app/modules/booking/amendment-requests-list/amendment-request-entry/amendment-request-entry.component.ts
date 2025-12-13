@@ -28,6 +28,8 @@ import { RefundInitiateComponent } from '../refund-initiate/refund-initiate.comp
 import { CommonUtils } from 'app/utils/commonutils';
 import { StatusLogComponent } from '../status-log/status-log.component';
 
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+
 @Component({
     selector: 'app-amendment-request-entry',
     templateUrl: './amendment-request-entry.component.html',
@@ -57,7 +59,8 @@ import { StatusLogComponent } from '../status-log/status-log.component';
         MatTooltipModule,
         MatDividerModule,
         MatSidenavModule,
-        FuseDrawerComponent
+        FuseDrawerComponent,
+        MatProgressSpinnerModule
     ],
 })
 export class AmendmentRequestEntryComponent {
@@ -90,7 +93,7 @@ export class AmendmentRequestEntryComponent {
         this.entityService.onAmendmentInfoCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
             next: (item) => {
                 this.record = item?.data ?? {}
-                // this.getData();
+                this.clearData();
                 this.amendmentInfoDrawer.toggle();
                 if (!item.global_withdraw && this.record) {
                     this.getData();
@@ -103,12 +106,12 @@ export class AmendmentRequestEntryComponent {
 
         this.entityService.onraiserefreshUpdateChargeCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
             next: (item) => {
-                this.cliarData();
+                this.clearData();
             }
         });
     }
 
-    cliarData() {
+    clearData() {
         this.recordList = null;
         this.agentInfoList = [];
         this.paymentInfoList = [];
@@ -130,8 +133,10 @@ export class AmendmentRequestEntryComponent {
 
     getData() {
         if (this.record && this.record.id) {
+            this.isLoading = true;
             this.amendmentRequestsService.getAirAmendmentRecord(this.record.id).subscribe({
                 next: (data) => {
+                    this.isLoading = false;
                     this.recordList = data
                     this.booking_id = data?.amendment_info?.air_booking_id
                     if (data) {
@@ -166,6 +171,7 @@ export class AmendmentRequestEntryComponent {
                             { name: 'GDS PNR', value: data.amendment_info.gds_pnr, classes: '' },
                             { name: 'Flight No', value: data.amendment_info.air_booking_no, classes: '', toFlight: true },
                             { name: 'Pax', value: data.amendment_info.information, classes: '', toPax: true },
+                            { name: 'Supplier Ref. No.', value: data.amendment_info.supplier_ref_no, classes: '' },
                             { name: 'Remark', value: data.amendment_info.remark, classes: '', isShowRemark: data.amendment_info.remark ? false : true },
                             { name: 'Agent Remark', value: data.remark, classes: '' },
                         ];
@@ -270,6 +276,7 @@ export class AmendmentRequestEntryComponent {
 
                     }
                 }, error: (err) => {
+                    this.isLoading = false;
                     this.alertService.showToast('error', err)
 
                 },
@@ -652,5 +659,5 @@ export class AmendmentRequestEntryComponent {
             default:
                 return 'Invoice';
         }
-    } 
+    }
 }

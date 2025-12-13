@@ -31,6 +31,7 @@ import { Linq } from 'app/utils/linq';
 import { Excel } from 'app/utils/export/excel';
 import { DateTime } from 'luxon';
 import { ForexService } from 'app/services/forex.service';
+import { FlightTabService } from 'app/services/flight-tab.service';
 
 @Component({
   selector: 'app-cab-list',
@@ -101,6 +102,7 @@ export class CabListComponent extends BaseListingComponent {
     public _filterService: CommonFilterService,
     private conformationService: FuseConfirmationService,
     private entityService: EntityService,
+    private flighttabService: FlightTabService,
   ) {
     super(module_name.cab_lead);
     this.key = this.module_name;
@@ -178,7 +180,7 @@ export class CabListComponent extends BaseListingComponent {
 
   // Api to get the Supplier list data
   getSupplierList(value: string, bool = true) {
-    this.forexService.getSupplierForexCombo(value).subscribe((data: any) => {
+    this.flighttabService.getSupplierBoCombo('cab').subscribe((data: any) => {
       this.supplierList = data;
     });
   }

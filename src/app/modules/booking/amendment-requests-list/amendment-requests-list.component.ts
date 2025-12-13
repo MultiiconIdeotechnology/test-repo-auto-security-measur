@@ -37,6 +37,7 @@ import { Subscription } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { cloneDeep } from 'lodash';
+import { FlightTabService } from 'app/services/flight-tab.service';
 
 @Component({
     selector: 'app-amendment-requests-list',
@@ -97,7 +98,7 @@ export class AmendmentRequestsListComponent
     types = Types;
 
 
-    typeList = ['Cancellation Quotation', 'Instant Cancellation', 'Full Refund', 'Reissue Quotation', 'No Show', 'Void', 'Correction Quotation', 'Wheel Chair', 'Meal Quotation(SSR)', 'Baggage Quotation(SSR)', 'Miscellaneous Quotation - SSR', 'Miscellaneous Quotation - Refund'];
+    typeList = ['Cancellation Quotation', 'Instant Cancellation', 'Full Refund', 'Reissue Quotation', 'No Show', 'Void', 'Correction Quotation', 'Wheel Chair Request', 'Meal Quotation(SSR)', 'Baggage Quotation(SSR)', 'Miscellaneous Quotation - SSR', 'Miscellaneous Quotation - Refund'];
     statusList = [
         { label: "Request Sent to Supplier", value: 'Request Sent to Supplier' },
         { label: "Request to Supplier Failed", value: 'Request to Supplier Failed' },
@@ -147,7 +148,9 @@ export class AmendmentRequestsListComponent
         private kycDocumentService: KycDocumentService,
         private confirmationService: FuseConfirmationService,
         private entityService: EntityService,
-        public _filterService: CommonFilterService
+        public _filterService: CommonFilterService,
+        private flighttabService: FlightTabService,
+
     ) {
         super(module_name.amendmentRequests);
         this.key = this.module_name;
@@ -183,6 +186,7 @@ export class AmendmentRequestsListComponent
             { field: 'agency_name', header: 'Agent', type: Types.select, },
             { field: 'agent_code', header: 'Agent Code', type: Types.number, fixVal: 0 },
             { field: 'booking_ref_no', header: ' Booking Ref. No.', type: Types.link, },
+            { field: 'supplier_booking_ref_no', header: 'Supplier Ref. No.', type: Types.text, },
             { field: 'pnr', header: 'PNR', type: Types.text, },
             { field: 'gds_pnr', header: 'GDS PNR', type: Types.text, },
             { field: 'refund_mode', header: 'Refund Mode', type: Types.text, },
@@ -345,7 +349,7 @@ export class AmendmentRequestsListComponent
     }
 
     getSupplier(value: string) {
-        this.kycDocumentService.getSupplierCombo(value, 'Airline').subscribe((data) => {
+        this.flighttabService.getSupplierBoCombo('Airline').subscribe((data) => {
             this.supplierList = data;
 
             for (let i in this.supplierList) {
@@ -509,8 +513,9 @@ export class AmendmentRequestsListComponent
 
     // Info Drawer Action
     viewInternal(record: any): void {
-        // AmendmentRequestEntryComponent
-        this.entityService.raiseAmendmentInfoCall({ data: record });
+        if(record){
+            this.entityService.raiseAmendmentInfoCall({ data: record });
+        }
     }
 
     // No Data Text

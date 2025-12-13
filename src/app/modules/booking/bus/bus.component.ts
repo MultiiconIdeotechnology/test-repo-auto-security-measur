@@ -135,7 +135,7 @@ export class BusComponent extends BaseListingComponent {
       { field: 'user_type', header: 'Type', type: Types.text },
       { field: 'payment_gateway', header: 'PG', type: Types.text },
       { field: 'mop', header: 'MOP', type: Types.text },
-      { field: 'supplier', header: 'Supplier', type: Types.text },
+      { field: 'supplier', header: 'Supplier', type: Types.select },
       { field: 'purchase_price', header: 'Purchase Price', type: Types.number, fixVal: 2, class: 'text-right' },
       { field: 'sourceCity', header: 'From', type: Types.select },
       { field: 'destination', header: ' To', type: Types.select },

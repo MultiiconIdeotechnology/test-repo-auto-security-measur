@@ -230,7 +230,7 @@ export class HolidayLeadComponent extends BaseListingComponent {
 
   // Api to get the Supplier list data
   getSupplierList(value: string, bool = true) {
-    this.HolidayLeadService.getSupplierCombo(value, 'Holiday').subscribe((data: any) => {
+    this.HolidayLeadService.getSupplierBoCombo('Holiday').subscribe((data: any) => {
       this.supplierList = data;
     });
   }

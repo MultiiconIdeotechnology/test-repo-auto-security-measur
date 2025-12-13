@@ -138,7 +138,7 @@ export class AirlineBlockListComponent extends BaseListingComponent {
 
   // Api to get the Supplier list data
   getSupplierList(value) {
-    this.airlineBlockService.getSupplierCombo(value, 'Airline Block').subscribe((data: any) => {
+    this.airlineBlockService.getSupplierBoCombo('Airline Block').subscribe((data: any) => {
       this.supplierList = data;
       for (let i in this.supplierList) {
         this.supplierList[i].id_by_value = this.supplierList[i].company_name
