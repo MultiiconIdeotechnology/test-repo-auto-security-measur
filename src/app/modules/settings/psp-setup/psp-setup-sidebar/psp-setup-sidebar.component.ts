@@ -30,10 +30,10 @@ export class PspSetupSidebarComponent {
   title: string = ""
   agentId: any;
 
-  agentAssignedList:any[] = [];
-  originalAgentList:any[] = [];
-  searchText:any;
-  isLoading:boolean = false;
+  agentAssignedList: any[] = [];
+  originalAgentList: any[] = [];
+  searchText: any;
+  isLoading: boolean = false;
   private modalSub: Subscription;
 
   constructor(
@@ -51,11 +51,13 @@ export class PspSetupSidebarComponent {
 
       if (res && res.data) {
         this.agentId = res.data;
-        if(this.agentId){
+        if (this.agentId) {
           this.getAgentAssignedList();
         }
-      } {
+      } else {
         this.agentId = "";
+        this.agentAssignedList = [];
+        this.originalAgentList = [];
       }
 
       this.settingsDrawer?.toggle();
@@ -76,7 +78,7 @@ export class PspSetupSidebarComponent {
     this.agentId = '';
     // Add any other state reset logic (e.g., clear form, reset API data)
   }
-  
+
 
   onFilterSearch(val: any) {
     this.agentAssignedList = this.originalAgentList.filter((item: any) =>
@@ -87,6 +89,8 @@ export class PspSetupSidebarComponent {
   }
 
   getAgentAssignedList(): void {
+    this.agentAssignedList = [];
+    this.originalAgentList = [];
     this.isLoading = true;
     this.pspSetupService.getAgentProfileFromId(this.agentId).subscribe({
       next: (resp: any) => {
