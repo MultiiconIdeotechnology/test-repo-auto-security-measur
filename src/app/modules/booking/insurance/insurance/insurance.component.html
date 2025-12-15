@@ -145,6 +145,22 @@
                                 maxFractionDigits="2">
                             </p-columnFilter>
 
+                             <ng-container *ngIf="col.field == 'supplier'">
+                                <p-columnFilter field="supplier" matchMode="in" [showMenu]="false">
+                                    <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                        <p-multiSelect [ngModel]="value" [options]="supplierList"
+                                            optionLabel="company_name" placeholder="Select Supplier"
+                                            (onChange)="filter($event.value)" appendTo="body">
+                                            <ng-template let-agent pTemplate="item">
+                                                <div>
+                                                    {{agent.company_name}}
+                                                </div>
+                                            </ng-template>
+                                        </p-multiSelect>
+                                    </ng-template>
+                                </p-columnFilter>
+                            </ng-container>
+
                             <!--date picker-->
                             <p-columnFilter *ngIf="col.type == types.date" type="date" [field]="col.field">
                                 <ng-template pTemplate="filter" let-value let-filter="filterCallback">

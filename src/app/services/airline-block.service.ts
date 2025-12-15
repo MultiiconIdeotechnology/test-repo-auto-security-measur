@@ -68,7 +68,7 @@ export class AirlineBlockService {
     }
 
     getSupplierBoCombo(type?: string): Observable<any> {
-    return this.http.post<any>(this.baseUrl + "Supplier/getSupplierBoCombo", { type: type });
-  }
+        return this.http.post<any>(this.baseUrl + "Supplier/getSupplierBoCombo", { type: type });
+    }
 
 }

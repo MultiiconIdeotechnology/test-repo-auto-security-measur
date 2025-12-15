@@ -141,7 +141,7 @@ export class CabListComponent extends BaseListingComponent {
       this.isFilterShow = true;
       this.primengTable._filter();
     });
-    this.getSupplier("")
+    this.getSupplier();
   }
 
   ngAfterViewInit() {
@@ -183,8 +183,8 @@ export class CabListComponent extends BaseListingComponent {
     });
   }
 
-  getSupplier(value) {
-    this.flighttabService.getSupplierBoCombo(value).subscribe((data: any) => {
+  getSupplier() {
+    this.flighttabService.getSupplierBoCombo('cab').subscribe((data: any) => {
       this.supplierListAll = data;
 
       for (let i in this.supplierListAll) {

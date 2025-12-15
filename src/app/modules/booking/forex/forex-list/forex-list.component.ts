@@ -177,7 +177,7 @@ export class ForexListComponent extends BaseListingComponent {
     });
 
     this.getCitytList('');
-    this.getSupplierList('');
+    this.getSupplierList();
     this.getCurrencyList();
     this.agentList = this._filterService.agentListById;
 
@@ -296,8 +296,8 @@ export class ForexListComponent extends BaseListingComponent {
   }
 
   // Api to get the Supplier list data
-  getSupplierList(value: string, bool = true) {
-    this.forexService.getSupplierForexCombo(value).subscribe((data: any) => {
+  getSupplierList() {
+    this.forexService.getSupplierBoCombo('forex').subscribe((data: any) => {
       this.supplierList = data;
     });
   }

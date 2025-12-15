@@ -211,7 +211,7 @@ export class AmendmentRequestsListComponent
         // ];
 
         this.getAgent("", true);
-        this.getSupplier("");
+        this.getSupplier();
         this.agentList = this._filterService.agentListById;
 
         this._filterService.updateSelectedOption('');
@@ -236,10 +236,7 @@ export class AmendmentRequestsListComponent
             if (resp?.['table_config']?.['updated_date_time']?.value != null && resp['table_config']['updated_date_time'].value.length) {
                 this._filterService.updateSelectedOption('custom_date_range');
                 this._filterService.rangeDateConvert(resp['table_config']['updated_date_time']);
-            }
-            if (resp['table_config']['travel_date']?.value != null) {
-                resp['table_config']['travel_date'].value = new Date(resp['table_config']['travel_date'].value);
-            }
+            }           
             this.primengTable['filters'] = resp['table_config'];
             this.isFilterShow = true;
             this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
@@ -267,11 +264,7 @@ export class AmendmentRequestsListComponent
             if (filterData?.['table_config']?.['updated_date_time']?.value != null && filterData['table_config']['updated_date_time'].value.length) {
                 this._filterService.updateSelectedOption('custom_date_range');
                 this._filterService.rangeDateConvert(filterData['table_config']['updated_date_time']);
-            }
-
-            if (filterData['table_config']['travel_date']?.value != null) {
-                filterData['table_config']['travel_date'].value = new Date(filterData['table_config']['travel_date'].value);
-            }
+            }           
             this.primengTable['filters'] = filterData['table_config'];
             this.selectedColumns = this.checkSelectedColumn(filterData['selectedColumns'] || [], this.selectedColumns);
             this.onColumnsChange();
@@ -348,7 +341,7 @@ export class AmendmentRequestsListComponent
         });
     }
 
-    getSupplier(value: string) {
+    getSupplier() {
         this.flighttabService.getSupplierBoCombo('Airline').subscribe((data) => {
             this.supplierList = data;
 
@@ -532,21 +525,27 @@ export class AmendmentRequestsListComponent
             return this.alertService.showToast('error', messages.permissionDenied);
         }
 
+        // let extraModel = this.getFilter();
+        // let newModel = this.getNewFilterReq({})
+        // const filterReq = { ...extraModel, ...newModel };
+
         let extraModel = this.getFilter();
         let newModel = this.getNewFilterReq({})
-        const filterReq = { ...extraModel, ...newModel };
-        filterReq['FromDate'] = DateTime.fromJSDate(this.AmendmentFilter.FromDate).toFormat('yyyy-MM-dd');
-        filterReq['ToDate'] = DateTime.fromJSDate(this.AmendmentFilter.ToDate).toFormat('yyyy-MM-dd');
-        filterReq['agent_id'] = this.AmendmentFilter?.agent_id?.id || '';
-        filterReq['supplier_id'] = this.AmendmentFilter?.supplier_id?.id || '';
-        filterReq['status'] = this.AmendmentFilter?.status == 'All' ? '' : this.AmendmentFilter?.status;
-        filterReq['type'] = this.AmendmentFilter?.type == 'All' ? '' : this.AmendmentFilter?.type;
-        filterReq['Take'] = this.totalRecords;
+        const request = { ...extraModel, ...newModel };
+        request['Skip'] = 0;
+        request['Take'] = this.totalRecords;
+        // filterReq['FromDate'] = DateTime.fromJSDate(this.AmendmentFilter.FromDate).toFormat('yyyy-MM-dd');
+        // filterReq['ToDate'] = DateTime.fromJSDate(this.AmendmentFilter.ToDate).toFormat('yyyy-MM-dd');
+        // filterReq['agent_id'] = this.AmendmentFilter?.agent_id?.id || '';
+        // filterReq['supplier_id'] = this.AmendmentFilter?.supplier_id?.id || '';
+        // filterReq['status'] = this.AmendmentFilter?.status == 'All' ? '' : this.AmendmentFilter?.status;
+        // filterReq['type'] = this.AmendmentFilter?.type == 'All' ? '' : this.AmendmentFilter?.type;
+        // filterReq['Take'] = this.totalRecords;
 
-        this.amendmentrequestsService.getAirAmendmentList(filterReq).subscribe(data => {
+        this.amendmentrequestsService.getAirAmendmentList(request).subscribe(data => {
             for (var dt of data.data) {
                 dt.amendment_request_time = dt.amendment_request_time ? DateTime.fromISO(dt.amendment_request_time).toFormat('dd-MM-yyyy HH:mm:ss') : '';
-                dt.travel_date = dt.travel_date ? DateTime.fromISO(dt.travel_date).toFormat('dd-MM-yyyy HH:mm:ss') : '';
+                dt.updated_date_time = dt.updated_date_time ? DateTime.fromISO(dt.updated_date_time).toFormat('dd-MM-yyyy HH:mm:ss') : '';
             }
             Excel.export(
                 'Amendment Booking',
@@ -554,15 +553,17 @@ export class AmendmentRequestsListComponent
                     { header: 'Ref No.', property: 'reference_no' },
                     { header: 'Amendment Type', property: 'amendment_type' },
                     { header: 'Status', property: 'amendment_status' },
-                    { header: 'Agent', property: 'agency_name' },
                     { header: 'Supplier', property: 'company_name' },
+                    { header: 'Agent', property: 'agency_name' },
+                    {header: 'Agent Code', property: 'agent_code'},
                     { header: 'Booking Ref. No.', property: 'booking_ref_no' },
+                    { header: 'Supplier Ref. No.', property: 'supplier_booking_ref_no'},
                     { header: 'PNR', property: 'pnr' },
                     { header: 'GDS PNR', property: 'gds_pnr' },
+                    { header: 'Refund Mode', property: 'refund_mode' },
+                    { header: 'Refund Amount', property: 'refund_amount' },
                     { header: 'Request On', property: 'amendment_request_time' },
-                    { header: 'Travel Date', property: 'travel_date' },
-                    { header: 'Agent Status', property: 'status_for_agent' },
-                    { header: 'Confirmed', property: 'amendment_confirmation_time' },
+                    { header: 'Updated Time', property: 'updated_date_time' },
                 ],
                 data.data, "Amendment Booking", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 12 } }]);
         });

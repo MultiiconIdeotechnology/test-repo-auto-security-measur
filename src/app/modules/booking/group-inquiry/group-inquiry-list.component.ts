@@ -118,7 +118,7 @@ export class GroupInquiryListComponent
 
     ngOnInit(): void {
 
-        this.getSupplier("");
+        this.getSupplier();
         this.agentList = this._filterService.agentListById;
 
         // common filter
@@ -229,7 +229,7 @@ export class GroupInquiryListComponent
         });
     }
 
-    getSupplier(value: string, bool: boolean = true) {
+    getSupplier() {
         this.flightTabService.getSupplierBoCombo('Airline').subscribe((data) => {
             this.supplierList = data;
 

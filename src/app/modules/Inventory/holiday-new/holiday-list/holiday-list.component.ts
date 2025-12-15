@@ -120,7 +120,7 @@ export class HolidayListComponent extends BaseListingComponent {
             this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
             this.primengTable._filter();
         });
-        this.getSupplier("")
+        this.getSupplier();
     }
 
 
@@ -129,8 +129,8 @@ export class HolidayListComponent extends BaseListingComponent {
         { label: 'No', value: false },
     ]
 
-    getSupplier(value) {
-        this.flighttabService.getSupplierBoCombo(value).subscribe((data: any) => {
+    getSupplier() {
+        this.flighttabService.getSupplierBoCombo('holiday').subscribe((data: any) => {
             this.supplierListAll = data;
 
             for (let i in this.supplierListAll) {

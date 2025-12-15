@@ -30,6 +30,7 @@ import { Linq } from 'app/utils/linq';
 import { Excel } from 'app/utils/export/excel';
 import { DateTime } from 'luxon';
 import { cloneDeep } from 'lodash';
+import { FlightTabService } from 'app/services/flight-tab.service';
 
 @Component({
   selector: 'app-insurance',
@@ -86,6 +87,8 @@ export class InsuranceComponent extends BaseListingComponent {
   agentList: any[] = [];
   selectedAgent: any;
   insuranceFilter: any;
+  supplierList: any[] = [];
+
 
 
 
@@ -96,7 +99,8 @@ export class InsuranceComponent extends BaseListingComponent {
     private insuranceService: InsuranceService,
     private userService: UserService,
     private agentService: AgentService,
-    public _filterService: CommonFilterService
+    public _filterService: CommonFilterService,
+    private flighttabService: FlightTabService,
   ) {
     super(module_name.insurance);
     this.key = this.module_name;
@@ -129,7 +133,7 @@ export class InsuranceComponent extends BaseListingComponent {
       { field: 'booking_ref_no', header: 'Reference No.', type: Types.link, isFrozen: false, },
       { field: 'status', header: 'Status', type: Types.select, isFrozen: false, isCustomColor: true },
       { field: 'bookingDate', header: 'Date', type: Types.dateTime, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
-      { field: 'supplier', header: 'Supplier', type: Types.text },
+      { field: 'supplier', header: 'Supplier', type: Types.select },
       { field: 'policyNumber', header: 'Policy No', type: Types.text },
       { field: 'purchase_price', header: 'Purchase Price', type: Types.number, fixVal: 2 },
       { field: 'user_type', header: 'Type', type: Types.text },
@@ -152,7 +156,6 @@ export class InsuranceComponent extends BaseListingComponent {
   }
 
   ngOnInit() {
-
     this.agentList = this._filterService.agentListByValue;
 
     // common filter
@@ -184,7 +187,7 @@ export class InsuranceComponent extends BaseListingComponent {
       this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
       this.primengTable._filter();
     });
-
+     this.getSupplierList();
 
   }
 
@@ -222,6 +225,19 @@ export class InsuranceComponent extends BaseListingComponent {
       this.onColumnsChange();
     }
   }
+
+  
+    // Api to get the Supplier List
+    getSupplierList() {
+        this.flighttabService.getSupplierBoCombo('Insurance').subscribe((data: any) => {
+            this.supplierList = data;
+
+            for (let i in this.supplierList) {
+                this.supplierList[i].id_by_value = this.supplierList[i].company_name;
+            }
+        })
+    }
+
 
   onColumnsChange(): void {
     this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });

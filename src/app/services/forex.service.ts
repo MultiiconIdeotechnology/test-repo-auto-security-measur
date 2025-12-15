@@ -40,4 +40,8 @@ export class ForexService {
     return this.http.post<any>(environment.apiUrl + "AirBooking/printInvoice", {invoiceId:invoiceId});
   }
 
+  getSupplierBoCombo(type?: string): Observable<any> {
+      return this.http.post<any>(this.baseUrl + "Supplier/getSupplierBoCombo", { type: type });
+  }
+
 }

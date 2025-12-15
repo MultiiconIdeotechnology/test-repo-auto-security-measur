@@ -91,7 +91,7 @@ export class AirlineBlockLeadComponent extends BaseListingComponent {
   }
 
   ngOnInit() {
-    this.getSupplierList('');
+    this.getSupplierList();
     this.agentList = this._filterService.agentListById;
     // common filter
     this._filterService.selectionDateDropdown = "";
@@ -125,9 +125,10 @@ export class AirlineBlockLeadComponent extends BaseListingComponent {
   }
 
   // Api to get the Supplier list data
-  getSupplierList(value) {
-    this.airlineBlockService.getSupplierCombo(value, 'Airline Block').subscribe((data: any) => {
+  getSupplierList() {
+    this.airlineBlockService.getSupplierBoCombo('Airline Block').subscribe((data: any) => {
       this.supplierList = data;
+      
       for (let i in this.supplierList) {
         this.supplierList[i].id_by_value = this.supplierList[i].company_name
       }
