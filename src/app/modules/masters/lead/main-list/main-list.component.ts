@@ -127,7 +127,7 @@ export class MainListComponent extends BaseListingComponent {
     this.selectedColumns = [
       { field: 'agency_name', header: 'Agent', type: Types.text },
       { field: 'lead_status', header: 'Status', type: Types.select, isCustomColor: true },
-      { field: 'kyc_complete_date', header: 'Date', type: Types.dateTime, dateFormat: 'dd-MM-yyyy' },
+      { field: 'kyc_complete_date', header: 'KYC Completed Date', type: Types.dateTime, dateFormat: 'dd-MM-yyyy' },
       { field: 'relation_manager', header: 'RM', type: Types.select },
       { field: 'email_address', header: 'Email', type: Types.text },
       { field: 'mobile_number', header: 'Mobile', type: Types.text },
