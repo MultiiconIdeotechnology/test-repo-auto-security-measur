@@ -132,55 +132,48 @@ export class SupplierTypeEntryComponent {
     // subscribing to modalchange on create and modify
     this.sidebarDialogService.onModalChange().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
       if (res && (res?.['type'] == 'supplier-fareType-create' || res?.['type'] == 'Supplier common-fareType-edit')) {
+
+        this.resetForm();
+        this.getSupplierCombo();
+        this.settingsDrawer.open();
+
+        if (res['type'] == 'supplier-fareType-create') {
+          this.title = 'Create Supplier Fare Type';
+          this.isEdit = false;
+          this.buttonLabel = "Create";
+        } else if (res['type'] == 'Supplier common-fareType-edit') {
+          this.title = 'Modify Supplier Fare Type';
+          this.buttonLabel = "Update";
+          this.isEdit = true;
+        }
+
         this.cacheService.getOrAdd(CacheLabel.getCommonFareTypeCombo,
           this.commonFareTypeService.getCommonFareTypeCombo('')).subscribe({
             next: data => {
               this.bontonFareTypeAllList = cloneDeep(data);
               this.bontonFareTypeList = this.bontonFareTypeAllList;
+
+              // Only patch if it is edit mode and we have data, logic moved here to ensure data availability
+              if (res['type'] == 'Supplier common-fareType-edit' && res?.data?.data?.id) {
+                const supplierId = res.data.data.supplierId;
+                const bontonFareTypeId = res.data.data.bonton_fare_type_id;
+
+                // Find matching objects now that list is populated
+                const bontonFareTypeObj = this.bontonFareTypeList.find(x => x.id === bontonFareTypeId);
+
+                this.formGroup.patchValue({
+                  id: res?.data?.data?.id || '',
+                  supplier_id: supplierId || '',
+                  supplier_fare_type: res.data.data.supplier_fare_type || '',
+                  bonton_fare_type_id: bontonFareTypeObj || ''
+                });
+
+                if (supplierId) {
+                  this.getSupplierFareTypeCombo('', supplierId);
+                }
+              }
             }
           });
-
-        this.formGroup.get('bonton_fare_type').valueChanges.subscribe(res => {
-          const val = res?.trim()?.toLowerCase();
-          if (!val)
-            this.bontonFareTypeList = this.bontonFareTypeAllList;
-          else
-            this.supplierFareTypeList = this.bontonFareTypeAllList.filter(x => x?.fare_type?.toLowerCase().includes(val));
-        })
-        this.resetForm();
-        this.getSupplierCombo();
-
-        if (res['type'] == 'supplier-fareType-create') {
-          this.settingsDrawer.open();
-          this.title = 'Create Supplier Fare Type';
-          this.resetForm();
-          this.isEdit = false;
-          this.buttonLabel = "Create";
-
-        } else if (res['type'] == 'Supplier common-fareType-edit') {
-          this.settingsDrawer.open();
-          this.title = 'Modify Supplier Fare Type';
-          this.buttonLabel = "Update";
-          if (res?.data?.data?.id) {
-            this.isEdit = true;
-            const supplierId = res.data.data.supplierId;
-            const supplierFareTypeId = res.data.data.supplier_fare_type;
-            const bontonFareTypeId = res.data.data.bonton_fare_type_id;
-
-
-
-            //  Find matching objects
-            const supplierFareTypeObj = this.supplierFareTypeList.find(x => x.class_of_service === supplierFareTypeId)?.class_of_service;
-            const bontonFareTypeObj = this.bontonFareTypeList.find(x => x.id === bontonFareTypeId);
-            this.formGroup.patchValue({
-              id: res?.data?.data?.id || '',
-              supplier_id: supplierId || '',
-              supplier_fare_type: res.data.data.supplier_fare_type || '',
-              bonton_fare_type_id: bontonFareTypeObj || ''
-            });
-          }
-
-        }
       }
     });
 
