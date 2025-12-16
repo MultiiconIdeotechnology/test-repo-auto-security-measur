@@ -143,7 +143,7 @@ export class KycEntryComponent {
 
       if (id) {
         this.readonly = readonly ? true : false;
-        this.btnTitle = readonly ? 'Close' : 'Save';
+        this.btnTitle = 'Save';
         this.kycService.getkycprofileRecord(this.routId).subscribe({
           next: data => {
             this.record = data;
@@ -456,6 +456,10 @@ export class KycEntryComponent {
 
   public compareWith(v1: any, v2: any) {
     return v1 && v2 && v1.id === v2.id;
+  }
+
+  close() {
+    this.router.navigate([this.kycprofileRoute]);
   }
 }
 

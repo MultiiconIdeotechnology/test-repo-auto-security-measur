@@ -75,15 +75,15 @@ export class EmployeeEntryComponent implements OnInit {
   // cityList: ReplaySubject<any[]> = new ReplaySubject<any[]>()
   designationList: any[] = [];
   genderList: string[] = ['Male', 'Female'];
-  first :boolean = true
+  first: boolean = true
 
   ngOnInit(): void {
     this.formGroup = this.formBuilder.group({
       id: [""],
       employee_name: [""],
-      company_email: ['',Validators.email],
+      company_email: ['', Validators.email],
       company_number: [""],
-      personal_email: ['',Validators.email],
+      personal_email: ['', Validators.email],
       personal_number: [""],
       emergency_number: [""],
       city_id: [""],
@@ -105,15 +105,15 @@ export class EmployeeEntryComponent implements OnInit {
 
     this.formGroup.get('employee_name').valueChanges.subscribe(text => {
       this.formGroup.get('employee_name').patchValue(Linq.convertToTitleCase(text), { emitEvent: false });
-   })
+    })
 
-   this.formGroup.get('company_email').valueChanges.subscribe(text => {
-    this.formGroup.get('company_email').patchValue(text.toLowerCase(), { emitEvent: false });
-  })
+    this.formGroup.get('company_email').valueChanges.subscribe(text => {
+      this.formGroup.get('company_email').patchValue(text.toLowerCase(), { emitEvent: false });
+    })
 
-  this.formGroup.get('personal_email').valueChanges.subscribe(text => {
-    this.formGroup.get('personal_email').patchValue(text.toLowerCase(), { emitEvent: false });
-  })
+    this.formGroup.get('personal_email').valueChanges.subscribe(text => {
+      this.formGroup.get('personal_email').patchValue(text.toLowerCase(), { emitEvent: false });
+    })
 
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
@@ -121,7 +121,7 @@ export class EmployeeEntryComponent implements OnInit {
 
       if (id) {
         this.readonly = readonly ? true : false;
-        this.btnTitle = readonly ? 'Close' : 'Save';
+        this.btnTitle = 'Save';
         this.employeeService.getemployeeRecord(id).subscribe({
           next: data => {
             data.shift_start_time = DateTime.fromISO(data.shift_start_time).toFormat('HH:mm').toString()
@@ -143,8 +143,8 @@ export class EmployeeEntryComponent implements OnInit {
                 { name: 'Company Number', value: this.record.company_number },
                 { name: 'Personal Email', value: this.record.personal_email },
                 { name: 'Personal Number', value: this.record.personal_number },
-                { name: 'Emergency Number', value: this.record.emergency_number},
-                { name: 'Joining Date', value: `${DateTime.fromISO(this.record.joining_date).toFormat('dd-MM-yyyy').toString()} - ${(this.record.is_working ? 'Countinue' : DateTime.fromISO(this.record.last_working_date).toFormat('dd-MM-yyyy').toString())}`, info_tooltip: 'Left Reason: ' + this.record.left_reason, show_info: !this.record.is_working  },
+                { name: 'Emergency Number', value: this.record.emergency_number },
+                { name: 'Joining Date', value: `${DateTime.fromISO(this.record.joining_date).toFormat('dd-MM-yyyy').toString()} - ${(this.record.is_working ? 'Countinue' : DateTime.fromISO(this.record.last_working_date).toFormat('dd-MM-yyyy').toString())}`, info_tooltip: 'Left Reason: ' + this.record.left_reason, show_info: !this.record.is_working },
                 { name: 'Shift', value: `${DateTime.fromISO(this.record.shift_start_time).toFormat('hh:mm a').toString()} - ${DateTime.fromISO(this.record.shift_end_time).toFormat('hh:mm a').toString()}` },
                 { name: 'Office Location', value: this.record.office_location },
                 { name: 'City', value: this.record.city },
@@ -152,14 +152,15 @@ export class EmployeeEntryComponent implements OnInit {
                 { name: 'KYC', value: this.record.is_kyc_completed ? ('Completed on' + ' ' + DateTime.fromISO(this.record.kyc_complete_date).toFormat('dd-MM-yyyy').toString()) : 'Incomplete' },
                 { name: 'KYC Profile', value: this.record.kyc_profile },
                 { name: 'Permission Profile', value: this.record.permission_profile },
-                { name: 'Entry Date Time', value : this.record.entry_date_time ? `${DateTime.fromISO(this.record.entry_date_time).toFormat('dd-MM-yyyy HH:mm').toString()}` : '-'},
-                { name: 'Last Login Time', value : this.record.last_login_time ? `${DateTime.fromISO(this.record.last_login_time).toFormat('dd-MM-yyyy HH:mm').toString()}` : '-'}
+                { name: 'Entry Date Time', value: this.record.entry_date_time ? `${DateTime.fromISO(this.record.entry_date_time).toFormat('dd-MM-yyyy HH:mm').toString()}` : '-' },
+                { name: 'Last Login Time', value: this.record.last_login_time ? `${DateTime.fromISO(this.record.last_login_time).toFormat('dd-MM-yyyy HH:mm').toString()}` : '-' }
               ]
             }
           },
-          error: (err) => {this.alertService.showToast('error',err,'top-right',true);
-                this.disableBtn = false;
-            },
+          error: (err) => {
+            this.alertService.showToast('error', err, 'top-right', true);
+            this.disableBtn = false;
+          },
         })
       }
     })
@@ -183,17 +184,19 @@ export class EmployeeEntryComponent implements OnInit {
       switchMap((value: any) => {
         return this.cityService.getCityCombo(value);
       })
-    ).subscribe({next : data => {
-       this.cityList = data
-      //  if(!this.record.city_id)
-      //  this.formGroup.get("city_id").patchValue(this.cityList[0].display_name);
+    ).subscribe({
+      next: data => {
+        this.cityList = data
+        //  if(!this.record.city_id)
+        //  this.formGroup.get("city_id").patchValue(this.cityList[0].display_name);
 
-      if(!this.record.city_id){
-        this.formGroup.get("city_id").patchValue(data[0].id)
-        this.first = false;
+        if (!this.record.city_id) {
+          this.formGroup.get("city_id").patchValue(data[0].id)
+          this.first = false;
+        }
+
       }
-
-      }});
+    });
   }
 
   public onProfileInput(event: any): void {
@@ -222,11 +225,11 @@ export class EmployeeEntryComponent implements OnInit {
   }
 
   submit(): void {
-    if(!this.formGroup.valid){
+    if (!this.formGroup.valid) {
       this.alertService.showToast('error', 'Please fill all required fields.', 'top-right', true);
       this.formGroup.markAllAsTouched();
       return;
-}
+    }
 
     if (this.readonly) {
       this.router.navigate([this.employeeListRoute])
@@ -236,12 +239,12 @@ export class EmployeeEntryComponent implements OnInit {
     json.birth_date = DateTime.fromJSDate(new Date(json.birth_date)).toFormat('yyyy-MM-dd');
     json.joining_date = DateTime.fromJSDate(new Date(json.joining_date)).toFormat('yyyy-MM-dd');
 
-    if (typeof json.profile_picture === 'string' ) {
-        json.profile_picture = {
-            fileName: '',
-            fileType: '',
-            base64: '',
-        };
+    if (typeof json.profile_picture === 'string') {
+      json.profile_picture = {
+        fileName: '',
+        fileType: '',
+        base64: '',
+      };
     }
     json.is_removed = this.profile_picture === null ? true : false;
     this.disableBtn = true
@@ -264,4 +267,10 @@ export class EmployeeEntryComponent implements OnInit {
     })
 
   }
+
+  close() {
+    this.router.navigate([this.employeeListRoute]);
+  }
+
 }
+

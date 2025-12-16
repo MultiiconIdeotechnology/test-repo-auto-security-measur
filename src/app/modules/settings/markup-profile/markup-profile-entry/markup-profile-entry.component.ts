@@ -1,6 +1,6 @@
 import { Routes } from 'app/common/const';
 import { Component } from '@angular/core';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, RouterModule, Router } from '@angular/router';
 import { ReplaySubject, debounceTime, distinctUntilChanged, filter, startWith, switchMap } from 'rxjs';
 import { AbstractControl, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { NgIf, NgClass, DatePipe, AsyncPipe, NgFor } from '@angular/common';
@@ -82,7 +82,7 @@ export class MarkupProfileEntryComponent {
     Supplier = "Add";
     compnyList: any[] = [];
     selectedDetailTab: string = "airline_wise_markup"
-    recordId:any;
+    recordId: any;
 
     markupprofileList: any[] = [
         "Company",
@@ -153,7 +153,7 @@ export class MarkupProfileEntryComponent {
         { value: 'Percentage(%) Per Pax', viewValue: 'Percentage(%) Per Pax' },
     ];
 
-    type_list_three:any[] = [
+    type_list_three: any[] = [
         { value: 'Flat for Full Booking', viewValue: 'Flat for Full Booking' },
         { value: 'Percentage(%) for Full Booking', viewValue: 'Percentage(%) for Full Booking' },
     ]
@@ -188,6 +188,7 @@ export class MarkupProfileEntryComponent {
         private pspsettingService: PspSettingService,
         private supplierService: SupplierService,
         private _userService: UserService,
+        private router: Router
     ) { }
 
     ngOnInit(): void {
@@ -272,7 +273,7 @@ export class MarkupProfileEntryComponent {
             air_int_bag_val: [0, [Validators.required, this.floatNumberValidator()]],
             air_int_correction_val: [0, [Validators.required, this.floatNumberValidator()]],
             air_int_correction_type: ['Flat for Full Amendment', Validators.required],
-            air_block_type : ['Flat for Full Booking', Validators.required],
+            air_block_type: ['Flat for Full Booking', Validators.required],
             air_block_val: [0, [Validators.required, this.floatNumberValidator()]],
             visa_type: ['Flat for Full Booking', Validators.required],
             visa_val: [0, [Validators.required, this.floatNumberValidator()]],
@@ -495,20 +496,20 @@ export class MarkupProfileEntryComponent {
                                 this.detailList.push(md);
                                 const b2b = this.detailList.find(x => x.profile_type === 'B2B')
 
-                                if(b2b){
+                                if (b2b) {
                                     const filteredB2B = Object.fromEntries(
-                                        Object.entries(b2b).filter(([key, value]) => !!value) 
-                                      );
-                                      this.DetailFormGroup.patchValue(filteredB2B);
-                                      this.GroupInquiryFormGroup.patchValue(filteredB2B);
+                                        Object.entries(b2b).filter(([key, value]) => !!value)
+                                    );
+                                    this.DetailFormGroup.patchValue(filteredB2B);
+                                    this.GroupInquiryFormGroup.patchValue(filteredB2B);
                                 }
 
                                 const b2c = this.detailList.find(x => x.profile_type === 'B2C')
-                                if(b2c){
-                                    const filteredB2C= Object.fromEntries(
-                                        Object.entries(b2c).filter(([key, value]) => !!value) 
-                                      );
-                                      this.DetailFormGroupOne.patchValue(filteredB2C);
+                                if (b2c) {
+                                    const filteredB2C = Object.fromEntries(
+                                        Object.entries(b2c).filter(([key, value]) => !!value)
+                                    );
+                                    this.DetailFormGroupOne.patchValue(filteredB2C);
                                 }
                                 this.Detail = 'Save';
                             }
@@ -1036,14 +1037,14 @@ export class MarkupProfileEntryComponent {
 
     floatNumberValidator(): ValidatorFn {
         return (control: AbstractControl): ValidationErrors | null => {
-          const value = (control.value).toString();
-          if (value && value?.endsWith('.')) {
-            return { invalidFloat: true }; // Return error if the value ends with a dot
-          }
-    
-          return null; // No errors
+            const value = (control.value).toString();
+            if (value && value?.endsWith('.')) {
+                return { invalidFloat: true }; // Return error if the value ends with a dot
+            }
+
+            return null; // No errors
         };
-      }
+    }
 
     submit(): void {
         if (!this.formGroup.valid) {
@@ -1052,7 +1053,7 @@ export class MarkupProfileEntryComponent {
             return;
         }
 
-        const title:string = this.recordId ? 'settings_markup_modify': 'settings_markup_add';
+        const title: string = this.recordId ? 'settings_markup_modify' : 'settings_markup_add';
 
         const executeMethod = () => {
             this.disableBtn = true;
@@ -1062,20 +1063,20 @@ export class MarkupProfileEntryComponent {
                 next: (res) => {
                     this.disableBtn = false;
                     this.toasterService.showToast('success', this.btnTitle === 'Create' ? 'Markup profile Created' : 'Markup profile Saved');
-    
+
                     this.markupprofileService.getMarkup(res.id).subscribe({
                         next: data => {
                             this.record = data;
                             this.formGroup.patchValue(this.record)
                         }
                     })
-    
+
                 }, error: (err) => {
                     this.disableBtn = false;
                     this.toasterService.showToast('error', err);
                 }
             })
-         }
+        }
 
         // Method to execute a function after verifying OTP if needed
         this._userService.verifyAndExecute(
@@ -1083,7 +1084,7 @@ export class MarkupProfileEntryComponent {
             () => executeMethod()
         );
 
-    
+
     }
 
     changeprofile() {
@@ -1100,6 +1101,10 @@ export class MarkupProfileEntryComponent {
 
     onDetail(val: any) {
         this.selectedDetailTab = val;
+    }
+
+    close() {
+        this.router.navigate([this.MarkupProfileListRoute]);
     }
 
 }

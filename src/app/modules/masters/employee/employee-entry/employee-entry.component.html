@@ -15,9 +15,12 @@
             </div>
         </div>
 
-        <button mat-raised-button color="primary" [disabled]="disableBtn" (click)="submit()">
-            {{ btnTitle }}
-        </button>
+        <div class="flex items-center gap-2">
+            <button mat-stroked-button (click)="close()">Close</button>
+            <button *ngIf="!readonly" mat-raised-button color="primary" [disabled]="disableBtn" (click)="submit()">
+                {{ btnTitle }}
+            </button>
+        </div>
     </div>
 
     <div class="flex-auto px-10 xl:px-40">
@@ -27,7 +30,8 @@
                 <div class="flex-0 w-22 h-22 rounded-full overflow-hidden">
                     <img class="w-full h-full object-cover cursor-pointer" *ngIf="profile_picture"
                         [matMenuTriggerFor]="imgMenu" [src]="profile_picture" alt="User avatar" />
-                    <mat-icon *ngIf="!profile_picture" class="w-full h-full object-cover dark:text-white text-primary cursor-pointer"
+                    <mat-icon *ngIf="!profile_picture"
+                        class="w-full h-full object-cover dark:text-white text-primary cursor-pointer"
                         [svgIcon]="'heroicons_solid:user-circle'" [matMenuTriggerFor]="imgMenu">
                     </mat-icon>
                     <div [hidden]="true">
@@ -35,16 +39,16 @@
                             (change)="onProfileInput($event)" />
                     </div>
                     <div>
-                    
-                    <mat-menu #imgMenu>
-                        <button mat-menu-item (click)="profileInput.click()">
-                            Upload Photo
-                        </button>
-                        <button mat-menu-item (click)="removePhoto()">
-                            Remove Photo
-                        </button>
-                    </mat-menu>
-                </div>
+
+                        <mat-menu #imgMenu>
+                            <button mat-menu-item (click)="profileInput.click()">
+                                Upload Photo
+                            </button>
+                            <button mat-menu-item (click)="removePhoto()">
+                                Remove Photo
+                            </button>
+                        </mat-menu>
+                    </div>
                 </div>
 
                 <mat-form-field class="flex-grow">
@@ -180,7 +184,7 @@
                 <mat-label>Address</mat-label>
                 <textarea matInput required [formControlName]="'address'"></textarea>
             </mat-form-field>
-            
+
         </form>
 
         <ng-template #detailView>

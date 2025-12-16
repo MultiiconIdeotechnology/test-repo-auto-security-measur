@@ -3,7 +3,7 @@
         class="flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between py-5 sm:px-10 border-b bg-card dark:bg-transparent">
         <div class="flex-1 min-w-0">
             <div class="flex flex-wrap items-center font-medium">
-                <a class="cursor-pointer" (click)="onPspSetupRoute()" >
+                <a class="cursor-pointer" (click)="onPspSetupRoute()">
                     <div class="whitespace-nowrap text-primary-500">
                         PSP Setup
                     </div>
@@ -16,6 +16,9 @@
                 </div>
             </div>
         </div>
+        <button mat-stroked-button class="mr-2" (click)="close()">
+            Close
+        </button>
     </div>
 
     <div class="flex-auto px-[10%]">
@@ -25,6 +28,7 @@
             <mat-divider></mat-divider>
         </div>
 
-        <app-psp-entry-payment-mode-form #pspEntryPaymentMode *ngIf="profileFormData && profileFormData?.id"></app-psp-entry-payment-mode-form>
+        <app-psp-entry-payment-mode-form #pspEntryPaymentMode
+            *ngIf="profileFormData && profileFormData?.id"></app-psp-entry-payment-mode-form>
     </div>
 </div>
