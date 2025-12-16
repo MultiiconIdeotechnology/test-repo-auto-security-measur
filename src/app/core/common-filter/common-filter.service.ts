@@ -89,6 +89,16 @@ export class CommonFilterService {
         { label: 'Custom Date Range', id_by_value: 'custom_date_range' }
     ];
 
+    dateRangeFutureList: any[] = [
+        { label: 'Today', id_by_value: 'today' },
+        { label: 'Next 3 Days', id_by_value: 'next_3_days' },
+        { label: 'This Month', id_by_value: 'this_month' },
+        { label: 'Next Month', id_by_value: 'next_month' },
+        { label: 'Next 3 Months', id_by_value: 'next_3_month' },
+        { label: 'Next 6 Months', id_by_value: 'next_6_month' },
+        { label: 'Custom Date Range', id_by_value: 'custom_date_range' }
+    ];
+
     constructor(
         private http: HttpClient,
         private agentService: AgentService,
@@ -143,7 +153,7 @@ export class CommonFilterService {
     //         this.activeFiltData = {};
     //     }
     // }
-     setActiveData(filerData: any) {
+    setActiveData(filerData: any) {
         if (filerData && filerData.filters) {
             this.activeFiltData = filerData.filters.find((element: any) => element.is_default);
             this.activeFiltData = {

@@ -132,7 +132,7 @@ export class TechDashboardCompletedComponent extends BaseListingComponent {
             { field: 'agentCode', header: 'Agent Code', type: Types.number, fixVal: 0 },
             { field: 'agencyName', header: 'Agency Name', type: Types.select },
             { field: 'activationDate', header: 'Activation Date', type: Types.date, dateFormat: 'dd-MM-yyyy' },
-            { field: 'expiryDate', header: 'Expiry Date', type: Types.date, dateFormat: 'dd-MM-yyyy' }
+            { field: 'expiryDate', header: 'Expiry Date', type: Types.dateTime, dateFormat: 'dd-MM-yyyy' }
         ];
 
         this.cols.unshift(...this.selectedColumns);
