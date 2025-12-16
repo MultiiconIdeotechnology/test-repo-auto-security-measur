@@ -1,6 +1,7 @@
 import { Routes } from 'app/common/const';
 import { AsyncPipe, NgFor, NgIf } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Optional } from '@angular/core';
+import { MatDialogRef } from '@angular/material/dialog';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ReactiveFormsModule, FormGroup, FormBuilder } from '@angular/forms';
 import { filter, startWith, debounceTime, distinctUntilChanged, switchMap, ReplaySubject, Observable } from 'rxjs';
@@ -71,7 +72,7 @@ export class MessageTemplatesEntryComponent implements OnInit {
   fieldList: {};
   TemplateList: any[] = ['Company', 'Agent']
   MessageList: any[] = ['Email', 'WhatsApp', 'SMS']
-  SendToList: any[] = ['Employee', 'Agent', 'Supplier', 'B2C', 'Individual','Master Agent','Sales Person','Operation Team','Group','Lead']
+  SendToList: any[] = ['Employee', 'Agent', 'Supplier', 'B2C', 'Individual', 'Master Agent', 'Sales Person', 'Operation Team', 'Group', 'Lead']
   isFirstemployee: boolean = false;
   isFirstAgent: boolean = false;
   isFirstemployeeadd: boolean = true;
@@ -95,12 +96,19 @@ export class MessageTemplatesEntryComponent implements OnInit {
     private employeeService: EmployeeService,
     private kycDocumentService: KycDocumentService,
     public toasterService: ToasterService,
-
-
+    @Optional() public dialogRef: MatDialogRef<MessageTemplatesEntryComponent>
   ) { }
 
   formGroup: FormGroup;
   protected alertService: ToastrService;
+
+  close() {
+    if (this.dialogRef) {
+      this.dialogRef.close();
+    } else {
+      this.router.navigate([this.MessageTemplatesRoute]);
+    }
+  }
 
   ngOnInit(): void {
     this.formGroup = this.formBuilder.group({
@@ -135,7 +143,7 @@ export class MessageTemplatesEntryComponent implements OnInit {
 
       if (id) {
         this.readonly = readonly ? true : false;
-        this.btnTitle = readonly ? 'Close' : 'Save';
+        this.btnTitle = 'Save';
         this.messageTemplatesService.getMessageRecord(id).subscribe({
           next: (data) => {
             this.record = data;
