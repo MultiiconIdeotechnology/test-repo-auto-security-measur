@@ -181,6 +181,35 @@ export class PspEntryPaymentModeFormComponent {
     }
   }
 
+  //Enable/Disable Mode
+   enableDisable(record): void {
+    const label: string = record.is_enable ? 'Disable' : 'Enable';
+    this.conformationService
+      .open({
+        title: label,
+        message: 'Are you sure to ' + label.toLowerCase() + ' ' + record.psp_name + ' ?',
+      })
+      .afterClosed()
+      .subscribe((res) => {
+        if (res === 'confirmed') {
+          this.pspSetupService
+            .setEnableDisablePGSettings(record.id)
+            .subscribe({
+              next: () => {
+                record.is_enable = !record.is_enable;
+                if (record.is_enable) {
+                  this.toasterService.showToast('success', 'PSP Mode has been Enabled!', 'top-right', true);
+                } else {
+                  this.toasterService.showToast('success', 'PSP Mode has been Disabled!', 'top-right', true);
+                }
+              }, error: (err) => {
+                this.toasterService.showToast('error', err);
+              }
+            });
+        }
+      });
+  }
+
   deleteRow(record: any, index: number) {
     const label: string = 'Delete PSP Settings';
     this.conformationService.open({
