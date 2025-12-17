@@ -51,38 +51,38 @@ export class PspSetupEntryComponent {
   pspSetupRoute = Routes.settings.psp_setup_route;
   record: any = {};
   private destroy$ = new Subject<void>();
-  isProfileFormSuccess:boolean = false;
-  profileFormData:any;
-  profileId:any;
+  isProfileFormSuccess: boolean = false;
+  profileFormData: any;
+  profileId: any;
   formGroup: FormGroup;
 
   constructor(
     private pspSetupService: PspSetupService,
     private activatedRoute: ActivatedRoute,
-    private toasterService:ToasterService,
+    private toasterService: ToasterService,
     private router: Router,
     private modalService: SidebarCustomModalService,
   ) {
-    this.activatedRoute.queryParams.subscribe((params:any) => {
-       this.profileId = params['id'];
-      if(this.profileId){
+    this.activatedRoute.queryParams.subscribe((params: any) => {
+      this.profileId = params['id'];
+      if (this.profileId) {
         this.isProfileFormSuccess = true;
       }
-   })
-   }
+    })
+  }
 
 
   ngAfterViewInit(): void {
     // -- get the localStorage data if the psp-entry-profile-form saved to reflect changes.
     this.pspSetupService.managePgProfile$.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-      if(res){
+      if (res) {
         this.profileFormData = JSON.parse(localStorage.getItem('pspSetupProfile'));
       }
     })
 
     // check if the localStorage has profileFormData
     this.profileFormData = JSON.parse(localStorage.getItem('pspSetupProfile'));
-    if(this.profileFormData && this.profileFormData?.id){
+    if (this.profileFormData && this.profileFormData?.id) {
       this.getPgProfileById(this.profileFormData?.id);
     }
   }
@@ -101,9 +101,13 @@ export class PspSetupEntryComponent {
     });
   }
 
-  onPspSetupRoute(){
+  onPspSetupRoute() {
     this.modalService.closeModal();
     this.router.navigate([this.pspSetupRoute])
+  }
+
+  close() {
+    this.onPspSetupRoute();
   }
 
   ngOnDestroy() {

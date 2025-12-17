@@ -15,7 +15,10 @@
             </div>
         </div>
 
-        <button mat-raised-button color="primary" (click)="submit()">
+        <button mat-stroked-button class="mr-2" (click)="close()">
+            Close
+        </button>
+        <button mat-raised-button color="primary" (click)="submit()" *ngIf="!readonly">
             {{ btnTitle }}
         </button>
     </div>
@@ -199,8 +202,10 @@
                     <input *ngIf="readonly" [readonly]="readonly" matInput required formControlName="send_from_id">
                 </mat-form-field> -->
 
-                <mat-form-field class="flex-grow ml-3" [class.hidden]="formGroup.get('send_to').value !== 'Individual' && formGroup.get('send_to').value !== 'Group'">
-                    <mat-label [class.hidden]="formGroup.get('send_to').value !== 'Individual'">Individual Address</mat-label>
+                <mat-form-field class="flex-grow ml-3"
+                    [class.hidden]="formGroup.get('send_to').value !== 'Individual' && formGroup.get('send_to').value !== 'Group'">
+                    <mat-label [class.hidden]="formGroup.get('send_to').value !== 'Individual'">Individual
+                        Address</mat-label>
                     <mat-label [class.hidden]="formGroup.get('send_to').value !== 'Group'">Group Name</mat-label>
                     <input matInput [readonly]="readonly" [required]="
                             formGroup.get('send_to').value == 'Individual'

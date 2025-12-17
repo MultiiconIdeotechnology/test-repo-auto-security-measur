@@ -15,9 +15,14 @@
             </div>
         </div>
 
-        <button mat-raised-button color="primary" [disabled]="disableBtn" (click)="submit()">
-            {{ btnTitle }}
-        </button>
+        <div class="flex items-center">
+            <button mat-stroked-button class="mr-2" (click)="close()">
+                Close
+            </button>
+            <button *ngIf="!readonly" mat-raised-button color="primary" [disabled]="disableBtn" (click)="submit()">
+                {{ btnTitle }}
+            </button>
+        </div>
     </div>
 
     <div class="flex-auto px-10 xl:px-40">
@@ -38,7 +43,7 @@
 
                 <mat-form-field class="flex-grow">
                     <mat-label>Company</mat-label>
-                    <mat-select formControlName="company_id"  [compareWith]="compareWith">
+                    <mat-select formControlName="company_id" [compareWith]="compareWith">
                         <mat-option>
                             <ngx-mat-select-search placeholderLabel="Search"
                                 noEntriesFoundLabel="'no matching company found'" [formControlName]="'companyfilter'">
@@ -99,9 +104,11 @@
                         <mat-icon *ngIf="filed.show_info" [matTooltip]="filed.info_tooltip">info</mat-icon>
                     </div>
                     <div class="flex">
-                        <span class="text-base truncate hover:text-gray-500 cursor-pointer"
-                            [matTooltip]="filed.value" *ngIf="filed.name !== 'Assigned'">{{ filed.value || "--" }}</span>
-                        <span class=" ml-6 flex flex-row space-x-2 items-center cursor-pointer hover:text-gray-500 hover:border-gray-500 border-white border-b-2" *ngIf="filed.name === 'Assigned'" (click)="assigned()">
+                        <span class="text-base truncate hover:text-gray-500 cursor-pointer" [matTooltip]="filed.value"
+                            *ngIf="filed.name !== 'Assigned'">{{ filed.value || "--" }}</span>
+                        <span
+                            class=" ml-6 flex flex-row space-x-2 items-center cursor-pointer hover:text-gray-500 hover:border-gray-500 border-white border-b-2"
+                            *ngIf="filed.name === 'Assigned'" (click)="assigned()">
                             <span>{{ filed.value || "--" }}</span>
                         </span>
                     </div>
@@ -109,7 +116,8 @@
             </div>
         </ng-template>
 
-        <div class="flex flex-col mt-3 overflow-x-hidden overflow-y-auto shadow rounded-lg" style="max-height: 40% !important">
+        <div class="flex flex-col mt-3 overflow-x-hidden overflow-y-auto shadow rounded-lg"
+            style="max-height: 40% !important">
             <div class="flex flex-row border-b-2 max-h-10 min-h-10 items-center bg-card sticky top-0">
                 <div class="w-1/4 px-4">Document</div>
                 <div class="w-1/4 px-4">Document Group</div>

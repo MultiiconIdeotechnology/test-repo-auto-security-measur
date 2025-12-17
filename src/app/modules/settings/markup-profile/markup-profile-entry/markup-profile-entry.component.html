@@ -16,6 +16,9 @@
                 </div>
             </div>
         </div>
+        <button mat-stroked-button class="mr-2" (click)="close()">
+            Close
+        </button>
     </div>
 
     <div class="flex-auto px-[10%]">
@@ -127,8 +130,8 @@
                                         <mat-form-field class="">
                                             <mat-label>Airline Domestic One Way</mat-label>
                                             <div class="flex flex-row items-center justify-between w-full">
-                                                <input [readonly]="readonly" type="text" appOnlyFloat class="w-18 pr-3" matInput
-                                                    formControlName="air_dom_ow_val" min="0" />
+                                                <input [readonly]="readonly" type="text" appOnlyFloat class="w-18 pr-3"
+                                                    matInput formControlName="air_dom_ow_val" min="0" />
                                                 <mat-select required *ngIf="!readonly" formControlName="air_dom_ow_type"
                                                     class="min-w-[calc(100%-72px)]">
                                                     <mat-option *ngFor="let tl of stype_list" [value]="tl.value">
@@ -143,8 +146,8 @@
                                         <mat-form-field class="">
                                             <mat-label>Airline Domestic Round Trip</mat-label>
                                             <div class="flex flex-row items-center justify-between w-full">
-                                                <input type="text" appOnlyFloat class="w-18 pr-3" matInput [readonly]="readonly"
-                                                    formControlName="air_dom_rt_val" min="0" />
+                                                <input type="text" appOnlyFloat class="w-18 pr-3" matInput
+                                                    [readonly]="readonly" formControlName="air_dom_rt_val" min="0" />
                                                 <mat-select required *ngIf="!readonly" formControlName="air_dom_rt_type"
                                                     class="min-w-[calc(100%-72px)]">
                                                     <mat-option *ngFor="let tl of stype_list" [value]="tl.value">
@@ -160,8 +163,8 @@
                                             <mat-label>Airline International One
                                                 Way</mat-label>
                                             <div class="flex flex-row items-center justify-between w-full">
-                                                <input type="text" appOnlyFloat class="w-18 pr-3" matInput [readonly]="readonly"
-                                                    formControlName="air_int_ow_val" min="0" />
+                                                <input type="text" appOnlyFloat class="w-18 pr-3" matInput
+                                                    [readonly]="readonly" formControlName="air_int_ow_val" min="0" />
                                                 <mat-select required *ngIf="!readonly" formControlName="air_int_ow_type"
                                                     class="min-w-[calc(100%-72px)]">
                                                     <mat-option *ngFor="let tl of stype_list" [value]="tl.value">
@@ -177,8 +180,8 @@
                                             <mat-label>Airline International Round
                                                 Trip</mat-label>
                                             <div class="flex flex-row items-center justify-between w-full">
-                                                <input type="text" appOnlyFloat class="w-18 pr-3" matInput [readonly]="readonly"
-                                                    formControlName="air_int_rt_val" min="0" />
+                                                <input type="text" appOnlyFloat class="w-18 pr-3" matInput
+                                                    [readonly]="readonly" formControlName="air_int_rt_val" min="0" />
                                                 <mat-select required *ngIf="!readonly" formControlName="air_int_rt_type"
                                                     class="min-w-[calc(100%-72px)]">
                                                     <mat-option *ngFor="let tl of stype_list" [value]="tl.value">
@@ -205,8 +208,8 @@
                                         <mat-form-field>
                                             <mat-label>Airline Cancellation Quotation</mat-label>
                                             <div class="flex flex-row items-center justify-between w-full">
-                                                <input type="text" appOnlyFloat class="w-18 pr-3" matInput [readonly]="readonly"
-                                                    formControlName="air_can_val" min="0" />
+                                                <input type="text" appOnlyFloat class="w-18 pr-3" matInput
+                                                    [readonly]="readonly" formControlName="air_can_val" min="0" />
                                                 <mat-select required *ngIf="!readonly" formControlName="air_can_type"
                                                     class="min-w-[calc(100%-72px)]">
                                                     <mat-option *ngFor="let tl of typeAir_list" [value]="tl.value">
@@ -221,8 +224,8 @@
                                         <mat-form-field>
                                             <mat-label>Airline Instant Cancellation</mat-label>
                                             <div class="flex flex-row items-center justify-between w-full">
-                                                <input type="text" appOnlyFloat class="w-18 pr-3" matInput [readonly]="readonly"
-                                                    formControlName="air_ins_can_val" min="0" />
+                                                <input type="text" appOnlyFloat class="w-18 pr-3" matInput
+                                                    [readonly]="readonly" formControlName="air_ins_can_val" min="0" />
                                                 <mat-select required *ngIf="!readonly"
                                                     formControlName="air_ins_can_type" class="min-w-[calc(100%-72px)]">
                                                     <mat-option *ngFor="let tl of typeAir_list" [value]="tl.value">
@@ -237,8 +240,8 @@
                                         <mat-form-field>
                                             <mat-label>Airline Reissue</mat-label>
                                             <div class="flex flex-row items-center justify-between w-full">
-                                                <input type="text" appOnlyFloat class="w-18 pr-3" matInput [readonly]="readonly"
-                                                    formControlName="air_reissue_val" min="0" />
+                                                <input type="text" appOnlyFloat class="w-18 pr-3" matInput
+                                                    [readonly]="readonly" formControlName="air_reissue_val" min="0" />
                                                 <mat-select required *ngIf="!readonly"
                                                     formControlName="air_reissue_type" class="min-w-[calc(100%-72px)]">
                                                     <mat-option *ngFor="let tl of typeAir_list" [value]="tl.value">
@@ -253,8 +256,8 @@
                                         <mat-form-field>
                                             <mat-label>Air No Show</mat-label>
                                             <div class="flex flex-row items-center justify-between w-full">
-                                                <input type="text" appOnlyFloat class="w-18 pr-3" matInput [readonly]="readonly"
-                                                    formControlName="air_no_show_val" min="0" />
+                                                <input type="text" appOnlyFloat class="w-18 pr-3" matInput
+                                                    [readonly]="readonly" formControlName="air_no_show_val" min="0" />
                                                 <mat-select required *ngIf="!readonly"
                                                     formControlName="air_no_show_type" class="min-w-[calc(100%-72px)]">
                                                     <mat-option *ngFor="let tl of typeAir_list" [value]="tl.value">
@@ -269,8 +272,8 @@
                                         <mat-form-field>
                                             <mat-label>Air Void</mat-label>
                                             <div class="flex flex-row items-center justify-between w-full">
-                                                <input type="text" appOnlyFloat class="w-18 pr-3" matInput [readonly]="readonly"
-                                                    formControlName="air_void_val" min="0" />
+                                                <input type="text" appOnlyFloat class="w-18 pr-3" matInput
+                                                    [readonly]="readonly" formControlName="air_void_val" min="0" />
                                                 <mat-select required *ngIf="!readonly" formControlName="air_void_type"
                                                     class="min-w-[calc(100%-72px)]">
                                                     <mat-option *ngFor="let tl of typeAir_list" [value]="tl.value">
@@ -285,8 +288,8 @@
                                         <mat-form-field>
                                             <mat-label>Air Meal</mat-label>
                                             <div class="flex flex-row items-center justify-between w-full">
-                                                <input type="text" appOnlyFloat class="w-18 pr-3" matInput [readonly]="readonly"
-                                                    formControlName="air_meal_val" min="0" />
+                                                <input type="text" appOnlyFloat class="w-18 pr-3" matInput
+                                                    [readonly]="readonly" formControlName="air_meal_val" min="0" />
                                                 <mat-select required *ngIf="!readonly" formControlName="air_meal_type"
                                                     class="min-w-[calc(100%-72px)]">
                                                     <mat-option *ngFor="let tl of typeAir_list" [value]="tl.value">
@@ -301,8 +304,8 @@
                                         <mat-form-field>
                                             <mat-label>Air Baggage</mat-label>
                                             <div class="flex flex-row items-center justify-between w-full">
-                                                <input type="text" appOnlyFloat class="w-18 pr-3" matInput [readonly]="readonly"
-                                                    formControlName="air_bag_val" min="0" />
+                                                <input type="text" appOnlyFloat class="w-18 pr-3" matInput
+                                                    [readonly]="readonly" formControlName="air_bag_val" min="0" />
                                                 <mat-select required *ngIf="!readonly" formControlName="air_bag_type"
                                                     class="min-w-[calc(100%-72px)]">
                                                     <mat-option *ngFor="let tl of typeAir_list" [value]="tl.value">
@@ -317,8 +320,9 @@
                                         <mat-form-field>
                                             <mat-label>Air Correction</mat-label>
                                             <div class="flex flex-row items-center justify-between w-full">
-                                                <input type="text" appOnlyFloat class="w-18 pr-3" matInput [readonly]="readonly"
-                                                    formControlName="air_correction_val" min="0" />
+                                                <input type="text" appOnlyFloat class="w-18 pr-3" matInput
+                                                    [readonly]="readonly" formControlName="air_correction_val"
+                                                    min="0" />
                                                 <mat-select required *ngIf="!readonly"
                                                     formControlName="air_correction_type"
                                                     class="min-w-[calc(100%-72px)]">
@@ -334,8 +338,8 @@
                                         <mat-form-field>
                                             <mat-label>Miscellaneous Quotation - SSR</mat-label>
                                             <div class="flex flex-row items-center justify-between w-full">
-                                                <input type="text" appOnlyFloat class="w-18 pr-3" matInput [readonly]="readonly"
-                                                    formControlName="air_misc_val" min="0" />
+                                                <input type="text" appOnlyFloat class="w-18 pr-3" matInput
+                                                    [readonly]="readonly" formControlName="air_misc_val" min="0" />
                                                 <mat-select required *ngIf="!readonly" formControlName="air_misc_type"
                                                     class="min-w-[calc(100%-72px)]">
                                                     <mat-option *ngFor="let tl of typeAir_list" [value]="tl.value">
@@ -350,8 +354,9 @@
                                         <mat-form-field>
                                             <mat-label>Miscellaneous Quotation - Refund</mat-label>
                                             <div class="flex flex-row items-center justify-between w-full">
-                                                <input type="text" appOnlyFloat class="w-18 pr-3" matInput [readonly]="readonly"
-                                                    formControlName="air_misc_refund_val" min="0" />
+                                                <input type="text" appOnlyFloat class="w-18 pr-3" matInput
+                                                    [readonly]="readonly" formControlName="air_misc_refund_val"
+                                                    min="0" />
                                                 <mat-select required *ngIf="!readonly"
                                                     formControlName="air_misc_refund_type"
                                                     class="min-w-[calc(100%-72px)]">
@@ -371,8 +376,8 @@
                                         <mat-form-field>
                                             <mat-label>Airline Cancellation Quotation</mat-label>
                                             <div class="flex flex-row items-center justify-between w-full">
-                                                <input type="text" appOnlyFloat class="w-18 pr-3" matInput [readonly]="readonly"
-                                                    formControlName="air_int_can_val" min="0" />
+                                                <input type="text" appOnlyFloat class="w-18 pr-3" matInput
+                                                    [readonly]="readonly" formControlName="air_int_can_val" min="0" />
                                                 <mat-select required *ngIf="!readonly"
                                                     formControlName="air_int_can_type" class="min-w-[calc(100%-72px)]">
                                                     <mat-option *ngFor="let tl of typeAir_list" [value]="tl.value">
@@ -387,8 +392,9 @@
                                         <mat-form-field>
                                             <mat-label>Airline Instant Cancellation</mat-label>
                                             <div class="flex flex-row items-center justify-between w-full">
-                                                <input type="text" appOnlyFloat class="w-18 pr-3" matInput [readonly]="readonly"
-                                                    formControlName="air_int_ins_can_val" min="0" />
+                                                <input type="text" appOnlyFloat class="w-18 pr-3" matInput
+                                                    [readonly]="readonly" formControlName="air_int_ins_can_val"
+                                                    min="0" />
                                                 <mat-select required *ngIf="!readonly"
                                                     formControlName="air_int_ins_can_type"
                                                     class="min-w-[calc(100%-72px)]">
@@ -404,8 +410,9 @@
                                         <mat-form-field>
                                             <mat-label>Airline Reissue</mat-label>
                                             <div class="flex flex-row items-center justify-between w-full">
-                                                <input type="text" appOnlyFloat class="w-18 pr-3" matInput [readonly]="readonly"
-                                                    formControlName="air_int_reissue_val" min="0" />
+                                                <input type="text" appOnlyFloat class="w-18 pr-3" matInput
+                                                    [readonly]="readonly" formControlName="air_int_reissue_val"
+                                                    min="0" />
                                                 <mat-select required *ngIf="!readonly"
                                                     formControlName="air_int_reissue_type"
                                                     class="min-w-[calc(100%-72px)]">
@@ -421,8 +428,9 @@
                                         <mat-form-field>
                                             <mat-label>Air No Show</mat-label>
                                             <div class="flex flex-row items-center justify-between w-full">
-                                                <input type="text" appOnlyFloat class="w-18 pr-3" matInput [readonly]="readonly"
-                                                    formControlName="air_int_no_show_val" min="0" />
+                                                <input type="text" appOnlyFloat class="w-18 pr-3" matInput
+                                                    [readonly]="readonly" formControlName="air_int_no_show_val"
+                                                    min="0" />
                                                 <mat-select required *ngIf="!readonly"
                                                     formControlName="air_int_no_show_type"
                                                     class="min-w-[calc(100%-72px)]">
@@ -438,8 +446,8 @@
                                         <mat-form-field>
                                             <mat-label>Air Void</mat-label>
                                             <div class="flex flex-row items-center justify-between w-full">
-                                                <input type="text" appOnlyFloat class="w-18 pr-3" matInput [readonly]="readonly"
-                                                    formControlName="air_int_void_val" min="0" />
+                                                <input type="text" appOnlyFloat class="w-18 pr-3" matInput
+                                                    [readonly]="readonly" formControlName="air_int_void_val" min="0" />
                                                 <mat-select required *ngIf="!readonly"
                                                     formControlName="air_int_void_type" class="min-w-[calc(100%-72px)]">
                                                     <mat-option *ngFor="let tl of typeAir_list" [value]="tl.value">
@@ -454,8 +462,8 @@
                                         <mat-form-field>
                                             <mat-label>Air Meal</mat-label>
                                             <div class="flex flex-row items-center justify-between w-full">
-                                                <input type="text" appOnlyFloat class="w-18 pr-3" matInput [readonly]="readonly"
-                                                    formControlName="air_int_meal_val" min="0" />
+                                                <input type="text" appOnlyFloat class="w-18 pr-3" matInput
+                                                    [readonly]="readonly" formControlName="air_int_meal_val" min="0" />
                                                 <mat-select required *ngIf="!readonly"
                                                     formControlName="air_int_meal_type" class="min-w-[calc(100%-72px)]">
                                                     <mat-option *ngFor="let tl of typeAir_list" [value]="tl.value">
@@ -470,8 +478,8 @@
                                         <mat-form-field>
                                             <mat-label>Air Baggage</mat-label>
                                             <div class="flex flex-row items-center justify-between w-full">
-                                                <input type="text" appOnlyFloat class="w-18 pr-3" matInput [readonly]="readonly"
-                                                    formControlName="air_int_bag_val" min="0" />
+                                                <input type="text" appOnlyFloat class="w-18 pr-3" matInput
+                                                    [readonly]="readonly" formControlName="air_int_bag_val" min="0" />
                                                 <mat-select required *ngIf="!readonly"
                                                     formControlName="air_int_bag_type" class="min-w-[calc(100%-72px)]">
                                                     <mat-option *ngFor="let tl of typeAir_list" [value]="tl.value">
@@ -486,8 +494,9 @@
                                         <mat-form-field>
                                             <mat-label>Air Correction</mat-label>
                                             <div class="flex flex-row items-center justify-between w-full">
-                                                <input type="text" appOnlyFloat class="w-18 pr-3" matInput [readonly]="readonly"
-                                                    formControlName="air_int_correction_val" min="0" />
+                                                <input type="text" appOnlyFloat class="w-18 pr-3" matInput
+                                                    [readonly]="readonly" formControlName="air_int_correction_val"
+                                                    min="0" />
                                                 <mat-select required *ngIf="!readonly"
                                                     formControlName="air_int_correction_type"
                                                     class="min-w-[calc(100%-72px)]">
@@ -503,8 +512,8 @@
                                         <mat-form-field>
                                             <mat-label>Miscellaneous Quotation - SSR</mat-label>
                                             <div class="flex flex-row items-center justify-between w-full">
-                                                <input type="text" appOnlyFloat class="w-18 pr-3" matInput [readonly]="readonly"
-                                                    formControlName="air_int_misc_val" min="0" />
+                                                <input type="text" appOnlyFloat class="w-18 pr-3" matInput
+                                                    [readonly]="readonly" formControlName="air_int_misc_val" min="0" />
                                                 <mat-select required *ngIf="!readonly"
                                                     formControlName="air_int_misc_type" class="min-w-[calc(100%-72px)]">
                                                     <mat-option *ngFor="let tl of typeAir_list" [value]="tl.value">
@@ -519,8 +528,9 @@
                                         <mat-form-field>
                                             <mat-label>Miscellaneous Quotation - Refund</mat-label>
                                             <div class="flex flex-row items-center justify-between w-full">
-                                                <input type="text" appOnlyFloat class="w-18 pr-3" matInput [readonly]="readonly"
-                                                    formControlName="air_int_misc_refund_val" min="0" />
+                                                <input type="text" appOnlyFloat class="w-18 pr-3" matInput
+                                                    [readonly]="readonly" formControlName="air_int_misc_refund_val"
+                                                    min="0" />
                                                 <mat-select required *ngIf="!readonly"
                                                     formControlName="air_int_misc_refund_type"
                                                     class="min-w-[calc(100%-72px)]">
@@ -556,8 +566,8 @@
                                         <mat-form-field class="">
                                             <mat-label>Holiday Domestic</mat-label>
                                             <div class="flex flex-row items-center justify-between w-full">
-                                                <input type="text" appOnlyFloat class="w-18 pr-3" matInput [readonly]="readonly"
-                                                    formControlName="hol_dom_val" min="0" />
+                                                <input type="text" appOnlyFloat class="w-18 pr-3" matInput
+                                                    [readonly]="readonly" formControlName="hol_dom_val" min="0" />
                                                 <mat-select required *ngIf="!readonly" formControlName="hol_dom_type"
                                                     class="min-w-[calc(100%-72px)]">
                                                     <mat-option *ngFor="let tl of type_list" [value]="tl.value">
@@ -572,8 +582,8 @@
                                         <mat-form-field class="">
                                             <mat-label>Holiday International</mat-label>
                                             <div class="flex flex-row items-center justify-between w-full">
-                                                <input type="text" appOnlyFloat class="w-18 pr-3" matInput [readonly]="readonly"
-                                                    formControlName="hol_int_val" min="0" />
+                                                <input type="text" appOnlyFloat class="w-18 pr-3" matInput
+                                                    [readonly]="readonly" formControlName="hol_int_val" min="0" />
                                                 <mat-select required *ngIf="!readonly" formControlName="hol_int_type"
                                                     class="min-w-[calc(100%-72px)]">
                                                     <mat-option *ngFor="let tl of type_list" [value]="tl.value">
@@ -598,8 +608,8 @@
                                         <mat-form-field class="">
                                             <mat-label>Hotel Domestic</mat-label>
                                             <div class="flex flex-row items-center justify-between w-full">
-                                                <input type="text" appOnlyFloat class="w-18 pr-3" matInput [readonly]="readonly"
-                                                    formControlName="hot_dom_val" min="0" />
+                                                <input type="text" appOnlyFloat class="w-18 pr-3" matInput
+                                                    [readonly]="readonly" formControlName="hot_dom_val" min="0" />
                                                 <mat-select required *ngIf="!readonly" formControlName="hot_dom_type"
                                                     class="min-w-[calc(100%-72px)]">
                                                     <mat-option *ngFor="let tl of type_list" [value]="tl.value">
@@ -614,8 +624,8 @@
                                         <mat-form-field class="">
                                             <mat-label>Hotel International</mat-label>
                                             <div class="flex flex-row items-center justify-between w-full">
-                                                <input type="text" appOnlyFloat class="w-18 pr-3" matInput [readonly]="readonly"
-                                                    formControlName="hot_int_val" min="0" />
+                                                <input type="text" appOnlyFloat class="w-18 pr-3" matInput
+                                                    [readonly]="readonly" formControlName="hot_int_val" min="0" />
                                                 <mat-select required *ngIf="!readonly" formControlName="hot_int_type"
                                                     class="min-w-[calc(100%-72px)]">
                                                     <mat-option *ngFor="let tl of type_list" [value]="tl.value">
@@ -640,8 +650,8 @@
                                         <mat-form-field class="">
                                             <mat-label>Bus</mat-label>
                                             <div class="flex flex-row items-center justify-between w-full">
-                                                <input type="text" appOnlyFloat class="w-18 pr-3" matInput [readonly]="readonly"
-                                                    formControlName="bus_val" min="0" />
+                                                <input type="text" appOnlyFloat class="w-18 pr-3" matInput
+                                                    [readonly]="readonly" formControlName="bus_val" min="0" />
                                                 <mat-select required *ngIf="!readonly" formControlName="bus_type"
                                                     class="min-w-[calc(100%-72px)]">
                                                     <mat-option *ngFor="let tl of type_list_two" [value]="tl.value">
@@ -655,8 +665,8 @@
                                         <mat-form-field class="">
                                             <mat-label>Cancellation</mat-label>
                                             <div class="flex flex-row items-center justify-between w-full">
-                                                <input type="text" appOnlyFloat class="w-18 pr-3" matInput [readonly]="readonly"
-                                                    formControlName="bus_cancel_val" min="0" />
+                                                <input type="text" appOnlyFloat class="w-18 pr-3" matInput
+                                                    [readonly]="readonly" formControlName="bus_cancel_val" min="0" />
                                                 <mat-select required *ngIf="!readonly" formControlName="bus_cancel_type"
                                                     class="min-w-[calc(100%-72px)]">
                                                     <mat-option *ngFor="let tl of type_list_two" [value]="tl.value">
@@ -681,8 +691,8 @@
                                         <mat-form-field class="">
                                             <mat-label>Insurance</mat-label>
                                             <div class="flex flex-row items-center justify-between w-full">
-                                                <input type="text" appOnlyFloat class="w-18 pr-3" matInput [readonly]="readonly"
-                                                    formControlName="ins_val" min="0" />
+                                                <input type="text" appOnlyFloat class="w-18 pr-3" matInput
+                                                    [readonly]="readonly" formControlName="ins_val" min="0" />
                                                 <mat-select required *ngIf="!readonly" formControlName="ins_type"
                                                     class="min-w-[calc(100%-72px)]">
                                                     <mat-option *ngFor="let tl of type_list" [value]="tl.value">
@@ -696,8 +706,8 @@
                                         <mat-form-field class="">
                                             <mat-label>Insurance Cancel</mat-label>
                                             <div class="flex flex-row items-center justify-between w-full">
-                                                <input type="text" appOnlyFloat class="w-18 pr-3" matInput [readonly]="readonly"
-                                                    formControlName="ins_can_val" min="0" />
+                                                <input type="text" appOnlyFloat class="w-18 pr-3" matInput
+                                                    [readonly]="readonly" formControlName="ins_can_val" min="0" />
                                                 <mat-select required *ngIf="!readonly" formControlName="ins_can_type"
                                                     class="min-w-[calc(100%-72px)]">
                                                     <mat-option *ngFor="let tl of type_list" [value]="tl.value">
@@ -722,8 +732,8 @@
                                         <mat-form-field>
                                             <mat-label>Visa</mat-label>
                                             <div class="flex flex-row items-center justify-between w-full">
-                                                <input type="text" appOnlyFloat class="w-18 pr-3" matInput [readonly]="readonly"
-                                                    formControlName="visa_val" min="0" />
+                                                <input type="text" appOnlyFloat class="w-18 pr-3" matInput
+                                                    [readonly]="readonly" formControlName="visa_val" min="0" />
                                                 <mat-select required *ngIf="!readonly" formControlName="visa_type"
                                                     class="min-w-[calc(100%-72px)]">
                                                     <mat-option *ngFor="let tl of type_list" [value]="tl.value">
@@ -748,8 +758,8 @@
                                         <mat-form-field class="">
                                             <mat-label>Activity</mat-label>
                                             <div class="flex flex-row items-center justify-between w-full">
-                                                <input type="text" appOnlyFloat class="w-18 pr-3" matInput [readonly]="readonly"
-                                                    formControlName="act_val" min="0" />
+                                                <input type="text" appOnlyFloat class="w-18 pr-3" matInput
+                                                    [readonly]="readonly" formControlName="act_val" min="0" />
                                                 <mat-select required *ngIf="!readonly" formControlName="act_type"
                                                     class="min-w-[calc(100%-72px)]">
                                                     <mat-option *ngFor="let tl of type_list" [value]="tl.value">
@@ -774,8 +784,8 @@
                                         <mat-form-field class="">
                                             <mat-label>Cab</mat-label>
                                             <div class="flex flex-row items-center justify-between w-full">
-                                                <input type="text" appOnlyFloat class="w-18 pr-3" matInput [readonly]="readonly"
-                                                    formControlName="cab_val" min="0" />
+                                                <input type="text" appOnlyFloat class="w-18 pr-3" matInput
+                                                    [readonly]="readonly" formControlName="cab_val" min="0" />
                                                 <mat-select required *ngIf="!readonly" formControlName="cab_type"
                                                     class="min-w-[calc(100%-72px)]">
                                                     <mat-option *ngFor="let tl of type_list_three" [value]="tl.value">
@@ -800,8 +810,8 @@
                                         <mat-form-field class="">
                                             <mat-label>Air Block</mat-label>
                                             <div class="flex flex-row items-center justify-between w-full">
-                                                <input type="text" appOnlyFloat class="w-18 pr-3" matInput [readonly]="readonly"
-                                                    formControlName="air_block_val" min="0" />
+                                                <input type="text" appOnlyFloat class="w-18 pr-3" matInput
+                                                    [readonly]="readonly" formControlName="air_block_val" min="0" />
                                                 <mat-select required *ngIf="!readonly" formControlName="air_block_type"
                                                     class="min-w-[calc(100%-72px)]">
                                                     <mat-option *ngFor="let tl of type_list_three" [value]="tl.value">
@@ -1193,8 +1203,8 @@
                                 <mat-form-field class="min-w-52 w-[24%]">
                                     <mat-label>Airline Domestic One Way</mat-label>
                                     <div class="flex flex-row items-center justify-between w-full">
-                                        <input type="text" appOnlyFloat class="w-18 pr-3" matInput formControlName="air_dom_ow_val"
-                                            min="0" />
+                                        <input type="text" appOnlyFloat class="w-18 pr-3" matInput
+                                            formControlName="air_dom_ow_val" min="0" />
                                         <mat-select required formControlName="air_dom_ow_type"
                                             class="min-w-[calc(100%-72px)]">
                                             <mat-option *ngFor="let tl of stype_list" [value]="tl.value">
@@ -1206,8 +1216,8 @@
                                 <mat-form-field class="min-w-52 w-[24%]">
                                     <mat-label>Airline Domestic Round Trip</mat-label>
                                     <div class="flex flex-row items-center justify-between w-full">
-                                        <input type="text" appOnlyFloat class="w-18 pr-3" matInput formControlName="air_dom_rt_val"
-                                            min="0" />
+                                        <input type="text" appOnlyFloat class="w-18 pr-3" matInput
+                                            formControlName="air_dom_rt_val" min="0" />
                                         <mat-select required formControlName="air_dom_rt_type"
                                             class="min-w-[calc(100%-72px)]">
                                             <mat-option *ngFor="let tl of stype_list" [value]="tl.value">
@@ -1220,8 +1230,8 @@
                                     <mat-label>Airline International One
                                         Way</mat-label>
                                     <div class="flex flex-row items-center justify-between w-full">
-                                        <input type="text" appOnlyFloat class="w-18 pr-3" matInput formControlName="air_int_ow_val"
-                                            min="0" />
+                                        <input type="text" appOnlyFloat class="w-18 pr-3" matInput
+                                            formControlName="air_int_ow_val" min="0" />
                                         <mat-select required formControlName="air_int_ow_type"
                                             class="min-w-[calc(100%-72px)]">
                                             <mat-option *ngFor="let tl of stype_list" [value]="tl.value">
@@ -1236,8 +1246,8 @@
                                     <mat-label>Airline International Round
                                         Trip</mat-label>
                                     <div class="flex flex-row items-center justify-between w-full">
-                                        <input type="text" appOnlyFloat class="w-18 pr-3" matInput formControlName="air_int_rt_val"
-                                            min="0" />
+                                        <input type="text" appOnlyFloat class="w-18 pr-3" matInput
+                                            formControlName="air_int_rt_val" min="0" />
                                         <mat-select required formControlName="air_int_rt_type"
                                             class="min-w-[calc(100%-72px)]">
                                             <mat-option *ngFor="let tl of stype_list" [value]="tl.value">

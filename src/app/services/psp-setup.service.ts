@@ -108,4 +108,8 @@ export class PspSetupService {
   //   return this.http.post<any>(this.baseUrl + 'Company/getCompanyCombo', {filter});
   // }
 
+
+  setEnableDisablePGSettings(id: string): Observable<any> {
+    return this.http.post<any>(this.baseUrl + 'PaymentGatewaySettings/setEnableDisablePGSettings', { id: id });
+  }
 }

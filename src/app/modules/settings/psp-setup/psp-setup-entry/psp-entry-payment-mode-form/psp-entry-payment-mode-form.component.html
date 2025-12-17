@@ -73,7 +73,7 @@
         </ng-template>
 
         <ng-template pTemplate="body" let-element let-columns="columns" let-i="rowIndex">
-            <tr>
+            <tr  [ngClass]="!element.is_enable ? 'opacity-38' : ''">
                 <td class="bg-gray-50 dark:bg-gray-900 left-[-1px]" alignFrozen="left" pFrozenColumn>
                     <span [matMenuTriggerFor]="optionMenu" class="flex align-middle cursor-pointer">
                         <mat-icon> more_vert </mat-icon>
@@ -83,6 +83,16 @@
                         <button mat-menu-item (click)="edit(element)">
                             <mat-icon class="mat-18">edit</mat-icon>
                             <span style="font-weight: 600">Edit</span>
+                        </button>
+                         <button mat-menu-item (click)="enableDisable(element)">
+                            <mat-icon class="mat-18">{{
+                                element.is_enable
+                                ? "highlight_off"
+                                : "check_circle"
+                                }}</mat-icon>
+                            <span style="font-weight: 600">{{
+                                element.is_enable ? "Disable" : "Enable"
+                                }}</span>
                         </button>
                         <button mat-menu-item (click)="deleteRow(element, i)">
                             <mat-icon class="mat-18">delete</mat-icon>
