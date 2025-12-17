@@ -108,8 +108,8 @@ export class SupplierKycComponent extends BaseListingComponent implements OnDest
       { field: 'email_address', header: 'Email', type:Types.text },
       { field: 'mobile_number', header: 'Mobile', type:Types.text },
       { field: 'city_name', header: 'City', type:Types.text },
-      { field: 'entry_date_time', header: 'Date', type: Types.date, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
-      { field: 'update_date_time', header: 'Update Date', type: Types.date, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
+      { field: 'entry_date_time', header: 'Date', type: Types.dateTime, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
+      { field: 'update_date_time', header: 'Update Date', type: Types.dateTime, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
       { field: 'is_rejected', header: 'Status', type:Types.select }
     ];
     this.cols.unshift(...this.selectedColumns);
@@ -118,6 +118,19 @@ export class SupplierKycComponent extends BaseListingComponent implements OnDest
 
   ngOnInit(): void {
     this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+      this._filterService.updateSelectedOption('');
+      this._filterService.updatedSelectionOptionTwo('');
+
+        if (resp['table_config']['entry_date_time']?.value != null && resp['table_config']['entry_date_time'].value.length) {
+        this._filterService.updateSelectedOption('custom_date_range');
+        this._filterService.rangeDateConvert(resp['table_config']['entry_date_time']);
+      }
+
+      if (resp['table_config']['update_date_time']?.value != null && resp['table_config']['update_date_time'].value.length) {
+        this._filterService.updatedSelectionOptionTwo('custom_date_range');
+        this._filterService.rangeDateConvert(resp['table_config']['update_date_time']);
+      } 
+
       this.primengTable['filters'] = resp['table_config'];
       this.isFilterShow = true;
       this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
@@ -129,9 +142,20 @@ export class SupplierKycComponent extends BaseListingComponent implements OnDest
 
   ngAfterViewInit() {
     // Defult Active filter show
+    this._filterService.updateSelectedOption('');
+    this._filterService.updatedSelectionOptionTwo('');
     if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
       let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
 
+      if (filterData['table_config']['entry_date_time']?.value != null && filterData['table_config']['entry_date_time'].value.length) {
+        this._filterService.updateSelectedOption('custom_date_range');
+        this._filterService.rangeDateConvert(filterData['table_config']['entry_date_time']);
+      }
+
+      if (filterData['table_config']['update_date_time']?.value != null && filterData['table_config']['update_date_time'].value.length) {
+        this._filterService.updatedSelectionOptionTwo('custom_date_range');
+        this._filterService.rangeDateConvert(filterData['table_config']['update_date_time']);
+      } 
 
       this.primengTable['filters'] = filterData['table_config'];
       this.selectedColumns = filterData['selectedColumns'] || [];
