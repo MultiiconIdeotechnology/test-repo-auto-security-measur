@@ -215,6 +215,11 @@ export class InboxComponent extends BaseListingComponent {
                 this._filterService.updatedSelectedContracting('custom_date_range');
                 this._filterService.rangeDateConvert(filterData['table_config']['call_date_time']);
             }
+         
+            if (filterData['table_config']['lead_assign_by_date']?.value != null && filterData['table_config']['lead_assign_by_date'].value.length) {
+                this.updateSelectedOptionThree('custom_date_range');
+                this._filterService.rangeDateConvert(filterData['table_config']['lead_assign_by_date']);
+            }
             this.primengTable['filters'] = filterData['table_config'];
             this.selectedColumns = this.checkSelectedColumn(filterData['selectedColumns'] || [], this.selectedColumns);
             this.onColumnsChange();

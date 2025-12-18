@@ -25,7 +25,7 @@ import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { AgentService } from 'app/services/agent.service';
 import { KycDocumentService } from 'app/services/kyc-document.service';
-import { Subscription } from 'rxjs';
+import { BehaviorSubject, Subscription } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { RejectResonComponent } from 'app/modules/account/withdraw/reject-reson/reject-reson.component';
 import { cloneDeep } from 'lodash';
@@ -76,6 +76,12 @@ export class GroupInquiryListComponent
         { label: 'Partial Cancellation Pending', value: 'Partial Cancellation Pending' },
         { label: 'Expired', value: 'Expired' }
     ];
+    private selectedOptionTwoSubjectThree = new BehaviorSubject<any>('');
+    selectionDateDropdownThree$ = this.selectedOptionTwoSubjectThree.asObservable();
+
+     updateSelectedOptionThree(option: string): void {
+        this.selectedOptionTwoSubjectThree.next(option);
+    }
 
     types = Types;
     cols: Column[] = [];
@@ -105,9 +111,9 @@ export class GroupInquiryListComponent
             { field: 'supplier_name', header: 'Supplier', type: Types.select, },
             { field: 'booking_status', header: 'Status', type: Types.select, isFrozen: false, isCustomColor: true },
             { field: 'pnr', header: 'PNR', type: Types.text },
-            { field: 'departure_date', header: 'Departure Date', type: Types.date, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
-            { field: 'arrival_date', header: 'Arrival Date', type: Types.date, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
-            { field: 'entry_date_time', header: 'Entry Date', type: Types.date, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
+            { field: 'departure_date', header: 'Departure Date', type: Types.dateTime, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
+            { field: 'arrival_date', header: 'Arrival Date', type: Types.dateTime, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
+            { field: 'entry_date_time', header: 'Entry Date', type: Types.dateTime, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
             { field: 'trip_type', header: 'Trip Type', type: Types.text, },
             { field: 'pax', header: 'Pax', type: Types.text, isHideFilter: true },
             { field: 'reject_reason', header: 'Reject Reason', type: Types.text, isHideFilter: true },
@@ -123,6 +129,9 @@ export class GroupInquiryListComponent
 
         // common filter
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this._filterService.updateSelectedOption('');
+            this._filterService.updatedSelectionOptionTwo('');
+            this.updateSelectedOptionThree('');
             this.selectedAgent = resp['table_config']['agent_id_filters']?.value;
             if (this.selectedAgent && this.selectedAgent.id) {
                 const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
@@ -133,12 +142,21 @@ export class GroupInquiryListComponent
 
             this.selectedSupplier = resp['table_config']['supplier_name']?.value;
             // this.sortColumn = resp['sortColumn'];
-            // this.primengTable['_sortField'] = resp['sortColumn'];
-            if (resp['table_config']['departure_date'].value) {
-                resp['table_config']['departure_date'].value = new Date(resp['table_config']['departure_date'].value);
+            // this.primengTable['_sortField'] = resp['sortColumn'];      
+            
+            if (resp['table_config']['departure_date']?.value != null && resp['table_config']['departure_date'].value.length) {
+                this._filterService.updateSelectedOption('custom_date_range');
+                this._filterService.rangeDateConvert(resp['table_config']['departure_date']);
             }
-            if (resp['table_config']['arrival_date'].value) {
-                resp['table_config']['arrival_date'].value = new Date(resp['table_config']['arrival_date'].value);
+
+            if (resp['table_config']['arrival_date']?.value != null && resp['table_config']['arrival_date'].value.length) {
+                this._filterService.updatedSelectionOptionTwo('custom_date_range');
+                this._filterService.rangeDateConvert(resp['table_config']['arrival_date']);
+            }
+
+            if (resp['table_config']['entry_date_time']?.value != null && resp['table_config']['entry_date_time'].value.length) {
+                this.updateSelectedOptionThree('custom_date_range');
+                this._filterService.rangeDateConvert(resp['table_config']['entry_date_time']);
             }
             this.primengTable['filters'] = resp['table_config'];
             this.isFilterShow = true;
@@ -149,6 +167,9 @@ export class GroupInquiryListComponent
 
     ngAfterViewInit() {
         // Defult Active filter show
+        this._filterService.updateSelectedOption('');
+        this._filterService.updatedSelectionOptionTwo('');
+        this.updateSelectedOptionThree('');
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             this.isFilterShow = true;
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
@@ -160,11 +181,19 @@ export class GroupInquiryListComponent
                     this.agentList.push(this.selectedAgent);
                 }
             }
-            if (filterData['table_config']['departure_date'].value) {
-                filterData['table_config']['departure_date'].value = new Date(filterData['table_config']['departure_date'].value);
+            if (filterData['table_config']['departure_date']?.value != null && filterData['table_config']['departure_date'].value.length) {
+                this._filterService.updateSelectedOption('custom_date_range');
+                this._filterService.rangeDateConvert(filterData['table_config']['departure_date']);
             }
-            if (filterData['table_config']['arrival_date'].value) {
-                filterData['table_config']['arrival_date'].value = new Date(filterData['table_config']['arrival_date'].value);
+
+            if (filterData['table_config']['arrival_date']?.value != null && filterData['table_config']['arrival_date'].value.length) {
+                this._filterService.updatedSelectionOptionTwo('custom_date_range');
+                this._filterService.rangeDateConvert(filterData['table_config']['arrival_date']);
+            }   
+
+            if (filterData['table_config']['entry_date_time']?.value != null && filterData['table_config']['entry_date_time'].value.length) {
+                this.updateSelectedOptionThree('custom_date_range');
+                this._filterService.rangeDateConvert(filterData['table_config']['entry_date_time']);
             }
             this.primengTable['filters'] = filterData['table_config'];
             this.selectedColumns = this.checkSelectedColumn(filterData['selectedColumns'] || [], this.selectedColumns);
@@ -408,4 +437,13 @@ export class GroupInquiryListComponent
         const date = new Date(value);
         return value && !isNaN(date.getTime());
     }
+
+     onOptionClickThree(option: any, primengTable: any, field: any, key?: any) {
+        this.selectedOptionTwoSubjectThree.next(option.id_by_value);
+        
+        if( option.id_by_value &&  option.id_by_value != 'custom_date_range'){
+            primengTable.filter(option, field, 'custom');
+        } 
+    }
+
 }

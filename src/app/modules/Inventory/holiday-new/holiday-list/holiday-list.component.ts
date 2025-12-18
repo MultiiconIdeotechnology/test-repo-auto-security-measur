@@ -21,7 +21,7 @@ import { ToasterService } from 'app/services/toaster.service';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { FlightTabService } from 'app/services/flight-tab.service';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
-import { Subscription } from 'rxjs';
+import { BehaviorSubject, Subscription } from 'rxjs';
 import { HolidayVersionTwoService } from 'app/services/holidayversion2.service ';
 import { cloneDeep } from 'lodash';
 
@@ -66,6 +66,13 @@ export class HolidayListComponent extends BaseListingComponent {
     exportCol: Column[] = [];
     activeFiltData: any = {};
 
+    private selectedOptionTwoSubjectThree = new BehaviorSubject<any>('');
+    selectionDateDropdownThree$ = this.selectedOptionTwoSubjectThree.asObservable();
+
+    updateSelectedOptionThree(option: string): void {
+        this.selectedOptionTwoSubjectThree.next(option);
+    }
+
     constructor(
         private holidayService: HolidayVersionTwoService,
         private toasterService: ToasterService,
@@ -91,9 +98,9 @@ export class HolidayListComponent extends BaseListingComponent {
             { field: 'no_of_days', header: 'Days', type: Types.number, fixVal: 0 },
             { field: 'is_popular', header: 'Is Popular', type: Types.boolean , class:'text-center' },
             { field: 'is_audited', header: 'Is Audited', type: Types.boolean , class:'text-center' },
-            { field: 'publish_date_time', header: 'Published', type: Types.date, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
-            { field: 'entry_date_time', header: 'Entry', type: Types.date, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
-            { field: 'last_price_date', header: 'Last Price Date', type: Types.date, dateFormat: 'dd-MM-yyyy HH:mm:ss' }
+            { field: 'publish_date_time', header: 'Published', type: Types.dateTime, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
+            { field: 'entry_date_time', header: 'Entry', type: Types.dateTime, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
+            { field: 'last_price_date', header: 'Last Price Date', type: Types.dateTime, dateFormat: 'dd-MM-yyyy HH:mm:ss' }
         ];
         this.cols.unshift(...this.selectedColumns);
         this.exportCol = cloneDeep(this.cols);
@@ -101,6 +108,9 @@ export class HolidayListComponent extends BaseListingComponent {
 
     ngOnInit() {
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this._filterService.updateSelectedOption('');
+            this._filterService.updatedSelectionOptionTwo('');
+            this.updateSelectedOptionThree('');
             // this.sortColumn = resp['sortColumn'];
             // this.primengTable['_sortField'] = resp['sortColumn'];
             if (resp['table_config']['supplier_name']) {
@@ -114,6 +124,21 @@ export class HolidayListComponent extends BaseListingComponent {
             }
             if (resp['table_config']['last_price_date'].value) {
                 resp['table_config']['last_price_date'].value = new Date(resp['table_config']['last_price_date'].value);
+            }
+
+            if (resp['table_config']['publish_date_time']?.value != null && resp['table_config']['publish_date_time'].value.length) {
+                this._filterService.updateSelectedOption('custom_date_range');
+                this._filterService.rangeDateConvert(resp['table_config']['publish_date_time']);
+            }
+
+            if (resp['table_config']['entry_date_time']?.value != null && resp['table_config']['entry_date_time'].value.length) {
+                this._filterService.updatedSelectionOptionTwo('custom_date_range');
+                this._filterService.rangeDateConvert(resp['table_config']['entry_date_time']);
+            }
+
+            if (resp['table_config']['last_price_date']?.value != null && resp['table_config']['last_price_date'].value.length) {
+                this.updateSelectedOptionThree('custom_date_range');
+                this._filterService.rangeDateConvert(resp['table_config']['last_price_date']);
             }
             this.primengTable['filters'] = resp['table_config'];
             this.isFilterShow = true;
@@ -159,20 +184,29 @@ export class HolidayListComponent extends BaseListingComponent {
 
     ngAfterViewInit() {
         // Defult Active filter show
+        this._filterService.updateSelectedOption('');
+        this._filterService.updatedSelectionOptionTwo('');
+        this.updateSelectedOptionThree('');
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             this.isFilterShow = true;
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
             if (filterData['table_config']['supplier_name']) {
                 this.selectedSupplier = filterData['table_config'].supplier_name?.value;
             }
-            if (filterData['table_config']['publish_date_time'].value) {
-                filterData['table_config']['publish_date_time'].value = new Date(filterData['table_config']['publish_date_time'].value);
+    
+            if (filterData['table_config']['publish_date_time']?.value != null && filterData['table_config']['publish_date_time'].value.length) {
+                this._filterService.updateSelectedOption('custom_date_range');
+                this._filterService.rangeDateConvert(filterData['table_config']['publish_date_time']);
             }
-            if (filterData['table_config']['entry_date_time'].value) {
-                filterData['table_config']['entry_date_time'].value = new Date(filterData['table_config']['entry_date_time'].value);
-            }
-            if (filterData['table_config']['last_price_date'].value) {
-                filterData['table_config']['last_price_date'].value = new Date(filterData['table_config']['last_price_date'].value);
+
+            if (filterData['table_config']['entry_date_time']?.value != null && filterData['table_config']['entry_date_time'].value.length) {
+                this._filterService.updatedSelectionOptionTwo('custom_date_range');
+                this._filterService.rangeDateConvert(filterData['table_config']['entry_date_time']);
+            }   
+
+            if (filterData['table_config']['last_price_date']?.value != null && filterData['table_config']['last_price_date'].value.length) {
+                this.updateSelectedOptionThree('custom_date_range');
+                this._filterService.rangeDateConvert(filterData['table_config']['last_price_date']);
             }
             this.primengTable['filters'] = filterData['table_config'];
             this.selectedColumns = this.checkSelectedColumn(filterData['selectedColumns'] || [], this.selectedColumns);
@@ -462,4 +496,12 @@ export class HolidayListComponent extends BaseListingComponent {
         return value && !isNaN(date.getTime());
     }
 
+     onOptionClickThree(option: any, primengTable: any, field: any, key?: any) {
+        this.selectedOptionTwoSubjectThree.next(option.id_by_value);
+        
+        if( option.id_by_value &&  option.id_by_value != 'custom_date_range'){
+            primengTable.filter(option, field, 'custom');
+        } 
+    
+    }
 }

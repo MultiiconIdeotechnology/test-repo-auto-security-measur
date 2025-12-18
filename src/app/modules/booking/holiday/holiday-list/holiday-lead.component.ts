@@ -33,7 +33,7 @@ import { Linq } from 'app/utils/linq';
 import { cloneDeep } from 'lodash';
 import { DateTime } from 'luxon';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
-import { Subscription } from 'rxjs';
+import { BehaviorSubject, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-holiday-lead-list',
@@ -87,6 +87,13 @@ export class HolidayLeadComponent extends BaseListingComponent {
   activeFiltData: any = {};
   cols: Column[] = [];
 
+  private selectedOptionTwoSubjectThree = new BehaviorSubject<any>('');
+  selectionDateDropdownThree$ = this.selectedOptionTwoSubjectThree.asObservable();
+
+  updateSelectedOptionThree(option: string): void {
+    this.selectedOptionTwoSubjectThree.next(option);
+  }
+
 
   constructor(
     private HolidayLeadService: HolidayLeadService,
@@ -108,10 +115,10 @@ export class HolidayLeadComponent extends BaseListingComponent {
       { field: 'product_name', header: 'Product Name', type: Types.text },
       { field: 'supplier_name', header: 'Supplier', type: Types.select },
       { field: 'agent_name', header: 'Agent', type: Types.select },
-      { field: 'start_date', header: 'Start Date', type: Types.date, dateFormat: 'dd-MM-yyyy' },
-      { field: 'end_date', header: 'End Date', type: Types.date, dateFormat: 'dd-MM-yyyy' },
+      { field: 'start_date', header: 'Start Date', type: Types.dateTime, dateFormat: 'dd-MM-yyyy' },
+      { field: 'end_date', header: 'End Date', type: Types.dateTime, dateFormat: 'dd-MM-yyyy' },
       { field: 'no_of_nights', header: 'No of Nights', type: Types.number, fixVal: 0 },
-      { field: 'entry_date_time', header: 'Created', type: Types.date, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
+      { field: 'entry_date_time', header: 'Created', type: Types.dateTime, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
       { field: 'lead_from', header: 'Lead From', type: Types.text },
       { field: 'booking_by', header: 'Booking By', type: Types.select }
     ];
@@ -127,9 +134,10 @@ export class HolidayLeadComponent extends BaseListingComponent {
     this.agentList = this._filterService.agentListById;
 
     // common filter
-    this._filterService.updateSelectedOption('');
     this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
       this._filterService.updateSelectedOption('');
+      this._filterService.updatedSelectionOptionTwo('');
+      this.updateSelectedOptionThree('');
       this.selectedAgent = resp['table_config']['agent_id_filters']?.value;
       if (this.selectedAgent && this.selectedAgent.id) {
         const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
@@ -143,6 +151,16 @@ export class HolidayLeadComponent extends BaseListingComponent {
         this._filterService.rangeDateConvert(resp['table_config']['entry_date_time']);
       }
 
+      if (resp['table_config']['start_date']?.value != null && resp['table_config']['start_date'].value.length) {
+        this._filterService.updatedSelectionOptionTwo('custom_date_range');
+        this._filterService.rangeDateConvert(resp['table_config']['start_date']);
+      }
+
+      if (resp['table_config']['end_date']?.value != null && resp['table_config']['end_date'].value.length) {
+        this.updateSelectedOptionThree('custom_date_range');
+        this._filterService.rangeDateConvert(resp['table_config']['end_date']);
+      }
+
       this.primengTable['filters'] = resp['table_config'];
       this.selectedColumns = resp['selectedColumns'] || [];
       this.isFilterShow = true;
@@ -154,6 +172,9 @@ export class HolidayLeadComponent extends BaseListingComponent {
 
   ngAfterViewInit() {
     // Defult Active filter show
+    this._filterService.updateSelectedOption('');
+    this._filterService.updatedSelectionOptionTwo('');
+    this.updateSelectedOptionThree('');
     if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
       let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
       this.selectedAgent = filterData['table_config']['agent_id_filters']?.value;
@@ -167,6 +188,17 @@ export class HolidayLeadComponent extends BaseListingComponent {
       if (filterData['table_config']['entry_date_time']?.value != null && filterData['table_config']['entry_date_time'].value.length) {
         this._filterService.updateSelectedOption('custom_date_range');
         this._filterService.rangeDateConvert(filterData['table_config']['entry_date_time']);
+      }
+
+
+      if (filterData['table_config']['start_date']?.value != null && filterData['table_config']['start_date'].value.length) {
+        this._filterService.updatedSelectionOptionTwo('custom_date_range');
+        this._filterService.rangeDateConvert(filterData['table_config']['start_date']);
+      }
+
+      if (filterData['table_config']['end_date']?.value != null && filterData['table_config']['end_date'].value.length) {
+        this.updateSelectedOptionThree('custom_date_range');
+        this._filterService.rangeDateConvert(filterData['table_config']['end_date']);
       }
 
       this.primengTable['filters'] = filterData['table_config'];
@@ -323,5 +355,13 @@ export class HolidayLeadComponent extends BaseListingComponent {
     const date = new Date(value);
     return value && !isNaN(date.getTime());
   }
+
+   onOptionClickThree(option: any, primengTable: any, field: any, key?: any) {
+        this.selectedOptionTwoSubjectThree.next(option.id_by_value);
+        
+        if( option.id_by_value &&  option.id_by_value != 'custom_date_range'){
+            primengTable.filter(option, field, 'custom');
+        } 
+    }
 
 }

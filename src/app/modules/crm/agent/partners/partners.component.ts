@@ -225,6 +225,11 @@ export class PartnersComponent extends BaseListingComponent {
                 this._filterService.updatedSelectedContracting('custom_date_range');
                 this._filterService.rangeDateConvert(filterData['table_config']['call_date_time']);
             }
+
+            if (filterData['table_config']['first_login_date_time']?.value != null && filterData['table_config']['first_login_date_time'].value.length) {
+                this.updateSelectedOptionThree('custom_date_range');
+                this._filterService.rangeDateConvert(filterData['table_config']['first_login_date_time']);
+            }
             this.primengTable['filters'] = filterData['table_config'];
             // this.primengTable['_sortField'] = filterData['sortColumn'];
             // this.sortColumn = filterData['sortColumn'];

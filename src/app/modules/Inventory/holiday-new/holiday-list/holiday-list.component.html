@@ -118,14 +118,107 @@
                                 </ng-template>
                             </p-columnFilter>
 
-                            <!--date picker-->
-                            <p-columnFilter *ngIf="col.type == types.date" type="date" [field]="col.field">
-                                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                    <p-calendar (onSelect)="filter($event)" dateFormat="dd-mm-yy" [ngModel]="value"
-                                        appendTo="body" placeholder="Search by Signup">
-                                    </p-calendar>
-                                </ng-template>
-                            </p-columnFilter>
+                            <!--date range picker-->
+                            <ng-container *ngIf="col.type == types.dateTime && col.field == 'publish_date_time'">
+                                <p-columnFilter *ngIf="(_filterService.selectionDateDropdown$ | async) != 'custom_date_range'" [field]="col.field"
+                                    matchMode="custom" [showMenu]="false">
+                                    <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                        <p-dropdown #dateRangeDropdown class="filter-dropdown" [ngModel]="value"
+                                            [options]="_filterService.dateRangeList" optionLabel="label" placeholder="Select Option"
+                                            appendTo="body">
+                                            <ng-template let-option pTemplate="item">
+                                                <div (click)="_filterService.onOptionClick(option, primengTable, col.field)">
+                                                    <div>{{option.label}}</div>
+                                                </div>
+                                            </ng-template>
+                                        </p-dropdown>
+                                    </ng-template>
+                                </p-columnFilter>
+                            
+                                <ng-container *ngIf="(_filterService.selectionDateDropdown$ | async) == 'custom_date_range'">
+                                    <div class="relative inline-block">
+                                        <p-columnFilter [field]="col.field" matchMode="custom" [showMenu]="false">
+                                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                                <p-calendar selectionMode="range" [ngModel]="value"
+                                                    (ngModelChange)="onDateRangeChange($event, filter)" [readonlyInput]="true" dateFormat="dd-mm-yy"
+                                                    appendTo="body" placeholder="📅 Search by Date Range">
+                                                </p-calendar>
+                                            </ng-template>
+                                        </p-columnFilter>
+                                        <mat-icon class="icon-size-4 cursor-pointer absolute"
+                                            style="top:50%; transform: translatey(-50%); right: 25px;"
+                                            (click)="_filterService.onOptionClick('', '', '')">cancel</mat-icon>
+                                    </div>
+                                </ng-container>
+                            </ng-container>
+
+                               <ng-container *ngIf="col.type == types.dateTime && col.field == 'entry_date_time'">
+                                <p-columnFilter *ngIf="(_filterService.selectionDateDropdownTwo$ | async) != 'custom_date_range'"
+                                    field="entry_date_time" matchMode="custom" [showMenu]="false">
+                                    <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                        <p-dropdown #dateRangeDropdown class="filter-dropdown" [ngModel]="value"
+                                            [options]="_filterService.dateRangeList" optionLabel="label" placeholder="Select Option"
+                                            appendTo="body">
+                                            <ng-template let-option pTemplate="item">
+                                                <div (click)="_filterService.onOptionClickTwo(option, primengTable, 'entry_date_time')">
+                                                    <div>{{option.label}}</div>
+                                                </div>
+                                            </ng-template>
+                                        </p-dropdown>
+                                    </ng-template>
+                                </p-columnFilter>
+                            
+                                <ng-container *ngIf="(_filterService.selectionDateDropdownTwo$ | async) == 'custom_date_range'">
+                                    <div class="relative inline-block">
+                                        <p-columnFilter field="entry_date_time" matchMode="custom" [showMenu]="false">
+                                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                                <p-calendar selectionMode="range" [ngModel]="value"
+                                                    (ngModelChange)="onDateRangeChange($event, filter)" [readonlyInput]="true" dateFormat="dd-mm-yy"
+                                                    appendTo="body" placeholder="📅 Search by Date Range">
+                                                </p-calendar>
+                                            </ng-template>
+                                        </p-columnFilter>
+                                        <mat-icon class="icon-size-4 cursor-pointer absolute"
+                                            style="top:50%; transform: translatey(-50%); right: 25px;"
+                                            (click)="_filterService.onOptionClickTwo('', '', '')">cancel</mat-icon>
+                                    </div>
+                                </ng-container>
+                            </ng-container>
+
+                            <!--Future date range picker-->
+                            <ng-container *ngIf="col.type == types.dateTime && col.field == 'last_price_date' ">
+                                <p-columnFilter *ngIf="(selectionDateDropdownThree$ | async) != 'custom_date_range'" field="last_price_date"
+                                    matchMode="custom" [showMenu]="false">
+                                    <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                        <p-dropdown #dateRangeDropdown class="filter-dropdown" [ngModel]="value"
+                                            [options]="_filterService.dateRangeFutureList" optionLabel="label" placeholder="Select Option"
+                                            appendTo="body">
+                                            <ng-template let-option pTemplate="item">
+                                                <div (click)="onOptionClickThree(option, primengTable, 'last_price_date')">
+                                                    <div>{{option.label}}</div>
+                                                </div>
+                                            </ng-template>
+                                        </p-dropdown>
+                                    </ng-template>
+                                </p-columnFilter>
+                            
+                                <ng-container *ngIf="(selectionDateDropdownThree$ | async) == 'custom_date_range'">
+                                    <div class="relative inline-block">
+                                        <p-columnFilter field="last_price_date" matchMode="custom" [showMenu]="false">
+                                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                                <p-calendar selectionMode="range" [ngModel]="value"
+                                                    (ngModelChange)="onDateRangeChange($event, filter)" [readonlyInput]="true" dateFormat="dd-mm-yy"
+                                                    appendTo="body" placeholder="📅 Search by Date Range">
+                                                </p-calendar>
+                                            </ng-template>
+                                        </p-columnFilter>
+                                        <mat-icon class="icon-size-4 cursor-pointer absolute"
+                                            style="top:50%; transform: translatey(-50%); right: 25px;"
+                                            (click)="onOptionClickThree('', '', '')">cancel</mat-icon>
+                                    </div>
+                                </ng-container>
+                            </ng-container>
+                            
 
                             <!--2 digit point number-->
                             <p-columnFilter *ngIf="col.type == types.number" [type]="'numeric'" [field]="col.field"
@@ -214,7 +307,7 @@
                             </span>
                         </ng-container>
 
-                        <ng-container *ngIf="col.type == types.date">
+                        <ng-container *ngIf="col.type == types.dateTime">
                             {{isValidDate(element[col.field])? (element[col.field] | date: col.dateFormat): "-"}}
                         </ng-container>
 

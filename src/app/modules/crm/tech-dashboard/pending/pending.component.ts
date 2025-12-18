@@ -138,8 +138,8 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
             { field: 'productServiceStatus', header: 'Status', type: Types.select, isCustomColor: true },
             { field: 'agentCode', header: 'Agent Code', type: Types.number, fixVal: 0 },
             { field: 'agencyName', header: 'Agency Name', type: Types.select },
-            { field: 'startIntegrationDateTime', header: 'Start Int. Date', type: Types.date, dateFormat: 'dd-MM-yyyy' },
-            { field: 'entryDateTime ', header: 'Entry Date', type: Types.date, dateFormat: 'dd-MM-yyyy' }
+            { field: 'startIntegrationDateTime', header: 'Start Int. Date', type: Types.dateTime, dateFormat: 'dd-MM-yyyy' },
+            { field: 'entryDateTime', header: 'Entry Date', type: Types.dateTime, dateFormat: 'dd-MM-yyyy' }
         ];
 
         this.cols.unshift(...this.selectedColumns);
@@ -150,6 +150,8 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
         this.agentList = this._filterService.agentListByValue;
 
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this._filterService.updateSelectedOption('');
+            this._filterService.updatedSelectionOptionTwo('');
             this.selectedAgent = resp['table_config']['agencyName']?.value;
             if (this.selectedAgent && this.selectedAgent.id) {
                 const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
@@ -159,12 +161,16 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
             }
             // this.sortColumn = resp['sortColumn'];
             // this.primengTable['_sortField'] = resp['sortColumn'];
-            if (resp['table_config']['startIntegrationDateTime'].value) {
-                resp['table_config']['startIntegrationDateTime'].value = new Date(resp['table_config']['startIntegrationDateTime'].value);
+            if (resp['table_config']['startIntegrationDateTime']?.value != null && resp['table_config']['startIntegrationDateTime'].value.length) {
+                this._filterService.updateSelectedOption('custom_date_range');
+                this._filterService.rangeDateConvert(resp['table_config']['startIntegrationDateTime']);
             }
-            if (resp['table_config']['entryDateTime'].value) {
-                resp['table_config']['entryDateTime'].value = new Date(resp['table_config']['entryDateTime'].value);
-            }
+
+            if (resp['table_config']['entryDateTime']?.value != null && resp['table_config']['entryDateTime'].value.length) {
+                this._filterService.updatedSelectionOptionTwo('custom_date_range');
+                this._filterService.rangeDateConvert(resp['table_config']['entryDateTime']);
+            }   
+
             this.primengTable['filters'] = resp['table_config'];
             this.isFilterShowPending = true;
             this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
@@ -175,6 +181,8 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
 
     ngAfterViewInit() {
         // Defult Active filter show
+        this._filterService.updateSelectedOption('');
+        this._filterService.updatedSelectionOptionTwo('');
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             this.isFilterShowPending = true;
             this.isFilterShowPendingChange.emit(this.isFilterShowPending);
@@ -189,12 +197,15 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
                 }
             }, 1000);
 
-            if (filterData['table_config']['startIntegrationDateTime'].value) {
-                filterData['table_config']['startIntegrationDateTime'].value = new Date(filterData['table_config']['startIntegrationDateTime'].value);
+            if (filterData['table_config']['startIntegrationDateTime']?.value != null && filterData['table_config']['startIntegrationDateTime'].value.length) {
+                this._filterService.updateSelectedOption('custom_date_range');
+                this._filterService.rangeDateConvert(filterData['table_config']['startIntegrationDateTime']);
             }
-            if (filterData['table_config']['entryDateTime'].value) {
-                filterData['table_config']['entryDateTime'].value = new Date(filterData['table_config']['entryDateTime'].value);
-            }
+
+            if (filterData['table_config']['entryDateTime']?.value != null && filterData['table_config']['entryDateTime'].value.length) {
+                this._filterService.updatedSelectionOptionTwo('custom_date_range');
+                this._filterService.rangeDateConvert(filterData['table_config']['entryDateTime']);
+            }   
             this.primengTable['filters'] = filterData['table_config'];
             this.selectedColumns = this.checkSelectedColumn(filterData['selectedColumns'] || [], this.selectedColumns);
             this.onColumnsChange();
@@ -585,6 +596,5 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
     isValidDate(value: any): boolean {
         const date = new Date(value);
         return value && !isNaN(date.getTime());
-
     }
 }
