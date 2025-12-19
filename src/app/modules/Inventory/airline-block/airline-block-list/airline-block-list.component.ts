@@ -122,13 +122,13 @@ export class AirlineBlockListComponent extends BaseListingComponent {
   ngOnInit() {
     this.getSupplierList();
     // common filter
-   
+
     this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
       this._filterService.updateSelectedOption('');
       this._filterService.updatedSelectionOptionTwo('');
       this.updateSelectedOptionThree('');
       this.updateSelectedOptionFour('');
-     
+
 
       if (resp['table_config']['departure_date_time']?.value != null && resp['table_config']['departure_date_time'].value.length) {
         this._filterService.updateSelectedOption('custom_date_range');
@@ -173,7 +173,7 @@ export class AirlineBlockListComponent extends BaseListingComponent {
         this._filterService.updatedSelectionOptionTwo('custom_date_range');
         this._filterService.rangeDateConvert(filterData['table_config']['arrival_date_time']);
       }
- 
+
       if (filterData['table_config']['entry_date_time']?.value != null && filterData['table_config']['entry_date_time'].value.length) {
         this.updateSelectedOptionThree('custom_date_range');
         this._filterService.rangeDateConvert(filterData['table_config']['entry_date_time']);
@@ -192,7 +192,7 @@ export class AirlineBlockListComponent extends BaseListingComponent {
   getSupplierList() {
     this.airlineBlockService.getSupplierBoCombo('Airline Block').subscribe((data: any) => {
       this.supplierList = data;
-      
+
       for (let i in this.supplierList) {
         this.supplierList[i].id_by_value = this.supplierList[i].company_name
       }
@@ -201,7 +201,7 @@ export class AirlineBlockListComponent extends BaseListingComponent {
 
 
   viewDetails(record: any): void {
-   if (!Security.hasPermission(inventoryAirlineBlockPermissions.viewAirlineBlockPermissions)) {
+    if (!Security.hasPermission(inventoryAirlineBlockPermissions.viewAirlineBlockPermissions)) {
       return this.alertService.showToast('error', messages.permissionDenied);
     }
     const queryParams: any = {
@@ -350,20 +350,20 @@ export class AirlineBlockListComponent extends BaseListingComponent {
     }
   }
 
-   onOptionClickThree(option: any, primengTable: any, field: any, key?: any) {
-        this.selectedOptionTwoSubjectThree.next(option.id_by_value);
-        
-        if( option.id_by_value &&  option.id_by_value != 'custom_date_range'){
-            primengTable.filter(option, field, 'custom');
-        } 
-    }
+  onOptionClickThree(option: any, primengTable: any, field: any, key?: any) {
+    this.selectedOptionTwoSubjectThree.next(option.id_by_value);
 
-    onOptionClickFour(option: any, primengTable: any, field: any, key?: any) {
-        this.selectedOptionTwoSubjectFour.next(option.id_by_value);
-        
-        if( option.id_by_value &&  option.id_by_value != 'custom_date_range'){
-            primengTable.filter(option, field, 'custom');
-        } 
+    if (option.id_by_value && option.id_by_value != 'custom_date_range') {
+      primengTable.filter(option, field, 'custom');
     }
+  }
+
+  onOptionClickFour(option: any, primengTable: any, field: any, key?: any) {
+    this.selectedOptionTwoSubjectFour.next(option.id_by_value);
+
+    if (option.id_by_value && option.id_by_value != 'custom_date_range') {
+      primengTable.filter(option, field, 'custom');
+    }
+  }
 
 }

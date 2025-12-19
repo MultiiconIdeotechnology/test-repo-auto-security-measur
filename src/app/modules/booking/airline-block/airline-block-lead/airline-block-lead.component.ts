@@ -21,7 +21,7 @@ import { BaseListingComponent } from 'app/form-models/base-listing';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { filter_module_name, messages, module_name, Security } from 'app/security';
 import { ToasterService } from 'app/services/toaster.service';
-import { Subscription, takeUntil } from 'rxjs';
+import { BehaviorSubject, Subscription, takeUntil } from 'rxjs';
 import { Excel } from 'app/utils/export/excel';
 import { DateTime } from 'luxon';
 import { Linq } from 'app/utils/linq';
@@ -75,6 +75,12 @@ export class AirlineBlockLeadComponent extends BaseListingComponent {
   supplierList: any[] = [];
   selectedAgent: any;
   agentList: any[] = [];
+  private selectedOptionTwoSubjectThree = new BehaviorSubject<any>('');
+  selectionDateDropdownThree$ = this.selectedOptionTwoSubjectThree.asObservable();
+
+  updateSelectedOptionThree(option: string): void {
+    this.selectedOptionTwoSubjectThree.next(option);
+  }
 
   constructor(
     private airlineBlockService: AirlineBlockService,
@@ -94,12 +100,24 @@ export class AirlineBlockLeadComponent extends BaseListingComponent {
     this.getSupplierList();
     this.agentList = this._filterService.agentListById;
     // common filter
-    this._filterService.selectionDateDropdown = "";
     this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
-      this._filterService.selectionDateDropdown = "";
+      this._filterService.updateSelectedOption('');
+      this._filterService.updatedSelectionOptionTwo('');
+      this.updateSelectedOptionThree('');
 
-      if (resp['table_config']['entry_date_time']?.value != null) {
-        resp['table_config']['entry_date_time'].value = new Date(resp['table_config']['entry_date_time'].value);
+      if (resp['table_config']['entry_date_time']?.value != null && resp['table_config']['entry_date_time'].value.length) {
+        this._filterService.updateSelectedOption('custom_date_range');
+        this._filterService.rangeDateConvert(resp['table_config']['entry_date_time']);
+      }
+
+      if (resp['table_config']['departure_date_time']?.value != null && resp['table_config']['departure_date_time'].value.length) {
+        this._filterService.updatedSelectionOptionTwo('custom_date_range');
+        this._filterService.rangeDateConvert(resp['table_config']['departure_date_time']);
+      }
+
+      if (resp['table_config']['arrival_date_time']?.value != null && resp['table_config']['arrival_date_time'].value.length) {
+        this.updateSelectedOptionThree('custom_date_range');
+        this._filterService.rangeDateConvert(resp['table_config']['arrival_date_time']);
       }
 
       this.primengTable['filters'] = resp['table_config'];
@@ -111,11 +129,25 @@ export class AirlineBlockLeadComponent extends BaseListingComponent {
 
   ngAfterViewInit() {
     // Defult Active filter show
+    this._filterService.updateSelectedOption('');
+    this._filterService.updatedSelectionOptionTwo('');
+    this.updateSelectedOptionThree('');
     if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
       let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
 
-      if (filterData['table_config']['entry_date_time']?.value != null) {
-        filterData['table_config']['entry_date_time'].value = new Date(filterData['table_config']['entry_date_time'].value);
+      if (filterData['table_config']['entry_date_time']?.value != null && filterData['table_config']['entry_date_time'].value.length) {
+        this._filterService.updateSelectedOption('custom_date_range');
+        this._filterService.rangeDateConvert(filterData['table_config']['entry_date_time']);
+      }
+
+      if (filterData['table_config']['departure_date_time']?.value != null && filterData['table_config']['departure_date_time'].value.length) {
+        this._filterService.updatedSelectionOptionTwo('custom_date_range');
+        this._filterService.rangeDateConvert(filterData['table_config']['departure_date_time']);
+      }
+
+      if (filterData['table_config']['arrival_date_time']?.value != null && filterData['table_config']['arrival_date_time'].value.length) {
+        this.updateSelectedOptionThree('custom_date_range');
+        this._filterService.rangeDateConvert(filterData['table_config']['arrival_date_time']);
       }
 
       this.primengTable['filters'] = filterData['table_config'];
@@ -234,6 +266,13 @@ export class AirlineBlockLeadComponent extends BaseListingComponent {
     });
   }
 
+   onOptionClickThree(option: any, primengTable: any, field: any, key?: any) {
+        this.selectedOptionTwoSubjectThree.next(option.id_by_value);
+        
+        if( option.id_by_value &&  option.id_by_value != 'custom_date_range'){
+            primengTable.filter(option, field, 'custom');
+        } 
+    }
 
 }
 

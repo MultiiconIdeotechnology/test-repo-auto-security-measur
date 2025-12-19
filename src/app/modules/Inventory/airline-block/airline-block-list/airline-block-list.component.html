@@ -35,8 +35,8 @@
             </button>
             <p-overlayPanel #op [dismissable]="false">
                 <p-multiSelect [options]="cols" [(ngModel)]="_selectedColumns" optionLabel="header"
-                    class="overlay-panel" [style]="{'max-width': '220px'}" display="chip"
-                    placeholder="Choose Columns" (onPanelHide)="op.hide()" [appendTo]="'body'" />
+                    class="overlay-panel" [style]="{'max-width': '220px'}" display="chip" placeholder="Choose Columns"
+                    (onPanelHide)="op.hide()" [appendTo]="'body'" />
             </p-overlayPanel>
 
             <!------Refresh------>
@@ -62,8 +62,8 @@
             <ng-template pTemplate="header" let-columns>
                 <tr>
                     <th class="text-center left-[-1px]" pFrozenColumn>#</th>
-                    <th class="min-w-[120px] text-center dark:bg-[#1e293b]"
-                        alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.is_publish_for_bonton"
+                    <th class="min-w-[120px] text-center dark:bg-[#1e293b]" alignFrozen="left" pFrozenColumn
+                        [frozen]="frozenObj?.is_publish_for_bonton"
                         [ngClass]="{'left-0': !frozenObj?.is_publish_for_bonton}">
                         Airline
                         <span class="float-right"
@@ -100,15 +100,15 @@
                         <p-sortIcon field="entry_date_time"></p-sortIcon>
                     </th>
 
-                    <th [ngClass]="{'w-full':isLast}" [pSortableColumn]="col.field" pResizableColumn *ngFor="let col of columns">
+                    <th [ngClass]="{'w-full':isLast}" [pSortableColumn]="col.field" pResizableColumn
+                        *ngFor="let col of columns">
                         {{col.header}} <p-sortIcon [field]="col.field" />
                     </th>
                 </tr>
 
                 <tr *ngIf="isFilterShow">
                     <th class="left-[-1px]" pFrozenColumn></th>
-                    <th  alignFrozen="left" pFrozenColumn
-                        [frozen]="frozenObj?.is_publish_for_bonton">
+                    <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.is_publish_for_bonton">
                         <p-columnFilter field="is_publish_for_bonton" matchMode="equals" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="actionList"
@@ -143,24 +143,25 @@
                             field="departure_date_time" matchMode="custom" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown #dateRangeDropdown class="filter-dropdown" [ngModel]="value"
-                                    [options]="_filterService.dateRangeFutureList" optionLabel="label" placeholder="Select Option"
-                                    appendTo="body">
+                                    [options]="_filterService.dateRangeFutureList" optionLabel="label"
+                                    placeholder="Select Option" appendTo="body">
                                     <ng-template let-option pTemplate="item">
-                                        <div (click)="_filterService.onOptionClick(option, primengTable, 'departure_date_time')">
+                                        <div
+                                            (click)="_filterService.onOptionClick(option, primengTable, 'departure_date_time')">
                                             <div>{{option.label}}</div>
                                         </div>
                                     </ng-template>
                                 </p-dropdown>
                             </ng-template>
                         </p-columnFilter>
-                    
+
                         <ng-container *ngIf="(_filterService.selectionDateDropdown$ | async) == 'custom_date_range'">
                             <div class="relative inline-block">
                                 <p-columnFilter field="departure_date_time" matchMode="custom" [showMenu]="false">
                                     <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                         <p-calendar selectionMode="range" [ngModel]="value"
-                                            (ngModelChange)="onDateRangeChange($event, filter)" [readonlyInput]="true" dateFormat="dd-mm-yy"
-                                            appendTo="body" placeholder="📅 Search by Date Range">
+                                            (ngModelChange)="onDateRangeChange($event, filter)" [readonlyInput]="true"
+                                            dateFormat="dd-mm-yy" appendTo="body" placeholder="📅 Search by Date Range">
                                         </p-calendar>
                                     </ng-template>
                                 </p-columnFilter>
@@ -169,31 +170,33 @@
                                     (click)="_filterService.onOptionClick('', '', '')">cancel</mat-icon>
                             </div>
                         </ng-container>
-                    
+
                     </th>
                     <th>
-                        <p-columnFilter *ngIf="(_filterService.selectionDateDropdownTwo$ | async) != 'custom_date_range'"
+                        <p-columnFilter
+                            *ngIf="(_filterService.selectionDateDropdownTwo$ | async) != 'custom_date_range'"
                             field="arrival_date_time" matchMode="custom" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown #dateRangeDropdown class="filter-dropdown" [ngModel]="value"
-                                    [options]="_filterService.dateRangeFutureList" optionLabel="label" placeholder="Select Option"
-                                    appendTo="body">
+                                    [options]="_filterService.dateRangeFutureList" optionLabel="label"
+                                    placeholder="Select Option" appendTo="body">
                                     <ng-template let-option pTemplate="item">
-                                        <div (click)="_filterService.onOptionClickTwo(option, primengTable, 'arrival_date_time')">
+                                        <div
+                                            (click)="_filterService.onOptionClickTwo(option, primengTable, 'arrival_date_time')">
                                             <div>{{option.label}}</div>
                                         </div>
                                     </ng-template>
                                 </p-dropdown>
                             </ng-template>
                         </p-columnFilter>
-                    
+
                         <ng-container *ngIf="(_filterService.selectionDateDropdownTwo$ | async) == 'custom_date_range'">
                             <div class="relative inline-block">
                                 <p-columnFilter field="arrival_date_time" matchMode="custom" [showMenu]="false">
                                     <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                         <p-calendar selectionMode="range" [ngModel]="value"
-                                            (ngModelChange)="onDateRangeChange($event, filter)" [readonlyInput]="true" dateFormat="dd-mm-yy"
-                                            appendTo="body" placeholder="📅 Search by Date Range">
+                                            (ngModelChange)="onDateRangeChange($event, filter)" [readonlyInput]="true"
+                                            dateFormat="dd-mm-yy" appendTo="body" placeholder="📅 Search by Date Range">
                                         </p-calendar>
                                     </ng-template>
                                 </p-columnFilter>
@@ -201,7 +204,7 @@
                                     style="top:50%; transform: translatey(-50%); right: 25px;"
                                     (click)="_filterService.onOptionClickTwo('', '', '')">cancel</mat-icon>
                             </div>
-                            </ng-container>
+                        </ng-container>
                     </th>
                     <th>
                         <p-columnFilter type="text" matchMode="contains" field="origin"
@@ -217,12 +220,12 @@
                             placeholder="Filter by Seats" ariaLabel="Filter No. of Seats"></p-columnFilter>
                     </th>
                     <th>
-                        <p-columnFilter *ngIf="(selectionDateDropdownThree$ | async) != 'custom_date_range'" field="entry_date_time"
-                            matchMode="custom" [showMenu]="false">
+                        <p-columnFilter *ngIf="(selectionDateDropdownThree$ | async) != 'custom_date_range'"
+                            field="entry_date_time" matchMode="custom" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown #dateRangeDropdown class="filter-dropdown" [ngModel]="value"
-                                    [options]="_filterService.dateRangeList" optionLabel="label" placeholder="Select Option"
-                                    appendTo="body">
+                                    [options]="_filterService.dateRangeList" optionLabel="label"
+                                    placeholder="Select Option" appendTo="body">
                                     <ng-template let-option pTemplate="item">
                                         <div (click)="onOptionClickThree(option, primengTable, 'entry_date_time')">
                                             <div>{{option.label}}</div>
@@ -231,14 +234,14 @@
                                 </p-dropdown>
                             </ng-template>
                         </p-columnFilter>
-                    
+
                         <ng-container *ngIf="(selectionDateDropdownThree$ | async) == 'custom_date_range'">
                             <div class="relative inline-block">
                                 <p-columnFilter field="entry_date_time" matchMode="custom" [showMenu]="false">
                                     <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                         <p-calendar selectionMode="range" [ngModel]="value"
-                                            (ngModelChange)="onDateRangeChange($event, filter)" [readonlyInput]="true" dateFormat="dd-mm-yy"
-                                            appendTo="body" placeholder="📅 Search by Date Range">
+                                            (ngModelChange)="onDateRangeChange($event, filter)" [readonlyInput]="true"
+                                            dateFormat="dd-mm-yy" appendTo="body" placeholder="📅 Search by Date Range">
                                         </p-calendar>
                                     </ng-template>
                                 </p-columnFilter>
@@ -249,14 +252,14 @@
                         </ng-container>
                     </th>
 
-                    <th *ngFor="let col of columns">                   
+                    <th *ngFor="let col of columns">
                         <ng-container *ngIf="col.isDate">
-                            <p-columnFilter *ngIf="(selectionDateDropdownFour$ | async) != 'custom_date_range'" field="modify_date_time"
-                                matchMode="custom" [showMenu]="false">
+                            <p-columnFilter *ngIf="(selectionDateDropdownFour$ | async) != 'custom_date_range'"
+                                field="modify_date_time" matchMode="custom" [showMenu]="false">
                                 <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                     <p-dropdown #dateRangeDropdown class="filter-dropdown" [ngModel]="value"
-                                        [options]="_filterService.dateRangeList" optionLabel="label" placeholder="Select Option"
-                                        appendTo="body">
+                                        [options]="_filterService.dateRangeList" optionLabel="label"
+                                        placeholder="Select Option" appendTo="body">
                                         <ng-template let-option pTemplate="item">
                                             <div (click)="onOptionClickFour(option, primengTable, 'modify_date_time')">
                                                 <div>{{option.label}}</div>
@@ -265,14 +268,15 @@
                                     </p-dropdown>
                                 </ng-template>
                             </p-columnFilter>
-                        
+
                             <ng-container *ngIf="(selectionDateDropdownFour$ | async) == 'custom_date_range'">
                                 <div class="relative inline-block">
                                     <p-columnFilter field="modify_date_time" matchMode="custom" [showMenu]="false">
                                         <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                             <p-calendar selectionMode="range" [ngModel]="value"
-                                                (ngModelChange)="onDateRangeChange($event, filter)" [readonlyInput]="true" dateFormat="dd-mm-yy"
-                                                appendTo="body" placeholder="📅 Search by Date Range">
+                                                (ngModelChange)="onDateRangeChange($event, filter)"
+                                                [readonlyInput]="true" dateFormat="dd-mm-yy" appendTo="body"
+                                                placeholder="📅 Search by Date Range">
                                             </p-calendar>
                                         </ng-template>
                                     </p-columnFilter>
@@ -306,11 +310,11 @@
                             <mat-divider></mat-divider>
                             <button mat-menu-item (click)="Audit(element)">
                                 <mat-icon class="mat-18">
-                                        {{element.is_audited ? "check_circle" : "check_circle"}}
-                                    </mat-icon>
-                                    <span style="font-weight: 600">
-                                        {{ element.is_audited ? "UnAudit" : "Audit" }}
-                                    </span>
+                                    {{element.is_audited ? "check_circle" : "check_circle"}}
+                                </mat-icon>
+                                <span style="font-weight: 600">
+                                    {{ element.is_audited ? "UnAudit" : "Audit" }}
+                                </span>
                             </button>
                             <div *ngIf="element.is_audited && element.origin && element.destination">
                                 <button mat-menu-item (click)="publishBonton(element)">
@@ -322,7 +326,8 @@
                                     </span>
                                 </button>
                             </div>
-                            <button mat-menu-item (click)="viewDetails(element)" *ngIf="element.origin && element.destination">
+                            <button mat-menu-item (click)="viewDetails(element)"
+                                *ngIf="element.origin && element.destination">
                                 <mat-icon svgIcon="heroicons_solid:eye"></mat-icon>
                                 <span style="font-weight: 600">View Airline Block</span>
                             </button>
@@ -364,7 +369,11 @@
             <ng-template pTemplate="emptymessage">
                 <tr class="h-14">
                     <td colspan="21" class="text-center font-semibold text-lg">
-                        {{ isLoading | noDataText:searchInputControl.value }}
+                        <span *ngIf="isLoading">Loading...</span>
+                        <span *ngIf="!isLoading">
+                            No records found {{ searchInputControl.value ? "matching '" + searchInputControl.value + "'"
+                            : "" }}
+                        </span>
                     </td>
                 </tr>
             </ng-template>

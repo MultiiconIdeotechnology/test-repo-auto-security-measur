@@ -267,7 +267,7 @@
                             {{ element.agency_name || '-' }}
                         </ng-container>
 
-                        <ng-container *ngIf="col.type == types.date">
+                        <ng-container *ngIf="col.type == types.dateTime">
                             {{isValidDate(element[col.field])? (element[col.field] | date: col.dateFormat): "-"}}
                         </ng-container>
 
