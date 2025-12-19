@@ -150,12 +150,12 @@ export class OfflineListComponent extends BaseListingComponent {
 
       // this.sortColumn = resp['sortColumn'];
       // this.primengTable['_sortField'] = resp['sortColumn'];
-     if (resp['table_config']['entry_date_time']?.value != null && resp['table_config']['entry_date_time'].value.length) {
+      if (resp['table_config']['entry_date_time']?.value != null && resp['table_config']['entry_date_time'].value.length) {
         this._filterService.updateSelectedOption('custom_date_range');
         this._filterService.rangeDateConvert(resp['table_config']['entry_date_time']);
       }
 
-      
+
       this.primengTable['filters'] = resp['table_config'];
       this.isFilterShow = true;
       this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);

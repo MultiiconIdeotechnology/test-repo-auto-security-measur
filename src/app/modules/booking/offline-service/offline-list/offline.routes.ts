@@ -10,14 +10,6 @@ export default [
         canActivate: [AuthGuard],
         data: { module: 'BO Menu Links', group: 'Bookings', operation: 'Offline Service', category: 'View' }
     },
-    // {
-    //     path: 'details',
-    //     component: HotelBookingDetailsComponent
-    // },
-    // {
-    //     path: 'details/:id',
-    //     component: HotelBookingDetailsComponent
-    // },
     {
         path: 'entry/:id/:readonly',
         component: OfflineInfoComponent,
