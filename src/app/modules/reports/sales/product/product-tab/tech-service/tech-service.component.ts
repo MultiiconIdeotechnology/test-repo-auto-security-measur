@@ -135,10 +135,15 @@ export class TechServiceComponent extends BaseListingComponent {
 
     ngOnInit(): void {
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this._filterService.updateSelectedOption('');
             if (resp['gridName'] != this.filter_table_name) return;
             this.activeFiltData = resp;
             this.sortColumn = resp['sortColumn'];
             //this.selectDateRanges(resp['table_config']);
+            if (resp['table_config']['expiry_date']?.value != null && resp['table_config']['expiry_date'].value.length) {
+                this._filterService.updateSelectedOption('custom_date_range');
+                this._filterService.rangeDateConvert(resp['table_config']['expiry_date']);
+            }
             this.primengTable['_sortField'] = resp['sortColumn'];
             this.isFilterShow = true;
             this.primengTable['filters'] = resp['table_config'];
@@ -155,7 +160,8 @@ export class TechServiceComponent extends BaseListingComponent {
 
     ngAfterViewInit() {
         // Defult Active filter show
-        if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+         this._filterService.updateSelectedOption('');
+        if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {         
             this.isFilterShow = true;
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
             this.selectedAgent = filterData['table_config']['agency_name']?.value;
