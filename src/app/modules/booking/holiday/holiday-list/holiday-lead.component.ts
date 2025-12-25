@@ -356,12 +356,14 @@ export class HolidayLeadComponent extends BaseListingComponent {
     return value && !isNaN(date.getTime());
   }
 
-   onOptionClickThree(option: any, primengTable: any, field: any, key?: any) {
-        this.selectedOptionTwoSubjectThree.next(option.id_by_value);
-        
-        if( option.id_by_value &&  option.id_by_value != 'custom_date_range'){
-            primengTable.filter(option, field, 'custom');
-        } 
+  onOptionClickThree(option: any, primengTable: any, field: any, key?: any) {
+    this.selectedOptionTwoSubjectThree.next(option.id_by_value);
+
+    if (option.id_by_value && option.id_by_value != 'custom_date_range') {
+      primengTable.filter(option, field, 'custom');
+    } else if (option.id_by_value == 'custom_date_range') {
+      primengTable.filter(null, field, 'custom');
     }
+  }
 
 }

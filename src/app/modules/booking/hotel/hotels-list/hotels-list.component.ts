@@ -217,7 +217,7 @@ export class HotelsListComponent extends BaseListingComponent {
           this.agentList.push(this.selectedAgent);
         }
       }
-  
+
       if (filterData['table_config']['bookingDate']?.value != null && filterData['table_config']['bookingDate'].value.length) {
         this._filterService.updateSelectedOption('custom_date_range');
         this._filterService.rangeDateConvert(filterData['table_config']['bookingDate']);
@@ -468,11 +468,13 @@ export class HotelsListComponent extends BaseListingComponent {
   }
 
   onOptionClickThree(option: any, primengTable: any, field: any, key?: any) {
-        this.selectedOptionTwoSubjectThree.next(option.id_by_value);
-        
-        if( option.id_by_value &&  option.id_by_value != 'custom_date_range'){
-            primengTable.filter(option, field, 'custom');
-        } 
+    this.selectedOptionTwoSubjectThree.next(option.id_by_value);
+
+    if (option.id_by_value && option.id_by_value != 'custom_date_range') {
+      primengTable.filter(option, field, 'custom');
+    } else if (option.id_by_value == 'custom_date_range') {
+      primengTable.filter(null, field, 'custom');
     }
+  }
 
 }

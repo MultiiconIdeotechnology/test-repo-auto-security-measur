@@ -79,7 +79,7 @@ export class GroupInquiryListComponent
     private selectedOptionTwoSubjectThree = new BehaviorSubject<any>('');
     selectionDateDropdownThree$ = this.selectedOptionTwoSubjectThree.asObservable();
 
-     updateSelectedOptionThree(option: string): void {
+    updateSelectedOptionThree(option: string): void {
         this.selectedOptionTwoSubjectThree.next(option);
     }
 
@@ -96,7 +96,7 @@ export class GroupInquiryListComponent
         private agentService: AgentService,
         private kycDocumentService: KycDocumentService,
         public _filterService: CommonFilterService,
-        private flightTabService : FlightTabService
+        private flightTabService: FlightTabService
     ) {
         super(module_name.groupInquiry);
         this.key = this.module_name;
@@ -143,7 +143,7 @@ export class GroupInquiryListComponent
             this.selectedSupplier = resp['table_config']['supplier_name']?.value;
             // this.sortColumn = resp['sortColumn'];
             // this.primengTable['_sortField'] = resp['sortColumn'];      
-            
+
             if (resp['table_config']['departure_date']?.value != null && resp['table_config']['departure_date'].value.length) {
                 this._filterService.updateSelectedOption('custom_date_range');
                 this._filterService.rangeDateConvert(resp['table_config']['departure_date']);
@@ -189,7 +189,7 @@ export class GroupInquiryListComponent
             if (filterData['table_config']['arrival_date']?.value != null && filterData['table_config']['arrival_date'].value.length) {
                 this._filterService.updatedSelectionOptionTwo('custom_date_range');
                 this._filterService.rangeDateConvert(filterData['table_config']['arrival_date']);
-            }   
+            }
 
             if (filterData['table_config']['entry_date_time']?.value != null && filterData['table_config']['entry_date_time'].value.length) {
                 this.updateSelectedOptionThree('custom_date_range');
@@ -438,12 +438,14 @@ export class GroupInquiryListComponent
         return value && !isNaN(date.getTime());
     }
 
-     onOptionClickThree(option: any, primengTable: any, field: any, key?: any) {
+    onOptionClickThree(option: any, primengTable: any, field: any, key?: any) {
         this.selectedOptionTwoSubjectThree.next(option.id_by_value);
-        
-        if( option.id_by_value &&  option.id_by_value != 'custom_date_range'){
+
+        if (option.id_by_value && option.id_by_value != 'custom_date_range') {
             primengTable.filter(option, field, 'custom');
-        } 
+        } else if (option.id_by_value == 'custom_date_range') {
+            primengTable.filter(null, field, 'custom');
+        }
     }
 
 }

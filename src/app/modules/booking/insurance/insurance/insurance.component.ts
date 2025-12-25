@@ -88,7 +88,7 @@ export class InsuranceComponent extends BaseListingComponent {
   selectedAgent: any;
   insuranceFilter: any;
   supplierList: any[] = [];
-  
+
   private selectedOptionTwoSubjectThree = new BehaviorSubject<any>('');
   selectionDateDropdownThree$ = this.selectedOptionTwoSubjectThree.asObservable();
 
@@ -175,7 +175,7 @@ export class InsuranceComponent extends BaseListingComponent {
         if (!match) {
           this.agentList.push(this.selectedAgent);
         }
-      }   
+      }
 
       if (resp['table_config']['bookingDate']?.value != null && resp['table_config']['bookingDate'].value.length) {
         this._filterService.updateSelectedOption('custom_date_range');
@@ -197,7 +197,7 @@ export class InsuranceComponent extends BaseListingComponent {
       this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
       this.primengTable._filter();
     });
-     this.getSupplierList();
+    this.getSupplierList();
 
   }
 
@@ -242,17 +242,17 @@ export class InsuranceComponent extends BaseListingComponent {
     }
   }
 
-  
-    // Api to get the Supplier List
-    getSupplierList() {
-        this.flighttabService.getSupplierBoCombo('Insurance').subscribe((data: any) => {
-            this.supplierList = data;
 
-            for (let i in this.supplierList) {
-                this.supplierList[i].id_by_value = this.supplierList[i].company_name;
-            }
-        })
-    }
+  // Api to get the Supplier List
+  getSupplierList() {
+    this.flighttabService.getSupplierBoCombo('Insurance').subscribe((data: any) => {
+      this.supplierList = data;
+
+      for (let i in this.supplierList) {
+        this.supplierList[i].id_by_value = this.supplierList[i].company_name;
+      }
+    })
+  }
 
 
   onColumnsChange(): void {
@@ -426,11 +426,13 @@ export class InsuranceComponent extends BaseListingComponent {
     return value && !isNaN(date.getTime());
   }
 
-    onOptionClickThree(option: any, primengTable: any, field: any, key?: any) {
-        this.selectedOptionTwoSubjectThree.next(option.id_by_value);
-        
-        if( option.id_by_value &&  option.id_by_value != 'custom_date_range'){
-            primengTable.filter(option, field, 'custom');
-        } 
+  onOptionClickThree(option: any, primengTable: any, field: any, key?: any) {
+    this.selectedOptionTwoSubjectThree.next(option.id_by_value);
+
+    if (option.id_by_value && option.id_by_value != 'custom_date_range') {
+      primengTable.filter(option, field, 'custom');
+    } else if (option.id_by_value == 'custom_date_range') {
+      primengTable.filter(null, field, 'custom');
     }
+  }
 }

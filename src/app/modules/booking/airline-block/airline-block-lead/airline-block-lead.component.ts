@@ -160,7 +160,7 @@ export class AirlineBlockLeadComponent extends BaseListingComponent {
   getSupplierList() {
     this.airlineBlockService.getSupplierBoCombo('Airline Block').subscribe((data: any) => {
       this.supplierList = data;
-      
+
       for (let i in this.supplierList) {
         this.supplierList[i].id_by_value = this.supplierList[i].company_name
       }
@@ -266,13 +266,15 @@ export class AirlineBlockLeadComponent extends BaseListingComponent {
     });
   }
 
-   onOptionClickThree(option: any, primengTable: any, field: any, key?: any) {
-        this.selectedOptionTwoSubjectThree.next(option.id_by_value);
-        
-        if( option.id_by_value &&  option.id_by_value != 'custom_date_range'){
-            primengTable.filter(option, field, 'custom');
-        } 
+  onOptionClickThree(option: any, primengTable: any, field: any, key?: any) {
+    this.selectedOptionTwoSubjectThree.next(option.id_by_value);
+
+    if (option.id_by_value && option.id_by_value != 'custom_date_range') {
+      primengTable.filter(option, field, 'custom');
+    } else if (option.id_by_value == 'custom_date_range') {
+      primengTable.filter(null, field, 'custom');
     }
+  }
 
 }
 

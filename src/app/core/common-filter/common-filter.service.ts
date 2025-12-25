@@ -226,6 +226,8 @@ export class CommonFilterService {
 
         if (option.id_by_value && option.id_by_value != 'custom_date_range') {
             primengTable.filter(option, field, 'custom');
+        } else if (option.id_by_value == 'custom_date_range') {
+            primengTable.filter(null, field, 'custom');
         }
     }
 
@@ -236,6 +238,8 @@ export class CommonFilterService {
 
         if (option.id_by_value && option.id_by_value != 'custom_date_range') {
             primengTable.filter(option, field, 'custom');
+        } else if (option.id_by_value == 'custom_date_range') {
+            primengTable.filter(null, field, 'custom');
         }
     }
 
@@ -245,6 +249,8 @@ export class CommonFilterService {
 
         if (option.id_by_value && option.id_by_value != 'custom_date_range') {
             primengTable.filter(option, field, 'custom');
+        } else if (option.id_by_value == 'custom_date_range') {
+            primengTable.filter(null, field, 'custom');
         }
     }
 

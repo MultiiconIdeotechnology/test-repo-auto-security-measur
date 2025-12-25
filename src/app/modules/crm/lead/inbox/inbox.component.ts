@@ -116,7 +116,7 @@ export class InboxComponent extends BaseListingComponent {
     selectedColumns: Column[] = [];
 
     private selectedOptionTwoSubjectThree = new BehaviorSubject<any>('');
-        selectionDateDropdownThree$ = this.selectedOptionTwoSubjectThree.asObservable();
+    selectionDateDropdownThree$ = this.selectedOptionTwoSubjectThree.asObservable();
 
     updateSelectedOptionThree(option: string): void {
         this.selectedOptionTwoSubjectThree.next(option);
@@ -156,12 +156,12 @@ export class InboxComponent extends BaseListingComponent {
 
     ngOnInit(): void {
         // common filter
-    
+
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
-        this._filterService.updateSelectedOption('');
-        this._filterService.updatedSelectionOptionTwo('');
-        this._filterService.updatedSelectedContracting('');
-        this.updateSelectedOptionThree('');
+            this._filterService.updateSelectedOption('');
+            this._filterService.updatedSelectionOptionTwo('');
+            this._filterService.updatedSelectedContracting('');
+            this.updateSelectedOptionThree('');
             if (resp['table_config']['last_call_date_time']?.value != null && resp['table_config']['last_call_date_time'].value.length) {
                 this._filterService.updateSelectedOption('custom_date_range');
                 this._filterService.rangeDateConvert(resp['table_config']['last_call_date_time']);
@@ -181,7 +181,7 @@ export class InboxComponent extends BaseListingComponent {
                 this.updateSelectedOptionThree('custom_date_range');
                 this._filterService.rangeDateConvert(resp['table_config']['lead_assign_by_date']);
             }
-            
+
 
             this.primengTable['filters'] = resp['table_config'];
             this.isFilterShowInbox = true;
@@ -215,7 +215,7 @@ export class InboxComponent extends BaseListingComponent {
                 this._filterService.updatedSelectedContracting('custom_date_range');
                 this._filterService.rangeDateConvert(filterData['table_config']['call_date_time']);
             }
-         
+
             if (filterData['table_config']['lead_assign_by_date']?.value != null && filterData['table_config']['lead_assign_by_date'].value.length) {
                 this.updateSelectedOptionThree('custom_date_range');
                 this._filterService.rangeDateConvert(filterData['table_config']['lead_assign_by_date']);
@@ -502,10 +502,12 @@ export class InboxComponent extends BaseListingComponent {
 
     onOptionClickThree(option: any, primengTable: any, field: any, key?: any) {
         this.selectedOptionTwoSubjectThree.next(option.id_by_value);
-        
-        if( option.id_by_value &&  option.id_by_value != 'custom_date_range'){
+
+        if (option.id_by_value && option.id_by_value != 'custom_date_range') {
             primengTable.filter(option, field, 'custom');
-        } 
+        } else if (option.id_by_value == 'custom_date_range') {
+            primengTable.filter(null, field, 'custom');
+        }
     }
 
 }

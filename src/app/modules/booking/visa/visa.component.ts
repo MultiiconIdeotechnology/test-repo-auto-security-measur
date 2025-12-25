@@ -195,7 +195,7 @@ export class VisaComponent extends BaseListingComponent {
 
         // common filter   
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
-            this._filterService.updateSelectedOption('');     
+            this._filterService.updateSelectedOption('');
             this._filterService.updatedSelectionOptionTwo('');
             this.updateSelectedOptionThree('');
             this.updateSelectedOptionFour('');
@@ -213,7 +213,7 @@ export class VisaComponent extends BaseListingComponent {
             if (resp['table_config']['entry_date_time']?.value != null && resp['table_config']['entry_date_time'].value.length) {
                 this._filterService.updateSelectedOption('custom_date_range');
                 this._filterService.rangeDateConvert(resp['table_config']['entry_date_time']);
-            }        
+            }
 
             if (resp['table_config']['travel_date']?.value != null && resp['table_config']['travel_date'].value.length) {
                 this._filterService.updatedSelectionOptionTwo('custom_date_range');
@@ -253,7 +253,7 @@ export class VisaComponent extends BaseListingComponent {
                     this.agentList.push(this.selectedAgent);
                 }
             }
-        
+
             if (filterData['table_config']['entry_date_time']?.value != null && filterData['table_config']['entry_date_time'].value.length) {
                 this._filterService.updateSelectedOption('custom_date_range');
                 this._filterService.rangeDateConvert(filterData['table_config']['entry_date_time']);
@@ -261,14 +261,14 @@ export class VisaComponent extends BaseListingComponent {
             if (filterData['table_config']['travel_date']?.value != null && filterData['table_config']['travel_date'].value.length) {
                 this._filterService.updatedSelectionOptionTwo('custom_date_range');
                 this._filterService.rangeDateConvert(filterData['table_config']['travel_date']);
-            }          
+            }
 
             if (filterData['table_config']['payment_request_time']?.value != null && filterData['table_config']['payment_request_time'].value.length) {
                 this.updateSelectedOptionThree('custom_date_range');
                 this._filterService.rangeDateConvert(filterData['table_config']['payment_request_time']);
             }
 
-             if (filterData['table_config']['payment_confirmation_time']?.value != null && filterData['table_config']['payment_confirmation_time'].value.length) {
+            if (filterData['table_config']['payment_confirmation_time']?.value != null && filterData['table_config']['payment_confirmation_time'].value.length) {
                 this.updateSelectedOptionFour('custom_date_range');
                 this._filterService.rangeDateConvert(filterData['table_config']['payment_confirmation_time']);
             }
@@ -539,18 +539,22 @@ export class VisaComponent extends BaseListingComponent {
 
     onOptionClickThree(option: any, primengTable: any, field: any, key?: any) {
         this.selectedOptionTwoSubjectThree.next(option.id_by_value);
-        
-        if( option.id_by_value &&  option.id_by_value != 'custom_date_range'){
+
+        if (option.id_by_value && option.id_by_value != 'custom_date_range') {
             primengTable.filter(option, field, 'custom');
-        } 
+        } else if (option.id_by_value == 'custom_date_range') {
+            primengTable.filter(null, field, 'custom');
+        }
     }
 
     onOptionClickFour(option: any, primengTable: any, field: any, key?: any) {
         this.selectedOptionTwoSubjectFour.next(option.id_by_value);
-        
-        if( option.id_by_value &&  option.id_by_value != 'custom_date_range'){
+
+        if (option.id_by_value && option.id_by_value != 'custom_date_range') {
             primengTable.filter(option, field, 'custom');
-        } 
+        } else if (option.id_by_value == 'custom_date_range') {
+            primengTable.filter(null, field, 'custom');
+        }
     }
 
 }

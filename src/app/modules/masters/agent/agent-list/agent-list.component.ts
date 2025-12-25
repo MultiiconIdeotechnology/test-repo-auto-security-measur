@@ -149,7 +149,7 @@ export class AgentListComponent extends BaseListingComponent {
         { field: 'address_line1', header: 'Address', type: Types.text },
         { field: 'city_name', header: 'City', type: Types.text },
         { field: 'state', header: 'State', type: Types.text },
-        { field: 'pincode', header: 'Pin Code', type: Types.text },   
+        { field: 'pincode', header: 'Pin Code', type: Types.text },
     ];
     selectedColumns: Column[] = [];
     exportCol: Column[] = [];
@@ -233,15 +233,15 @@ export class AgentListComponent extends BaseListingComponent {
         this.selectedColumns = [
             { field: 'agent_code', header: 'Code', type: Types.number, fixVal: 0 },
             { field: 'agency_name', header: 'Agency', type: Types.text },
-            { field: 'agency_alias_name', header: ' Alias Name', type: Types.text },               
+            { field: 'agency_alias_name', header: ' Alias Name', type: Types.text },
             { field: 'status', header: 'Status', type: Types.select, isCustomColor: true },
             { field: 'relation_manager_name', header: 'RM', type: Types.select },
             { field: 'email_address', header: 'Email', type: Types.text },
-            { field: 'mobile_no', header: 'Mobile', type: Types.text,},
+            { field: 'mobile_no', header: 'Mobile', type: Types.text, },
             { field: 'currency', header: 'Currency', type: Types.select },
             { field: 'is_cashback_enable', header: 'Cashback', type: Types.boolean },
             { field: 'entry_date_time', header: 'Signup', type: Types.dateTime, dateFormat: 'dd-MM-yyyy' },
-           
+
         ];
 
         this.cols.unshift(...this.selectedColumns);
@@ -340,7 +340,7 @@ export class AgentListComponent extends BaseListingComponent {
                 this._filterService.rangeDateConvert(filterData['table_config']['web_last_login_time']);
             }
 
-             if (filterData['table_config']['agent_assign_by_date']?.value != null && filterData['table_config']['agent_assign_by_date'].value.length) {
+            if (filterData['table_config']['agent_assign_by_date']?.value != null && filterData['table_config']['agent_assign_by_date'].value.length) {
                 this.updateSelectedOptionFour('custom_date_range');
                 this._filterService.rangeDateConvert(filterData['table_config']['agent_assign_by_date']);
             }
@@ -1170,19 +1170,23 @@ export class AgentListComponent extends BaseListingComponent {
         return value && !isNaN(date.getTime());
     }
 
-      onOptionClickThree(option: any, primengTable: any, field: any, key?: any) {
+    onOptionClickThree(option: any, primengTable: any, field: any, key?: any) {
         this.selectedOptionTwoSubjectThree.next(option.id_by_value);
-        
-        if( option.id_by_value &&  option.id_by_value != 'custom_date_range'){
+
+        if (option.id_by_value && option.id_by_value != 'custom_date_range') {
             primengTable.filter(option, field, 'custom');
-        } 
+        } else if (option.id_by_value == 'custom_date_range') {
+            primengTable.filter(null, field, 'custom');
+        }
     }
 
     onOptionClickFour(option: any, primengTable: any, field: any, key?: any) {
         this.selectedOptionTwoSubjectFour.next(option.id_by_value);
-        
-        if( option.id_by_value &&  option.id_by_value != 'custom_date_range'){
+
+        if (option.id_by_value && option.id_by_value != 'custom_date_range') {
             primengTable.filter(option, field, 'custom');
-        } 
+        } else if (option.id_by_value == 'custom_date_range') {
+            primengTable.filter(null, field, 'custom');
+        }
     }
 }

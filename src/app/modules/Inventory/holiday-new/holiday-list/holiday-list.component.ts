@@ -96,8 +96,8 @@ export class HolidayListComponent extends BaseListingComponent {
             { field: 'supplier_name', header: 'Supplier', type: Types.select },
             { field: 'no_of_nights', header: 'Nights', type: Types.number, fixVal: 0 },
             { field: 'no_of_days', header: 'Days', type: Types.number, fixVal: 0 },
-            { field: 'is_popular', header: 'Is Popular', type: Types.boolean , class:'text-center' },
-            { field: 'is_audited', header: 'Is Audited', type: Types.boolean , class:'text-center' },
+            { field: 'is_popular', header: 'Is Popular', type: Types.boolean, class: 'text-center' },
+            { field: 'is_audited', header: 'Is Audited', type: Types.boolean, class: 'text-center' },
             { field: 'publish_date_time', header: 'Published', type: Types.dateTime, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
             { field: 'entry_date_time', header: 'Entry', type: Types.dateTime, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
             { field: 'last_price_date', header: 'Last Price Date', type: Types.dateTime, dateFormat: 'dd-MM-yyyy HH:mm:ss' }
@@ -193,7 +193,7 @@ export class HolidayListComponent extends BaseListingComponent {
             if (filterData['table_config']['supplier_name']) {
                 this.selectedSupplier = filterData['table_config'].supplier_name?.value;
             }
-    
+
             if (filterData['table_config']['publish_date_time']?.value != null && filterData['table_config']['publish_date_time'].value.length) {
                 this._filterService.updateSelectedOption('custom_date_range');
                 this._filterService.rangeDateConvert(filterData['table_config']['publish_date_time']);
@@ -202,7 +202,7 @@ export class HolidayListComponent extends BaseListingComponent {
             if (filterData['table_config']['entry_date_time']?.value != null && filterData['table_config']['entry_date_time'].value.length) {
                 this._filterService.updatedSelectionOptionTwo('custom_date_range');
                 this._filterService.rangeDateConvert(filterData['table_config']['entry_date_time']);
-            }   
+            }
 
             if (filterData['table_config']['last_price_date']?.value != null && filterData['table_config']['last_price_date'].value.length) {
                 this.updateSelectedOptionThree('custom_date_range');
@@ -496,12 +496,13 @@ export class HolidayListComponent extends BaseListingComponent {
         return value && !isNaN(date.getTime());
     }
 
-     onOptionClickThree(option: any, primengTable: any, field: any, key?: any) {
+    onOptionClickThree(option: any, primengTable: any, field: any, key?: any) {
         this.selectedOptionTwoSubjectThree.next(option.id_by_value);
-        
-        if( option.id_by_value &&  option.id_by_value != 'custom_date_range'){
+
+        if (option.id_by_value && option.id_by_value != 'custom_date_range') {
             primengTable.filter(option, field, 'custom');
-        } 
-    
+        } else if (option.id_by_value == 'custom_date_range') {
+            primengTable.filter(null, field, 'custom');
+        }
     }
 }
