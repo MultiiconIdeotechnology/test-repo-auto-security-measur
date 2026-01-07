@@ -264,6 +264,7 @@ export class PspEntryPaymentModeFormComponent {
             this.tableList.forEach((item: any, index: any) => {
               if (item.id == resp.id) {
                 this.tableList[index] = tableObj;
+                this.getPgProfileById(this.profileId);
                 this.toasterService.showToast('success', 'Profile name updated successfully');
                 formDirective.resetForm();
               }
@@ -272,7 +273,7 @@ export class PspEntryPaymentModeFormComponent {
           } else {
             this.formGroup.get('id').patchValue(resp.id);
             tableObj.id = resp.id;
-            this.tableList.push(tableObj)
+            this.tableList.push(tableObj);
             this.toasterService.showToast('success', 'Profile name saved successfully');
             formDirective.resetForm();
           }
