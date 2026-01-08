@@ -63,7 +63,7 @@
 
     <div class="table-container paginator-bottom">
         <p-table #datatable [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1" [resizableColumns]="true"
-           [columns]="selectedColumns" columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}"
+            [columns]="selectedColumns" columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}"
             [loading]="isLoading" [paginator]="true" [rows]="appConfig.pageSize" [totalRecords]="totalRecords"
             [rowsPerPageOptions]="appConfig.pageSizeOptions" [lazy]="true" (onLazyLoad)="refreshItems($event)"
             [scrollable]="true" [scrollHeight]="scrollHeight" [showCurrentPageReport]="true" [showPageLinks]="false"
@@ -71,7 +71,7 @@
             [globalFilterFields]="['booking_ref_number', 'status', 'dec_agent_id', 'agent_name','operation_person','sales_person','entry_date_time']"
             styleClass="p-datatable-gridlines p-datatable-sm">
 
-            <ng-template pTemplate="header"  let-columns>
+            <ng-template pTemplate="header" let-columns>
                 <tr>
                     <th class="left-[-1px] text-center w-1 dark:bg-gray-800" *ngIf="isDisplayHashCol()" pFrozenColumn>#
                     </th>
@@ -80,7 +80,7 @@
                         [ngClass]="{ 'w-full': isLast}" [class]="col.class">
                         {{ col.header }}
                         <p-sortIcon [field]="col?.field" />
-                    </th>               
+                    </th>
                 </tr>
 
                 <tr *ngIf="isFilterShow">
@@ -106,8 +106,7 @@
                                 </ng-template>
                             </p-columnFilter>
 
-                            <ng-container *ngIf="col.type == types.select && col.field == 'agent_name'"
-                                [field]="col.field">
+                            <ng-container *ngIf="col.type == types.select && col.field == 'agent_name'">
                                 <p-columnFilter class="searchableDropdown" field="agency_name_agent_id"
                                     matchMode="equals" [showMenu]="false">
                                     <ng-template pTemplate="filter" let-value let-filter="filterCallback">
@@ -150,14 +149,43 @@
                                 </p-columnFilter>
                             </ng-container>
 
-                            <!--date picker-->
-                            <p-columnFilter *ngIf="col.type == types.date" type="date" [field]="col.field">
-                                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                    <p-calendar (onSelect)="filter($event)" dateFormat="dd-mm-yy" [ngModel]="value"
-                                        appendTo="body" placeholder="Search by Signup">
-                                    </p-calendar>
-                                </ng-template>
-                            </p-columnFilter>
+                            <!--date range picker-->
+                            <ng-container *ngIf="col.type == types.dateTime && col.field == 'entry_date_time'">
+                                <p-columnFilter
+                                    *ngIf="(_filterService.selectionDateDropdown$ | async) != 'custom_date_range'"
+                                    [field]="col.field" matchMode="custom" [showMenu]="false">
+                                    <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                        <p-dropdown #dateRangeDropdown class="filter-dropdown" [ngModel]="value"
+                                            [options]="_filterService.dateRangeList" optionLabel="label"
+                                            placeholder="Select Option" appendTo="body">
+                                            <ng-template let-option pTemplate="item">
+                                                <div
+                                                    (click)="_filterService.onOptionClick(option, primengTable, col.field)">
+                                                    <div>{{option.label}}</div>
+                                                </div>
+                                            </ng-template>
+                                        </p-dropdown>
+                                    </ng-template>
+                                </p-columnFilter>
+
+                                <ng-container
+                                    *ngIf="(_filterService.selectionDateDropdown$ | async) == 'custom_date_range'">
+                                    <div class="relative inline-block">
+                                        <p-columnFilter [field]="col.field" matchMode="custom" [showMenu]="false">
+                                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                                <p-calendar selectionMode="range" [ngModel]="value"
+                                                    (ngModelChange)="onDateRangeChange($event, filter)"
+                                                    [readonlyInput]="true" dateFormat="dd-mm-yy" appendTo="body"
+                                                    placeholder="📅 Search by Date Range">
+                                                </p-calendar>
+                                            </ng-template>
+                                        </p-columnFilter>
+                                        <mat-icon class="icon-size-4 cursor-pointer absolute"
+                                            style="top:50%; transform: translatey(-50%); right: 25px;"
+                                            (click)="_filterService.onOptionClick('', '', '')">cancel</mat-icon>
+                                    </div>
+                                </ng-container>
+                            </ng-container>
 
                             <!--2 digit point number-->
                             <p-columnFilter *ngIf="col.type == types.number" [type]="'numeric'" [field]="col.field"
@@ -166,7 +194,7 @@
                                 maxFractionDigits="2">
                             </p-columnFilter>
                         </ng-container>
-                    </th>                 
+                    </th>
                 </tr>
             </ng-template>
 
@@ -216,10 +244,10 @@
                             </span>
                         </ng-container>
 
-                        <ng-container *ngIf="col.type == types.dateTime || col.type == types.date">
+                        <ng-container *ngIf="col.type == types.dateTime">
                             {{isValidDate(element[col.field])? (element[col.field] | date: col.dateFormat): "-"}}
                         </ng-container>
-                    </td>                   
+                    </td>
                 </tr>
             </ng-template>
 

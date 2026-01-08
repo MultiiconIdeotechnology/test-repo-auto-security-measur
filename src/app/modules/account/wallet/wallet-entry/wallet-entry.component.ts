@@ -5,7 +5,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatOptionModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -55,7 +55,8 @@ import { filter, startWith, debounceTime, distinctUntilChanged, switchMap } from
     NgxMatTimepickerModule,
     RouterOutlet,
     MatOptionModule,
-    MatDividerModule
+    MatDividerModule,
+    MatDialogModule
   ]
 })
 export class WalletEntryComponent {
@@ -181,19 +182,19 @@ export class WalletEntryComponent {
     this.disableBtn = true;
     const json = this.formGroup.getRawValue();
 
-      json.file = this.jFile? this.jFile : '' 
+    json.file = this.jFile ? this.jFile : ''
 
-        this.walletService.offlineRecharge(json).subscribe({
-          next: () => {
-            this.disableBtn = false;
-            this.matDialogRef.close(true);
-            this.alertService.showToast('success', 'Top-up wallet request added!', 'top-right', true);
-          },
-          error: (err) => {
-            this.alertService.showToast('error', err, 'top-right', true);
-            this.disableBtn = false;
-          },
-        });
+    this.walletService.offlineRecharge(json).subscribe({
+      next: () => {
+        this.disableBtn = false;
+        this.matDialogRef.close(true);
+        this.alertService.showToast('success', 'Top-up wallet request added!', 'top-right', true);
+      },
+      error: (err) => {
+        this.alertService.showToast('error', err, 'top-right', true);
+        this.disableBtn = false;
+      },
+    });
 
   }
 

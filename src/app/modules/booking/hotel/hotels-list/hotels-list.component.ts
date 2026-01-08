@@ -33,7 +33,7 @@ import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { AgentService } from 'app/services/agent.service';
 import { BusService } from 'app/services/bus.service';
 import { FlightTabService } from 'app/services/flight-tab.service';
-import { Subscription } from 'rxjs';
+import { BehaviorSubject, Subscription } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { cloneDeep } from 'lodash';
 
@@ -91,6 +91,13 @@ export class HotelsListComponent extends BaseListingComponent {
   exportCol: Column[] = [];
   activeFiltData: any = {};
 
+  private selectedOptionTwoSubjectThree = new BehaviorSubject<any>('');
+  selectionDateDropdownThree$ = this.selectedOptionTwoSubjectThree.asObservable();
+
+  updateSelectedOptionThree(option: string): void {
+    this.selectedOptionTwoSubjectThree.next(option);
+  }
+
   constructor(
     private conformationService: FuseConfirmationService,
     private matDialog: MatDialog,
@@ -136,8 +143,8 @@ export class HotelsListComponent extends BaseListingComponent {
       { field: 'from_city', header: 'Destination', type: Types.text },
       { field: 'pax', header: 'Pax', type: Types.text, isHideFilter: true },
       { field: 'hotel_name', header: 'Hotel', type: Types.text },
-      { field: 'check_in_date', header: 'Check In', type: Types.date, dateFormat: 'dd-MM-yyyy' },
-      { field: 'check_out_date', header: 'Check Out', type: Types.date, dateFormat: 'dd-MM-yyyy' },
+      { field: 'check_in_date', header: 'Check In', type: Types.dateTime, dateFormat: 'dd-MM-yyyy' },
+      { field: 'check_out_date', header: 'Check Out', type: Types.dateTime, dateFormat: 'dd-MM-yyyy' },
       { field: 'no_of_rooms', header: 'Rooms', type: Types.number, fixVal: 0 },
       { field: 'no_of_nights', header: 'Nights', type: Types.number, fixVal: 0 },
       { field: 'device', header: 'Device', type: Types.text },
@@ -156,9 +163,10 @@ export class HotelsListComponent extends BaseListingComponent {
     // this.getFromCity('');
 
     // common filter
-    this._filterService.updateSelectedOption('');
     this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
       this._filterService.updateSelectedOption('');
+      this._filterService.updatedSelectionOptionTwo('');
+      this.updateSelectedOptionThree('');
       this.selectedAgent = resp['table_config']['agent_id_filters']?.value;
       if (this.selectedAgent && this.selectedAgent.id) {
         const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
@@ -169,18 +177,21 @@ export class HotelsListComponent extends BaseListingComponent {
 
       this.selectedSupplier = resp['table_config']['supplier_name']?.value;
       // this.sortColumn = resp['sortColumn'];
-      // this.primengTable['_sortField'] = resp['sortColumn'];
+      // this.primengTable['_sortField'] = resp['sortColumn']
 
-      if (resp['table_config']['bookingDate']?.value && Array.isArray(resp['table_config']['bookingDate']?.value)) {
-        this._filterService.selectionDateDropdown = 'custom_date_range';
+      if (resp['table_config']['bookingDate']?.value != null && resp['table_config']['bookingDate'].value.length) {
+        this._filterService.updateSelectedOption('custom_date_range');
         this._filterService.rangeDateConvert(resp['table_config']['bookingDate']);
       }
 
-      if (resp['table_config']['check_in_date']?.value != null) {
-        resp['table_config']['check_in_date'].value = new Date(resp['table_config']['check_in_date'].value);
+      if (resp['table_config']['check_in_date']?.value != null && resp['table_config']['check_in_date'].value.length) {
+        this._filterService.updatedSelectionOptionTwo('custom_date_range');
+        this._filterService.rangeDateConvert(resp['table_config']['check_in_date']);
       }
-      if (resp['table_config']['check_out_date']?.value != null) {
-        resp['table_config']['check_out_date'].value = new Date(resp['table_config']['check_out_date'].value);
+
+      if (resp['table_config']['check_out_date']?.value != null && resp['table_config']['check_out_date'].value.length) {
+        this.updateSelectedOptionThree('custom_date_range');
+        this._filterService.rangeDateConvert(resp['table_config']['check_out_date']);
       }
       this.primengTable['filters'] = resp['table_config'];
       this.isFilterShow = true;
@@ -192,6 +203,9 @@ export class HotelsListComponent extends BaseListingComponent {
 
   ngAfterViewInit() {
     // Defult Active filter show
+    this._filterService.updateSelectedOption('');
+    this._filterService.updatedSelectionOptionTwo('');
+    this.updateSelectedOptionThree('');
     if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
       this.isFilterShow = true;
       let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
@@ -203,16 +217,20 @@ export class HotelsListComponent extends BaseListingComponent {
           this.agentList.push(this.selectedAgent);
         }
       }
-      if (filterData['table_config']['bookingDate']?.value && Array.isArray(filterData['table_config']['bookingDate']?.value)) {
-        this._filterService.selectionDateDropdown = 'custom_date_range';
+
+      if (filterData['table_config']['bookingDate']?.value != null && filterData['table_config']['bookingDate'].value.length) {
+        this._filterService.updateSelectedOption('custom_date_range');
         this._filterService.rangeDateConvert(filterData['table_config']['bookingDate']);
       }
 
-      if (filterData['table_config']['check_in_date']?.value != null) {
-        filterData['table_config']['check_in_date'].value = new Date(filterData['table_config']['check_in_date'].value);
+      if (filterData['table_config']['check_in_date']?.value != null && filterData['table_config']['check_in_date'].value.length) {
+        this._filterService.updatedSelectionOptionTwo('custom_date_range');
+        this._filterService.rangeDateConvert(filterData['table_config']['check_in_date']);
       }
-      if (filterData['table_config']['check_out_date']?.value != null) {
-        filterData['table_config']['check_out_date'].value = new Date(filterData['table_config']['check_out_date'].value);
+
+      if (filterData['table_config']['check_out_date']?.value != null && filterData['table_config']['check_out_date'].value.length) {
+        this.updateSelectedOptionThree('custom_date_range');
+        this._filterService.rangeDateConvert(filterData['table_config']['check_out_date']);
       }
       // this.primengTable['_sortField'] = filterData['sortColumn'];
       // this.sortColumn = filterData['sortColumn'];
@@ -447,6 +465,16 @@ export class HotelsListComponent extends BaseListingComponent {
   isValidDate(value: any): boolean {
     const date = new Date(value);
     return value && !isNaN(date.getTime());
+  }
+
+  onOptionClickThree(option: any, primengTable: any, field: any, key?: any) {
+    this.selectedOptionTwoSubjectThree.next(option.id_by_value);
+
+    if (option.id_by_value && option.id_by_value != 'custom_date_range') {
+      primengTable.filter(option, field, 'custom');
+    } else if (option.id_by_value == 'custom_date_range') {
+      primengTable.filter(null, field, 'custom');
+    }
   }
 
 }

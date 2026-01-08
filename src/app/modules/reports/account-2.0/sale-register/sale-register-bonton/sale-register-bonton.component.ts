@@ -61,7 +61,7 @@ export class SaleRegisterBontonComponent extends BaseListingComponent implements
   @Input() supplierList: any = [];
   @Input() lastSearchString = '';
   @ViewChild('op') overlayPanel!: OverlayPanel;
-   module_name = module_name.sale_register_2;
+  module_name = module_name.sale_register_2;
   filter_table_name = filter_module_name.sale_register_bonton;
   private settingsUpdatedSubscription: Subscription;
   isLoading = false;
@@ -275,13 +275,18 @@ export class SaleRegisterBontonComponent extends BaseListingComponent implements
   }
 
   onOptionClick(option: any, primengTable: any, field: string) {
-    const value = option?.id_by_value ?? '';
-    const current = this.selectionMap();
-    this.selectionMap.set({ ...current, [field]: value });
+    let  value = option?.id_by_value ?? '';
+        
 
     if (value && value !== 'custom_date_range') {
       primengTable.filter(option, field, 'custom');
     }
+    else if (value && value == 'custom_date_range') {
+      primengTable.filter(null, field, 'custom');
+    }
+
+        const current = this.selectionMap();
+        this.selectionMap.set({ ...current, [field]: value });
   }
 
 

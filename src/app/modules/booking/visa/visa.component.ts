@@ -30,7 +30,7 @@ import { VisaFilterComponent } from './visa-filter/visa-filter.component';
 import { VisaService } from 'app/services/visa.service';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { UserService } from 'app/core/user/user.service';
-import { takeUntil } from 'rxjs';
+import { BehaviorSubject, takeUntil } from 'rxjs';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { AgentService } from 'app/services/agent.service';
 import { Subscription } from 'rxjs';
@@ -96,12 +96,27 @@ export class VisaComponent extends BaseListingComponent {
     selectedColumns: Column[] = [];
     exportCol: Column[] = [];
     activeFiltData: any = {};
+
+    private selectedOptionTwoSubjectThree = new BehaviorSubject<any>('');
+    selectionDateDropdownThree$ = this.selectedOptionTwoSubjectThree.asObservable();
+
+    private selectedOptionTwoSubjectFour = new BehaviorSubject<any>('');
+    selectionDateDropdownFour$ = this.selectedOptionTwoSubjectFour.asObservable();
+
+    updateSelectedOptionThree(option: string): void {
+        this.selectedOptionTwoSubjectThree.next(option);
+    }
+
+    updateSelectedOptionFour(option: string): void {
+        this.selectedOptionTwoSubjectFour.next(option);
+    }
+
     cols: Column[] = [
         { field: 'visa_type', header: 'Visa Type', type: 'text' },
         { field: 'length_of_stay', header: 'Length of Stay', type: 'number', fixVal: 0 },
         { field: 'customer_name', header: 'Customer Name', type: 'text' },
-        { field: 'payment_request_time', header: 'Payment Request Time', type: Types.date, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
-        { field: 'payment_confirmation_time', header: 'Payment Confirmation Time', type: Types.date, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
+        { field: 'payment_request_time', header: 'Payment Request Time', type: Types.dateTime, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
+        { field: 'payment_confirmation_time', header: 'Payment Confirmation Time', type: Types.dateTime, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
         { field: 'psp_ref_number', header: 'PSP Refrence No.', type: 'text' },
         { field: 'payment_fail_reason', header: 'Payment Fail Reason', type: 'text' },
     ];
@@ -153,7 +168,7 @@ export class VisaComponent extends BaseListingComponent {
             { field: 'device', header: 'Device', type: Types.text },
             { field: 'payment_mode', header: 'MOP', type: Types.text },
             { field: 'destination_caption', header: 'Destination', type: Types.text },
-            { field: 'travel_date', header: 'Travel Date', type: Types.date, dateFormat: 'dd-MM-yyyy' },
+            { field: 'travel_date', header: 'Travel Date', type: Types.dateTime, dateFormat: 'dd-MM-yyyy' },
             { field: 'pax', header: 'Pax', type: Types.number, fixVal: 0 },
             { field: 'payment_gateway', header: 'PG', type: Types.text },
             { field: 'ip_address', header: 'IP Address', type: Types.text }
@@ -178,10 +193,12 @@ export class VisaComponent extends BaseListingComponent {
 
         this.agentList = this._filterService.agentListById;
 
-        // common filter
-        this._filterService.updateSelectedOption('');
+        // common filter   
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
             this._filterService.updateSelectedOption('');
+            this._filterService.updatedSelectionOptionTwo('');
+            this.updateSelectedOptionThree('');
+            this.updateSelectedOptionFour('');
             this.selectedAgent = resp['table_config']['agent_id_filters']?.value;
             if (this.selectedAgent && this.selectedAgent.id) {
                 const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
@@ -192,19 +209,27 @@ export class VisaComponent extends BaseListingComponent {
 
             // this.sortColumn = resp['sortColumn'];
             // this.primengTable['_sortField'] = resp['sortColumn'];
-            if (resp['table_config']['entry_date_time']?.value && Array.isArray(resp['table_config']['entry_date_time']?.value)) {
-                this._filterService.selectionDateDropdown = 'custom_date_range';
+
+            if (resp['table_config']['entry_date_time']?.value != null && resp['table_config']['entry_date_time'].value.length) {
+                this._filterService.updateSelectedOption('custom_date_range');
                 this._filterService.rangeDateConvert(resp['table_config']['entry_date_time']);
             }
-            if (resp['table_config']['travel_date']?.value != null) {
-                resp['table_config']['travel_date'].value = new Date(resp['table_config']['travel_date'].value);
+
+            if (resp['table_config']['travel_date']?.value != null && resp['table_config']['travel_date'].value.length) {
+                this._filterService.updatedSelectionOptionTwo('custom_date_range');
+                this._filterService.rangeDateConvert(resp['table_config']['travel_date']);
             }
-            if (resp['table_config']?.['payment_request_time']?.value != null) {
-                resp['table_config']['payment_request_time'].value = new Date(resp['table_config']['payment_request_time'].value);
+
+            if (resp['table_config']['payment_request_time']?.value != null && resp['table_config']['payment_request_time'].value.length) {
+                this.updateSelectedOptionThree('custom_date_range');
+                this._filterService.rangeDateConvert(resp['table_config']['payment_request_time']);
             }
-            if (resp['table_config']?.['payment_confirmation_time']?.value != null) {
-                resp['table_config']['payment_confirmation_time'].value = new Date(resp['table_config']['payment_confirmation_time'].value);
+
+            if (resp['table_config']['payment_confirmation_time']?.value != null && resp['table_config']['payment_confirmation_time'].value.length) {
+                this.updateSelectedOptionFour('custom_date_range');
+                this._filterService.rangeDateConvert(resp['table_config']['payment_confirmation_time']);
             }
+
             this.primengTable['filters'] = resp['table_config'];
             this.selectedColumns = resp['selectedColumns'] || [];
             this.isFilterShow = true;
@@ -215,6 +240,10 @@ export class VisaComponent extends BaseListingComponent {
 
     ngAfterViewInit() {
         // Defult Active filter show
+        this._filterService.updateSelectedOption('');
+        this._filterService.updatedSelectionOptionTwo('');
+        this.updateSelectedOptionThree('');
+        this.updateSelectedOptionFour('');
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
             this.selectedAgent = filterData['table_config']['agent_id_filters']?.value;
@@ -225,18 +254,23 @@ export class VisaComponent extends BaseListingComponent {
                 }
             }
 
-            if (filterData['table_config']['entry_date_time']?.value && Array.isArray(filterData['table_config']['entry_date_time']?.value)) {
-                this._filterService.selectionDateDropdown = 'custom_date_range';
+            if (filterData['table_config']['entry_date_time']?.value != null && filterData['table_config']['entry_date_time'].value.length) {
+                this._filterService.updateSelectedOption('custom_date_range');
                 this._filterService.rangeDateConvert(filterData['table_config']['entry_date_time']);
             }
-            if (filterData['table_config']['travel_date']?.value != null) {
-                filterData['table_config']['travel_date'].value = new Date(filterData['table_config']['travel_date'].value);
+            if (filterData['table_config']['travel_date']?.value != null && filterData['table_config']['travel_date'].value.length) {
+                this._filterService.updatedSelectionOptionTwo('custom_date_range');
+                this._filterService.rangeDateConvert(filterData['table_config']['travel_date']);
             }
-            if (filterData['table_config']?.['payment_request_time']?.value != null) {
-                filterData['table_config']['payment_request_time'].value = new Date(filterData['table_config']['payment_request_time'].value);
+
+            if (filterData['table_config']['payment_request_time']?.value != null && filterData['table_config']['payment_request_time'].value.length) {
+                this.updateSelectedOptionThree('custom_date_range');
+                this._filterService.rangeDateConvert(filterData['table_config']['payment_request_time']);
             }
-            if (filterData['table_config']?.['payment_confirmation_time']?.value != null) {
-                filterData['table_config']['payment_confirmation_time'].value = new Date(filterData['table_config']['payment_confirmation_time'].value);
+
+            if (filterData['table_config']['payment_confirmation_time']?.value != null && filterData['table_config']['payment_confirmation_time'].value.length) {
+                this.updateSelectedOptionFour('custom_date_range');
+                this._filterService.rangeDateConvert(filterData['table_config']['payment_confirmation_time']);
             }
             this.primengTable['filters'] = filterData['table_config'];
             this.selectedColumns = this.checkSelectedColumn(filterData['selectedColumns'] || [], this.selectedColumns);
@@ -501,6 +535,26 @@ export class VisaComponent extends BaseListingComponent {
     isValidDate(value: any): boolean {
         const date = new Date(value);
         return value && !isNaN(date.getTime());
+    }
+
+    onOptionClickThree(option: any, primengTable: any, field: any, key?: any) {
+        this.selectedOptionTwoSubjectThree.next(option.id_by_value);
+
+        if (option.id_by_value && option.id_by_value != 'custom_date_range') {
+            primengTable.filter(option, field, 'custom');
+        } else if (option.id_by_value == 'custom_date_range') {
+            primengTable.filter(null, field, 'custom');
+        }
+    }
+
+    onOptionClickFour(option: any, primengTable: any, field: any, key?: any) {
+        this.selectedOptionTwoSubjectFour.next(option.id_by_value);
+
+        if (option.id_by_value && option.id_by_value != 'custom_date_range') {
+            primengTable.filter(option, field, 'custom');
+        } else if (option.id_by_value == 'custom_date_range') {
+            primengTable.filter(null, field, 'custom');
+        }
     }
 
 }

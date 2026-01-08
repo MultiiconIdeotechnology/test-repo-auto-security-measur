@@ -114,7 +114,7 @@ export class ProformaInvoiceComponent extends BaseListingComponent implements On
     //   }
     // })
     this.selectedColumns = [
-      { field: 'invoice_date', header: 'Invoice Date', type: Types.date, dateFormat: 'dd-MM-yyyy' },
+      { field: 'invoice_date', header: 'Invoice Date', type: Types.dateTime, dateFormat: 'dd-MM-yyyy' },
       { field: 'invoice_no', header: 'Invoice No.', type: Types.text },
       { field: 'customer_name', header: 'Customer Name', type: Types.text },
       { field: 'taxable_amount', header: 'Taxable Amount',type: Types.number, fixVal: 2, class: 'text-right' },
@@ -142,7 +142,6 @@ export class ProformaInvoiceComponent extends BaseListingComponent implements On
 
     // this.getAgent("");
 
-    this._filterService.updateSelectedOption('');
 
     // common filter
     this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
@@ -159,9 +158,12 @@ export class ProformaInvoiceComponent extends BaseListingComponent implements On
       //   }
       // }
 
-      if (resp['table_config']['invoice_date']?.value != null) {
-        resp['table_config']['invoice_date'].value = new Date(resp['table_config']['invoice_date'].value);
-      }
+
+      if (resp['table_config']['invoice_date']?.value != null && resp['table_config']['invoice_date'].value.length) {
+                this._filterService.updateSelectedOption('custom_date_range');
+                this._filterService.rangeDateConvert(resp['table_config']['invoice_date']);
+            } 
+
 
       this.primengTable['filters'] = resp['table_config'];
       this.isFilterShow = true;
@@ -173,15 +175,17 @@ export class ProformaInvoiceComponent extends BaseListingComponent implements On
 
   ngAfterViewInit() {
     // Defult Active filter show
-    // this._filterService.updateSelectedOption('');
+     this._filterService.updateSelectedOption('');
     if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
       this.isFilterShow = true;
       let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
       this.selectedAgent = filterData['table_config']['agent']?.value;
 
-      if (filterData['table_config']['invoice_date']?.value != null) {
-        filterData['table_config']['invoice_date'].value = new Date(filterData['table_config']['invoice_date'].value);
+      if (filterData['table_config']['invoice_date']?.value != null && filterData['table_config']['invoice_date'].value.length) {
+                this._filterService.updateSelectedOption('custom_date_range');
+                this._filterService.rangeDateConvert(filterData['table_config']['invoice_date']);
       }
+
       this.primengTable['filters'] = filterData['table_config'];
       this.selectedColumns = this.checkSelectedColumn(filterData['selectedColumns'] || [], this.selectedColumns);
       this.onColumnsChange();

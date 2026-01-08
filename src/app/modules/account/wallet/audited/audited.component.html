@@ -61,7 +61,7 @@
                             </p-columnFilter>
 
                             <!--date range picker-->
-                            <ng-container *ngIf="col.type == types.dateTime">
+                            <ng-container *ngIf="col.type == types.dateTime && col.field == 'request_date_time'">
                                 <p-columnFilter
                                     *ngIf="(_filterService.selectionDateDropdown$ | async) != 'custom_date_range'"
                                     [field]="col.field" matchMode="custom" [showMenu]="false">
@@ -97,6 +97,40 @@
                                     </div>
                                 </ng-container>
                             </ng-container>
+
+                             <ng-container *ngIf="col.type == types.dateTime && col.field == 'audited_date_time' ">
+                            <p-columnFilter *ngIf="(_filterService.selectionDateDropdownTwo$ | async) != 'custom_date_range'"
+                                field="audited_date_time" matchMode="custom" [showMenu]="false">
+                                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                    <p-dropdown #dateRangeDropdown class="filter-dropdown" [ngModel]="value"
+                                        [options]="_filterService.dateRangeList" optionLabel="label" placeholder="Select Option"
+                                        appendTo="body">
+                                        <ng-template let-option pTemplate="item">
+                                            <div (click)="_filterService.onOptionClickTwo(option, primengTable, 'audited_date_time')">
+                                                <div>{{option.label}}</div>
+                                            </div>
+                                        </ng-template>
+                                    </p-dropdown>
+                                </ng-template>
+                            </p-columnFilter>
+                        
+                            <ng-container *ngIf="(_filterService.selectionDateDropdownTwo$ | async) == 'custom_date_range'">
+                                <div class="relative inline-block">
+                                    <p-columnFilter field="audited_date_time" matchMode="custom" [showMenu]="false">
+                                        <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                            <p-calendar selectionMode="range" [ngModel]="value"
+                                                (ngModelChange)="onDateRangeChange($event, filter)" [readonlyInput]="true" dateFormat="dd-mm-yy"
+                                                appendTo="body" placeholder="📅 Search by Date Range">
+                                            </p-calendar>
+                                        </ng-template>
+                                    </p-columnFilter>
+                                    <mat-icon class="icon-size-4 cursor-pointer absolute"
+                                        style="top:50%; transform: translatey(-50%); right: 25px;"
+                                        (click)="_filterService.onOptionClickTwo('', '', '')">cancel</mat-icon>
+                                </div>
+                            </ng-container>
+                        </ng-container>
+
 
                             <ng-container *ngIf="col.type == types.select && col.field == 'recharge_for_name'">
                                 <p-columnFilter class="searchableDropdown" field="agent_code_filter" matchMode="equals"
@@ -196,7 +230,7 @@
                             </span>
                         </ng-container>
 
-                        <ng-container *ngIf="col.type == types.dateTime || col.type == types.date">
+                        <ng-container *ngIf="col.type == types.dateTime">
                             {{isValidDate(element[col.field])? (element[col.field] | date: col.dateFormat): "-"}}
                         </ng-container>
                     </td>

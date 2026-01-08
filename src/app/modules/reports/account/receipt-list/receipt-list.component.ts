@@ -150,7 +150,7 @@ export class ReceiptListComponent extends BaseListingComponent implements OnDest
             { field: 'roe', header: 'ROE', type: Types.number, fixVal: 0, class: 'text-right' },
             { field: 'mode_of_payment', header: 'MOP', type: Types.text },
             { field: 'receipt_request_date', header: 'Request', type: Types.dateTime, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
-            { field: 'audit_date_time', header: 'Audit', type: Types.date, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
+            { field: 'audit_date_time', header: 'Audit', type: Types.dateTime, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
             { field: 'agent_name', header: 'Agent', type: Types.select },
             { field: 'pg_name', header: 'PG', type: Types.text },
             { field: 'pg_payment_ref_no', header: 'PG Ref.No.', type: Types.text },
@@ -174,9 +174,9 @@ export class ReceiptListComponent extends BaseListingComponent implements OnDest
         this.agentList = this._filterService.agentListByValue;
 
         // common filter
-        this._filterService.updateSelectedOption('');
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
             this._filterService.updateSelectedOption('');
+            this._filterService.updatedSelectionOptionTwo('');
             this.selectedAgent = resp['table_config']['agent_name']?.value;
             if (this.selectedAgent && this.selectedAgent.id) {
                 const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
@@ -185,14 +185,17 @@ export class ReceiptListComponent extends BaseListingComponent implements OnDest
                 }
             }
             // this.sortColumn = resp['sortColumn'];
-            // this.primengTable['_sortField'] = resp['sortColumn'];
-            if (resp['table_config']['receipt_request_date']?.value && Array.isArray(resp['table_config']['receipt_request_date']?.value)) {
-                this._filterService.selectionDateDropdown = 'custom_date_range';
+            // this.primengTable['_sortField'] = resp['sortColumn'];        
+
+            if (resp['table_config']['receipt_request_date']?.value != null && resp['table_config']['receipt_request_date'].value.length) {
+                this._filterService.updateSelectedOption('custom_date_range');
                 this._filterService.rangeDateConvert(resp['table_config']['receipt_request_date']);
-            }
-            if (resp['table_config']['audit_date_time']?.value != null) {
-                resp['table_config']['audit_date_time'].value = new Date(resp['table_config']['audit_date_time'].value);
-            }
+            } 
+
+             if (resp['table_config']['audit_date_time']?.value != null && resp['table_config']['audit_date_time'].value.length) {
+                this._filterService.updatedSelectionOptionTwo('custom_date_range');
+                this._filterService.rangeDateConvert(resp['table_config']['audit_date_time']);
+            }         
             this.primengTable['filters'] = resp['table_config'];
             this.isFilterShow = true;
             this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
@@ -202,6 +205,8 @@ export class ReceiptListComponent extends BaseListingComponent implements OnDest
 
     ngAfterViewInit() {
         // Defult Active filter show
+        this._filterService.updateSelectedOption('');
+        this._filterService.updatedSelectionOptionTwo('');
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             this.isFilterShow = true;
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
@@ -211,15 +216,17 @@ export class ReceiptListComponent extends BaseListingComponent implements OnDest
                 if (!match) {
                     this.agentList.push(this.selectedAgent);
                 }
-            }
+            }     
 
-            if (filterData['table_config']['receipt_request_date']?.value && Array.isArray(filterData['table_config']['receipt_request_date']?.value)) {
-                this._filterService.selectionDateDropdown = 'custom_date_range';
+            if (filterData['table_config']['receipt_request_date']?.value != null && filterData['table_config']['receipt_request_date'].value.length) {
+                this._filterService.updateSelectedOption('custom_date_range');
                 this._filterService.rangeDateConvert(filterData['table_config']['receipt_request_date']);
             }
-            if (filterData['table_config']['audit_date_time']?.value != null) {
-                filterData['table_config']['audit_date_time'].value = new Date(filterData['table_config']['audit_date_time'].value);
-            }
+
+            if (filterData['table_config']['audit_date_time']?.value != null && filterData['table_config']['audit_date_time'].value.length) {
+                this._filterService.updatedSelectionOptionTwo('custom_date_range');
+                this._filterService.rangeDateConvert(filterData['table_config']['audit_date_time']);
+            }         
             // this.primengTable['_sortField'] = filterData['sortColumn'];
             // this.sortColumn = filterData['sortColumn'];
             this.primengTable['filters'] = filterData['table_config'];

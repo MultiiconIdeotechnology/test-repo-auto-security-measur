@@ -97,7 +97,7 @@ export class PartnersComponent extends BaseListingComponent {
         this.selectedOptionTwoSubjectFour.next(option);
     }
 
-     updateSelectedOptionFive(option: string): void {
+    updateSelectedOptionFive(option: string): void {
         this.selectedOptionTwoSubjectFive.next(option);
     }
 
@@ -174,7 +174,7 @@ export class PartnersComponent extends BaseListingComponent {
                 this._filterService.rangeDateConvert(resp['table_config']['first_transaction_date_time']);
             }
 
-             if (resp['table_config']['lastLoginDateTime']?.value != null && resp['table_config']['lastLoginDateTime'].value.length) {
+            if (resp['table_config']['lastLoginDateTime']?.value != null && resp['table_config']['lastLoginDateTime'].value.length) {
                 this.updateSelectedOptionFive('custom_date_range');
                 this._filterService.rangeDateConvert(resp['table_config']['lastLoginDateTime']);
             }
@@ -224,6 +224,11 @@ export class PartnersComponent extends BaseListingComponent {
             if (filterData['table_config']['call_date_time']?.value != null && filterData['table_config']['call_date_time'].value.length) {
                 this._filterService.updatedSelectedContracting('custom_date_range');
                 this._filterService.rangeDateConvert(filterData['table_config']['call_date_time']);
+            }
+
+            if (filterData['table_config']['first_login_date_time']?.value != null && filterData['table_config']['first_login_date_time'].value.length) {
+                this.updateSelectedOptionThree('custom_date_range');
+                this._filterService.rangeDateConvert(filterData['table_config']['first_login_date_time']);
             }
             this.primengTable['filters'] = filterData['table_config'];
             // this.primengTable['_sortField'] = filterData['sortColumn'];
@@ -482,26 +487,32 @@ export class PartnersComponent extends BaseListingComponent {
 
     onOptionClickThree(option: any, primengTable: any, field: any, key?: any) {
         this.selectedOptionTwoSubjectThree.next(option.id_by_value);
-        
-        if( option.id_by_value &&  option.id_by_value != 'custom_date_range'){
+
+        if (option.id_by_value && option.id_by_value != 'custom_date_range') {
             primengTable.filter(option, field, 'custom');
-        } 
+        } else if (option.id_by_value == 'custom_date_range') {
+            primengTable.filter(null, field, 'custom');
+        }
     }
 
     onOptionClickFour(option: any, primengTable: any, field: any, key?: any) {
         this.selectedOptionTwoSubjectFour.next(option.id_by_value);
-        
-        if( option.id_by_value &&  option.id_by_value != 'custom_date_range'){
+
+        if (option.id_by_value && option.id_by_value != 'custom_date_range') {
             primengTable.filter(option, field, 'custom');
-        } 
+        } else if (option.id_by_value == 'custom_date_range') {
+            primengTable.filter(null, field, 'custom');
+        }
     }
 
     onOptionClickFive(option: any, primengTable: any, field: any, key?: any) {
         this.selectedOptionTwoSubjectFive.next(option.id_by_value);
-        
-        if( option.id_by_value &&  option.id_by_value != 'custom_date_range'){
+
+        if (option.id_by_value && option.id_by_value != 'custom_date_range') {
             primengTable.filter(option, field, 'custom');
-        } 
+        } else if (option.id_by_value == 'custom_date_range') {
+            primengTable.filter(null, field, 'custom');
+        }
     }
 
     ngOnDestroy(): void {

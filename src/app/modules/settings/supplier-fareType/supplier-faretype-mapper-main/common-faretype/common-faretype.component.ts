@@ -120,13 +120,18 @@ export class CommonFaretypeComponent extends BaseListingComponent {
   }
 
   onOptionClick(option: any, primengTable: any, field: string) {
-    const value = option?.id_by_value ?? '';
-    const current = this.selectionMap();
-    this.selectionMap.set({ ...current, [field]: value });
+    let  value = option?.id_by_value ?? '';
+    
 
     if (value && value !== 'custom_date_range') {
       primengTable.filter(option, field, 'custom');
     }
+    else if (value && value === 'custom_date_range') {
+      primengTable.filter(null, field, 'custom');
+    }
+    
+    const current = this.selectionMap();
+    this.selectionMap.set({ ...current, [field]: value });
   }
 
   refreshItems(event?: any): void {

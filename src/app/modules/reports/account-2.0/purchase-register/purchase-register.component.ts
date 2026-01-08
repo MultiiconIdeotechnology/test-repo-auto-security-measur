@@ -68,7 +68,7 @@ export class PurchaseRegisterComponent
 
   @ViewChild('bontonTable') bontonTableComponent: BontonComponent;
   @ViewChild('dmccTable') dmccTableComponent: BontonDmccComponent;
-  
+
 
   activeTab: any = 0;
   selectedTableKey: any;
@@ -288,8 +288,8 @@ export class PurchaseRegisterComponent
         break;
 
       case dateRange.lastMonth:
-        start = new Date(today.getFullYear(), today.getMonth() - 1, 1);
-        end = new Date(today.getFullYear(), today.getMonth(), 0); // last day of last month
+        start = new Date(today.getFullYear(), today.getMonth(), 1);
+        end = new Date(today.getFullYear(), today.getMonth() + 1, 0);
         break;
 
       case dateRange.last3Month:

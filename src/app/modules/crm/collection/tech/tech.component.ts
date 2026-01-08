@@ -114,6 +114,8 @@ export class TechCollectionComponent extends BaseListingComponent {
         this.agentList = this._filterService.agentListByValue;
 
         this.settingsTechSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
+            this._filterService.updateSelectedOption('');
+            this._filterService.updatedSelectionOptionTwo('');
             this.selectedAgent = resp['table_config']['agencyName']?.value;
             const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
             if (!match) {
@@ -121,12 +123,15 @@ export class TechCollectionComponent extends BaseListingComponent {
             }
             // this.sortColumn = resp['sortColumn'];
             // this.primengTable['_sortField'] = resp['sortColumn'];
-            if (resp.table_config?.lastCallDate?.value != null) {
-                resp['table_config']['lastCallDate'].value = new Date(resp['table_config']['lastCallDate'].value);
+            if (resp['table_config']['lastCallDate']?.value != null && resp['table_config']['lastCallDate'].value.length) {
+                this._filterService.updateSelectedOption('custom_date_range');
+                this._filterService.rangeDateConvert(resp['table_config']['lastCallDate']);
             }
-            if (resp.table_config?.installmentDate?.value != null) {
-                resp['table_config']['installmentDate'].value = new Date(resp['table_config']['installmentDate'].value);
-            }
+
+            if (resp['table_config']['installmentDate']?.value != null && resp['table_config']['installmentDate'].value.length) {
+                this._filterService.updatedSelectionOptionTwo('custom_date_range');
+                this._filterService.rangeDateConvert(resp['table_config']['installmentDate']);
+            }   
             this.primengTable['filters'] = resp['table_config'];
             this.isFilterShowTech = true;
             this.primengTable._filter();
@@ -139,6 +144,8 @@ export class TechCollectionComponent extends BaseListingComponent {
     }
 
     ngAfterViewInit() {
+        this._filterService.updateSelectedOption('');
+        this._filterService.updatedSelectionOptionTwo('');
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             this.isFilterShowTech = true;
             this.isFilterShowTechChange.emit(this.isFilterShowTech);
@@ -151,12 +158,15 @@ export class TechCollectionComponent extends BaseListingComponent {
                     this.agentList.push(this.selectedAgent);
                 }
             }
-            if (filterData['table_config']['lastCallDate'].value) {
-                filterData['table_config']['lastCallDate'].value = new Date(filterData['table_config']['lastCallDate'].value);
+            if (filterData['table_config']['lastCallDate']?.value != null && filterData['table_config']['lastCallDate'].value.length) {
+                this._filterService.updateSelectedOption('custom_date_range');
+                this._filterService.rangeDateConvert(filterData['table_config']['lastCallDate']);
             }
-            if (filterData['table_config']['installmentDate'].value) {
-                filterData['table_config']['installmentDate'].value = new Date(filterData['table_config']['installmentDate'].value);
-            }
+
+            if (filterData['table_config']['installmentDate']?.value != null && filterData['table_config']['installmentDate'].value.length) {
+                this._filterService.updatedSelectionOptionTwo('custom_date_range');
+                this._filterService.rangeDateConvert(filterData['table_config']['installmentDate']);
+            }    
 
             this.primengTable['filters'] = filterData['table_config'];
             // this.primengTable['_sortField'] = filterData['sortColumn'];

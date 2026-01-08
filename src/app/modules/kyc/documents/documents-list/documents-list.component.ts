@@ -69,7 +69,7 @@ export class DocumentsListComponent
     types = Types;
     cols: Column[] = [
         { field: 'rejection_note', header: 'Rejection Note', type: Types.text },
-        { field: 'reject_date_time', header: 'Reject Date Time', type: Types.date, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
+        { field: 'reject_date_time', header: 'Reject Date Time', type: Types.dateTime, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
     ];
     selectedColumns: Column[] = [];
     exportCol: Column[] = [];
@@ -124,7 +124,7 @@ export class DocumentsListComponent
             { field: 'kyc_profile_name', header: 'Profile', type: Types.text },
             { field: 'kyc_profile_doc_name', header: 'Profile Doc', type: Types.select },
             { field: 'audit_by_name', header: 'Audited By', type: Types.text },
-            { field: 'entry_date_time', header: 'Upload', type: Types.date, dateFormat: 'dd-MM-yyyy HH:mm:ss' }
+            { field: 'entry_date_time', header: 'Upload', type: Types.dateTime, dateFormat: 'dd-MM-yyyy HH:mm:ss' }
         ];
         this.cols.unshift(...this.selectedColumns);
         this.exportCol = cloneDeep(this.cols);
@@ -135,16 +135,21 @@ export class DocumentsListComponent
 
         // common filter
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
+            this._filterService.updateSelectedOption('');
+            this._filterService.updatedSelectionOptionTwo('');
             this.selectedDocument = resp['table_config']['kyc_profile_doc_name']?.value;
             // this.sortColumn = resp['sortColumn'];
             // this.primengTable['_sortField'] = resp['sortColumn'];
 
-            if (resp['table_config']?.['entry_date_time']?.value != null) {
-                resp['table_config']['entry_date_time'].value = new Date(resp['table_config']['entry_date_time'].value);
+            if (resp['table_config']['entry_date_time']?.value != null && resp['table_config']['entry_date_time'].value.length) {
+                this._filterService.updateSelectedOption('custom_date_range');
+                this._filterService.rangeDateConvert(resp['table_config']['entry_date_time']);
             }
-            if (resp['table_config']?.['reject_date_time']?.value != null) {
-                resp['table_config']['reject_date_time'].value = new Date(resp['table_config']['reject_date_time'].value);
-            }
+
+            if (resp['table_config']['reject_date_time']?.value != null && resp['table_config']['reject_date_time'].value.length) {
+                this._filterService.updatedSelectionOptionTwo('custom_date_range');
+                this._filterService.rangeDateConvert(resp['table_config']['reject_date_time']);
+            }   
             this.primengTable['filters'] = resp['table_config'];
             this.selectedColumns = resp['selectedColumns'] || [];
             this.isFilterShow = true;
@@ -156,15 +161,21 @@ export class DocumentsListComponent
 
     ngAfterViewInit() {
         // Defult Active filter show
+        this._filterService.updateSelectedOption('');
+        this._filterService.updatedSelectionOptionTwo('');
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
             this.selectedDocument = filterData['table_config']['kyc_profile_doc_name']?.value;
-            if (filterData['table_config']?.['entry_date_time']?.value != null) {
-                filterData['table_config']['entry_date_time'].value = new Date(filterData['table_config']['entry_date_time'].value);
+
+            if (filterData['table_config']['entry_date_time']?.value != null && filterData['table_config']['entry_date_time'].value.length) {
+                this._filterService.updateSelectedOption('custom_date_range');
+                this._filterService.rangeDateConvert(filterData['table_config']['entry_date_time']);
             }
-            if (filterData['table_config']?.['reject_date_time']?.value != null) {
-                filterData['table_config']['reject_date_time'].value = new Date(filterData['table_config']['reject_date_time'].value);
-            }
+
+            if (filterData['table_config']['reject_date_time']?.value != null && filterData['table_config']['reject_date_time'].value.length) {
+                this._filterService.updatedSelectionOptionTwo('custom_date_range');
+                this._filterService.rangeDateConvert(filterData['table_config']['reject_date_time']);
+            }    
             this.primengTable['filters'] = filterData['table_config'];
             // this.selectedColumns = filterData['selectedColumns'] || [];
             // this.primengTable['_sortField'] = filterData['sortColumn'];

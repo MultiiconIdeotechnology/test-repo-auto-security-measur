@@ -168,7 +168,7 @@ export class FlightComponent extends BaseListingComponent {
             { field: 'agent_name', header: 'Agent', type: Types.text, },
             { field: 'from_airport_code', header: 'From', type: Types.text },
             { field: 'to_airport_code', header: 'To', type: Types.text, },
-            { field: 'travelDate', header: 'Travel Date', type: Types.date, dateFormat: 'dd-MM-yyyy HH:mm' },
+            { field: 'travelDate', header: 'Travel Date', type: Types.dateTime, dateFormat: 'dd-MM-yyyy HH:mm' },
             { field: 'tripType', header: 'Trip Type', type: Types.text, },
             { field: 'cabin', header: 'Cabin', type: Types.text, },
             { field: 'device', header: 'Device', type: Types.text, },

@@ -125,7 +125,7 @@ export class OfflineListComponent extends BaseListingComponent {
       { field: 'agent_name', header: 'Agency Name', type: Types.select },
       { field: 'operation_person', header: 'Operation Person', type: Types.text },
       { field: 'sales_person', header: 'RM', type: Types.select },
-      { field: 'entry_date_time', header: 'Entry Date', type: Types.date, dateFormat: 'dd-MM-yyyy HH:mm:ss' }
+      { field: 'entry_date_time', header: 'Entry Date', type: Types.dateTime, dateFormat: 'dd-MM-yyyy HH:mm:ss' }
     ];
 
     this.cols.unshift(...this.selectedColumns);
@@ -138,6 +138,7 @@ export class OfflineListComponent extends BaseListingComponent {
 
     // common filter
     this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+      this._filterService.updateSelectedOption('');
       this.selectedAgent = resp['table_config']['agency_name_agent_id']?.value;
       if (this.selectedAgent && this.selectedAgent.id) {
         const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
@@ -149,9 +150,12 @@ export class OfflineListComponent extends BaseListingComponent {
 
       // this.sortColumn = resp['sortColumn'];
       // this.primengTable['_sortField'] = resp['sortColumn'];
-      if (resp['table_config']['entry_date_time'].value) {
-        resp['table_config']['entry_date_time'].value = new Date(resp['table_config']['entry_date_time'].value);
+      if (resp['table_config']['entry_date_time']?.value != null && resp['table_config']['entry_date_time'].value.length) {
+        this._filterService.updateSelectedOption('custom_date_range');
+        this._filterService.rangeDateConvert(resp['table_config']['entry_date_time']);
       }
+
+
       this.primengTable['filters'] = resp['table_config'];
       this.isFilterShow = true;
       this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
@@ -161,6 +165,7 @@ export class OfflineListComponent extends BaseListingComponent {
 
   ngAfterViewInit() {
     // Defult Active filter show
+    this._filterService.updateSelectedOption('');
     if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
       this.isFilterShow = true;
       let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
@@ -173,8 +178,9 @@ export class OfflineListComponent extends BaseListingComponent {
         }
       }
 
-      if (filterData['table_config']['entry_date_time'].value) {
-        filterData['table_config']['entry_date_time'].value = new Date(filterData['table_config']['entry_date_time'].value);
+      if (filterData['table_config']['entry_date_time']?.value != null && filterData['table_config']['entry_date_time'].value.length) {
+        this._filterService.updateSelectedOption('custom_date_range');
+        this._filterService.rangeDateConvert(filterData['table_config']['entry_date_time']);
       }
       // this.primengTable['_sortField'] = filterData['sortColumn'];
       // this.sortColumn = filterData['sortColumn'];

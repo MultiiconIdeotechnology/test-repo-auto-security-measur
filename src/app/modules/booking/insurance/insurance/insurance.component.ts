@@ -24,7 +24,7 @@ import { UserService } from 'app/core/user/user.service';
 import { bookingsInsurancePermissions, filter_module_name, messages, module_name, Security } from 'app/security';
 import { AgentService } from 'app/services/agent.service';
 import { ToasterService } from 'app/services/toaster.service';
-import { Subscription, takeUntil } from 'rxjs';
+import { BehaviorSubject, Subscription, takeUntil } from 'rxjs';
 import { InsuranceService } from 'app/services/insurance.service';
 import { Linq } from 'app/utils/linq';
 import { Excel } from 'app/utils/export/excel';
@@ -89,6 +89,12 @@ export class InsuranceComponent extends BaseListingComponent {
   insuranceFilter: any;
   supplierList: any[] = [];
 
+  private selectedOptionTwoSubjectThree = new BehaviorSubject<any>('');
+  selectionDateDropdownThree$ = this.selectedOptionTwoSubjectThree.asObservable();
+
+  updateSelectedOptionThree(option: string): void {
+    this.selectedOptionTwoSubjectThree.next(option);
+  }
 
 
 
@@ -140,8 +146,8 @@ export class InsuranceComponent extends BaseListingComponent {
       { field: 'device', header: 'Device', type: Types.text },
       { field: 'mop', header: 'MOP', type: Types.text },
       { field: 'agent_name', header: 'Agent', type: Types.select, },
-      { field: 'startDate', header: 'Travel From Date', type: Types.date, dateFormat: 'dd-MM-yyyy' },
-      { field: 'endDate', header: 'Travel To Date', type: Types.date, dateFormat: 'dd-MM-yyyy' },
+      { field: 'startDate', header: 'Travel From Date', type: Types.dateTime, dateFormat: 'dd-MM-yyyy' },
+      { field: 'endDate', header: 'Travel To Date', type: Types.dateTime, dateFormat: 'dd-MM-yyyy' },
       { field: 'duration', header: 'Duration', type: Types.number, fixVal: 0 },
       { field: 'payment_gateway', header: 'PG', type: Types.text },
       { field: 'travelType', header: 'Travel Type', type: Types.text },
@@ -159,9 +165,10 @@ export class InsuranceComponent extends BaseListingComponent {
     this.agentList = this._filterService.agentListByValue;
 
     // common filter
-    this._filterService.updateSelectedOption('');
     this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
       this._filterService.updateSelectedOption('');
+      this._filterService.updatedSelectionOptionTwo('');
+      this.updateSelectedOptionThree('');
       this.selectedAgent = resp['table_config']['agent_name']?.value;
       if (this.selectedAgent && this.selectedAgent.id) {
         const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
@@ -170,29 +177,34 @@ export class InsuranceComponent extends BaseListingComponent {
         }
       }
 
-      if (resp['table_config']['bookingDate']?.value && Array.isArray(resp['table_config']['bookingDate']?.value)) {
-        this._filterService.selectionDateDropdown = 'custom_date_range';
+      if (resp['table_config']['bookingDate']?.value != null && resp['table_config']['bookingDate'].value.length) {
+        this._filterService.updateSelectedOption('custom_date_range');
         this._filterService.rangeDateConvert(resp['table_config']['bookingDate']);
       }
-      if (resp['table_config']['startDate']?.value != null) {
-        resp['table_config']['startDate'].value = new Date(resp['table_config']['startDate'].value);
-      }
-      if (resp['table_config']?.['endDate']?.value != null) {
-        resp['table_config']['endDate'].value = new Date(resp['table_config']['endDate'].value);
+
+      if (resp['table_config']['startDate']?.value != null && resp['table_config']['startDate'].value.length) {
+        this._filterService.updatedSelectionOptionTwo('custom_date_range');
+        this._filterService.rangeDateConvert(resp['table_config']['startDate']);
       }
 
+      if (resp['table_config']['endDate']?.value != null && resp['table_config']['endDate'].value.length) {
+        this.updateSelectedOptionThree('custom_date_range');
+        this._filterService.rangeDateConvert(resp['table_config']['endDate']);
+      }
       this.primengTable['filters'] = resp['table_config'];
       this.selectedColumns = resp['selectedColumns'] || [];
       this.isFilterShow = true;
       this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
       this.primengTable._filter();
     });
-     this.getSupplierList();
+    this.getSupplierList();
 
   }
 
   ngAfterViewInit() {
     // Defult Active filter show
+    this._filterService.updatedSelectionOptionTwo('');
+    this.updateSelectedOptionThree('');
     if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
       let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
       this.selectedAgent = filterData['table_config']['agent_name']?.value;
@@ -203,15 +215,19 @@ export class InsuranceComponent extends BaseListingComponent {
         }
       }
 
-      if (filterData['table_config']['bookingDate']?.value && Array.isArray(filterData['table_config']['bookingDate']?.value)) {
-        this._filterService.selectionDateDropdown = 'custom_date_range';
+      if (filterData['table_config']['bookingDate']?.value != null && filterData['table_config']['bookingDate'].value.length) {
+        this._filterService.updateSelectedOption('custom_date_range');
         this._filterService.rangeDateConvert(filterData['table_config']['bookingDate']);
       }
-      if (filterData['table_config']['startDate']?.value != null) {
-        filterData['table_config']['startDate'].value = new Date(filterData['table_config']['startDate'].value);
+
+      if (filterData['table_config']['startDate']?.value != null && filterData['table_config']['startDate'].value.length) {
+        this._filterService.updatedSelectionOptionTwo('custom_date_range');
+        this._filterService.rangeDateConvert(filterData['table_config']['startDate']);
       }
-      if (filterData['table_config']?.['endDate']?.value != null) {
-        filterData['table_config']['endDate'].value = new Date(filterData['table_config']['endDate'].value);
+
+      if (filterData['table_config']['endDate']?.value != null && filterData['table_config']['endDate'].value.length) {
+        this.updateSelectedOptionThree('custom_date_range');
+        this._filterService.rangeDateConvert(filterData['table_config']['endDate']);
       }
       this.primengTable['filters'] = filterData['table_config'];
       // this.primengTable['_sortField'] = filterData['sortColumn'];
@@ -226,17 +242,17 @@ export class InsuranceComponent extends BaseListingComponent {
     }
   }
 
-  
-    // Api to get the Supplier List
-    getSupplierList() {
-        this.flighttabService.getSupplierBoCombo('Insurance').subscribe((data: any) => {
-            this.supplierList = data;
 
-            for (let i in this.supplierList) {
-                this.supplierList[i].id_by_value = this.supplierList[i].company_name;
-            }
-        })
-    }
+  // Api to get the Supplier List
+  getSupplierList() {
+    this.flighttabService.getSupplierBoCombo('Insurance').subscribe((data: any) => {
+      this.supplierList = data;
+
+      for (let i in this.supplierList) {
+        this.supplierList[i].id_by_value = this.supplierList[i].company_name;
+      }
+    })
+  }
 
 
   onColumnsChange(): void {
@@ -410,5 +426,13 @@ export class InsuranceComponent extends BaseListingComponent {
     return value && !isNaN(date.getTime());
   }
 
+  onOptionClickThree(option: any, primengTable: any, field: any, key?: any) {
+    this.selectedOptionTwoSubjectThree.next(option.id_by_value);
 
+    if (option.id_by_value && option.id_by_value != 'custom_date_range') {
+      primengTable.filter(option, field, 'custom');
+    } else if (option.id_by_value == 'custom_date_range') {
+      primengTable.filter(null, field, 'custom');
+    }
+  }
 }

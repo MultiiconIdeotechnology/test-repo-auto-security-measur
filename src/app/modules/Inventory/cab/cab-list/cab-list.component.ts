@@ -115,6 +115,8 @@ export class CabListComponent extends BaseListingComponent {
 
     // common filter
     this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
+      this._filterService.updateSelectedOption('');
+      this._filterService.updatedSelectionOptionTwo('');
       this.selectedFromCity = resp['table_config']['filter_from_city_id']?.value;
       this.selectedToCity = resp['table_config']['filter_to_city_id']?.value;
 
@@ -132,6 +134,17 @@ export class CabListComponent extends BaseListingComponent {
         }
       }
 
+
+       if (resp['table_config']['bonton_publish_date_time']?.value != null && resp['table_config']['bonton_publish_date_time'].value.length) {
+                this._filterService.updateSelectedOption('custom_date_range');
+                this._filterService.rangeDateConvert(resp['table_config']['bonton_publish_date_time']);
+            }
+
+            if (resp['table_config']['wl_publish_date_time']?.value != null && resp['table_config']['wl_publish_date_time'].value.length) {
+                this._filterService.updatedSelectionOptionTwo('custom_date_range');
+                this._filterService.rangeDateConvert(resp['table_config']['wl_publish_date_time']);
+            }
+
       // if (resp['table_config']['entry_date_time']?.value != null) {
       //   resp['table_config']['entry_date_time'].value = new Date(resp['table_config']['entry_date_time'].value);
       // }
@@ -146,6 +159,8 @@ export class CabListComponent extends BaseListingComponent {
 
   ngAfterViewInit() {
     // Defult Active filter show
+    this._filterService.updateSelectedOption('');
+    this._filterService.updatedSelectionOptionTwo('');
     if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
       let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
       this.selectedFromCity = filterData['table_config']['filter_from_city_id']?.value;
@@ -164,6 +179,16 @@ export class CabListComponent extends BaseListingComponent {
           this.ToCityList.push(this.selectedToCity);
         }
       }
+
+      if (filterData['table_config']['bonton_publish_date_time']?.value != null && filterData['table_config']['bonton_publish_date_time'].value.length) {
+        this._filterService.updateSelectedOption('custom_date_range');
+        this._filterService.rangeDateConvert(filterData['table_config']['bonton_publish_date_time']);
+      }
+
+      if (filterData['table_config']['wl_publish_date_time']?.value != null && filterData['table_config']['wl_publish_date_time'].value.length) {
+        this._filterService.updatedSelectionOptionTwo('custom_date_range');
+        this._filterService.rangeDateConvert(filterData['table_config']['wl_publish_date_time']);
+      }   
 
       this.primengTable['filters'] = filterData['table_config'];
       this._selectedColumns = filterData['selectedColumns'] || [];

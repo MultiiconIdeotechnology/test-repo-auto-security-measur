@@ -121,13 +121,13 @@ export class WalletcreditListComponent extends BaseListingComponent implements O
       { field: 'master_agent_code', header: 'Agent Code', type: Types.number, fixVal: 0 },
       { field: 'master_agent_name', header: 'Agent', type: Types.select },
       { field: 'credit_balance', header: 'Balance', type: Types.number, fixVal: 2, class: 'text-right' },
-      { field: 'expiry_date', header: 'Expiry', type: Types.date, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
+      { field: 'expiry_date', header: 'Expiry', type: Types.dateTime, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
       { field: 'payment_cycle_policy_type', header: 'Policy Type', type: Types.text },
       { field: 'payment_cycle_policy', header: 'Policy', type: Types.text },
       { field: 'outstanding_on_due_date', header: 'Outstanding', type: Types.number, fixVal: 2, class: 'text-right' },
       { field: 'over_due_count', header: 'Over Due', type: Types.number, fixVal: 0, class: 'text-right' },
       { field: 'is_defaulter', header: 'Defaulter', type: Types.boolean },
-      { field: 'entry_date_time', header: 'Entry', type: Types.date, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
+      { field: 'entry_date_time', header: 'Entry', type: Types.dateTime, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
       { field: 'is_enable', header: 'Active', type: Types.boolean },
     ];
     this.cols.unshift(...this.selectedColumns);
@@ -138,6 +138,8 @@ export class WalletcreditListComponent extends BaseListingComponent implements O
     this.agentList = this._filterService.agentListByValue;
 
     this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+      this._filterService.updateSelectedOption('');
+      this._filterService.updatedSelectionOptionTwo('');
       this.selectedAgent = resp['table_config']['master_agent_name']?.value;
       if (this.selectedAgent && this.selectedAgent.id) {
         const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
@@ -147,11 +149,14 @@ export class WalletcreditListComponent extends BaseListingComponent implements O
       }
       // this.sortColumn = resp['sortColumn'];
       // this.primengTable['_sortField'] = resp['sortColumn'];
-      if (resp['table_config']['expiry_date'].value) {
-        resp['table_config']['expiry_date'].value = new Date(resp['table_config']['expiry_date'].value);
+      if (resp['table_config']['expiry_date']?.value != null && resp['table_config']['expiry_date'].value.length) {
+        this._filterService.updateSelectedOption('custom_date_range');
+        this._filterService.rangeDateConvert(resp['table_config']['expiry_date']);
       }
-      if (resp['table_config']['entry_date_time'].value) {
-        resp['table_config']['entry_date_time'].value = new Date(resp['table_config']['entry_date_time'].value);
+
+      if (resp['table_config']['entry_date_time']?.value != null && resp['table_config']['entry_date_time'].value.length) {
+        this._filterService.updatedSelectionOptionTwo('custom_date_range');
+        this._filterService.rangeDateConvert(resp['table_config']['entry_date_time']);
       }
       this.primengTable['filters'] = resp['table_config'];
       // this.selectedColumns = resp['selectedColumns'] || [];
@@ -164,6 +169,8 @@ export class WalletcreditListComponent extends BaseListingComponent implements O
 
   ngAfterViewInit() {
     // Defult Active filter show
+    this._filterService.updateSelectedOption('');
+    this._filterService.updatedSelectionOptionTwo('');
     if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
       this.isFilterShow = true;
       let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
@@ -175,11 +182,14 @@ export class WalletcreditListComponent extends BaseListingComponent implements O
         }
       }
 
-      if (filterData['table_config']['expiry_date'].value) {
-        filterData['table_config']['expiry_date'].value = new Date(filterData['table_config']['expiry_date'].value);
+      if (filterData['table_config']['expiry_date']?.value != null && filterData['table_config']['expiry_date'].value.length) {
+        this._filterService.updateSelectedOption('custom_date_range');
+        this._filterService.rangeDateConvert(filterData['table_config']['expiry_date']);
       }
-      if (filterData['table_config']['entry_date_time'].value) {
-        filterData['table_config']['entry_date_time'].value = new Date(filterData['table_config']['entry_date_time'].value);
+
+      if (filterData['table_config']['entry_date_time']?.value != null && filterData['table_config']['entry_date_time'].value.length) {
+        this._filterService.updatedSelectionOptionTwo('custom_date_range');
+        this._filterService.rangeDateConvert(filterData['table_config']['entry_date_time']);
       }
       this.primengTable['filters'] = filterData['table_config'];
       // this.primengTable['_sortField'] = filterData['sortColumn'];

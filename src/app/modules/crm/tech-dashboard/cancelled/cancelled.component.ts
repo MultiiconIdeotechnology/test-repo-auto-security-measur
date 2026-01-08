@@ -122,6 +122,8 @@ export class CancelledComponent extends BaseListingComponent {
 
     // common filter
     this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+      this._filterService.updateSelectedOption('');
+      this._filterService.updatedSelectionOptionTwo('');
       this.selectedAgent = resp['table_config']['agency_name']?.value;
       if (this.selectedAgent && this.selectedAgent.id) {
 
@@ -132,11 +134,14 @@ export class CancelledComponent extends BaseListingComponent {
       }
       // this.sortColumn = resp['sortColumn'];
       // this.primengTable['_sortField'] = resp['sortColumn'];
-      if (resp['table_config']['activationDate'].value) {
-        resp['table_config']['activationDate'].value = new Date(resp['table_config']['activationDate'].value);
+      if (resp['table_config']['activationDate']?.value != null && resp['table_config']['activationDate'].value.length) {
+        this._filterService.updateSelectedOption('custom_date_range');
+        this._filterService.rangeDateConvert(resp['table_config']['activationDate']);
       }
-      if (resp['table_config']['expiryDate'].value) {
-        resp['table_config']['expiryDate'].value = new Date(resp['table_config']['expiryDate'].value);
+
+      if (resp['table_config']['expiryDate']?.value != null && resp['table_config']['expiryDate'].value.length) {
+        this._filterService.updatedSelectionOptionTwo('custom_date_range');
+        this._filterService.rangeDateConvert(resp['table_config']['expiryDate']);
       }
       this.primengTable['filters'] = resp['table_config'];
       this.isFilterShowCancelled = true;
@@ -147,6 +152,8 @@ export class CancelledComponent extends BaseListingComponent {
 
   ngAfterViewInit() {
     // Defult Active filter show
+    this._filterService.updateSelectedOption('');
+    this._filterService.updatedSelectionOptionTwo('');
     if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
       this.isFilterShowCancelled = true;
       this.isFilterShowCancelledChange.emit(this.isFilterShowCancelled);
@@ -161,11 +168,14 @@ export class CancelledComponent extends BaseListingComponent {
           }
         }
       }, 1000);
-      if (filterData['table_config']['activationDate'].value) {
-        filterData['table_config']['activationDate'].value = new Date(filterData['table_config']['activationDate'].value);
+      if (filterData['table_config']['activationDate']?.value != null && filterData['table_config']['activationDate'].value.length) {
+        this._filterService.updateSelectedOption('custom_date_range');
+        this._filterService.rangeDateConvert(filterData['table_config']['activationDate']);
       }
-      if (filterData['table_config']['expiryDate'].value) {
-        filterData['table_config']['expiryDate'].value = new Date(filterData['table_config']['expiryDate'].value);
+
+      if (filterData['table_config']['expiryDate']?.value != null && filterData['table_config']['expiryDate'].value.length) {
+        this._filterService.updatedSelectionOptionTwo('custom_date_range');
+        this._filterService.rangeDateConvert(filterData['table_config']['expiryDate']);
       }
       this.primengTable['filters'] = filterData['table_config'];
       // this.primengTable['_sortField'] = filterData['sortColumn'];

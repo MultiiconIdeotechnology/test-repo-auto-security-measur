@@ -109,6 +109,8 @@ export class TravelCollectionComponent extends BaseListingComponent {
         this.agentList = this._filterService.agentListByValue;
 
         this.settingsTravelSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
+            this._filterService.updateSelectedOption('');
+            this._filterService.updatedSelectionOptionTwo('');
             this.selectedAgent = resp['table_config']['agencyName']?.value;
             const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
             if (!match) {
@@ -116,13 +118,15 @@ export class TravelCollectionComponent extends BaseListingComponent {
             }
             // this.sortColumn = resp['sortColumn'];
             // this.primengTable['_sortField'] = resp['sortColumn'];
+            if (resp['table_config']['dueDate']?.value != null && resp['table_config']['dueDate'].value.length) {
+                this._filterService.updateSelectedOption('custom_date_range');
+                this._filterService.rangeDateConvert(resp['table_config']['dueDate']);
+            }
 
-            if (resp.table_config?.dueDate?.value != null) {
-                resp['table_config']['dueDate'].value = new Date(resp['table_config']['dueDate'].value);
-            }
-            if (resp.table_config?.expiryDate?.value != null) {
-                resp['table_config']['expiryDate'].value = new Date(resp['table_config']['expiryDate'].value);
-            }
+            if (resp['table_config']['expiryDate']?.value != null && resp['table_config']['expiryDate'].value.length) {
+                this._filterService.updatedSelectionOptionTwo('custom_date_range');
+                this._filterService.rangeDateConvert(resp['table_config']['expiryDate']);
+            }   
             this.primengTable['filters'] = resp['table_config'];
             this.isFilterShowTravel = true;
             this.isFilterShowTravelChange.emit(this.isFilterShowTravel);
@@ -131,6 +135,8 @@ export class TravelCollectionComponent extends BaseListingComponent {
     }
 
     ngAfterViewInit(): void {
+        this._filterService.updateSelectedOption('');
+        this._filterService.updatedSelectionOptionTwo('');
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             this.isFilterShowTravel = true;
             this.isFilterShowTravelChange.emit(this.isFilterShowTravel);
@@ -143,14 +149,17 @@ export class TravelCollectionComponent extends BaseListingComponent {
                         this.agentList.push(this.selectedAgent);
                     }
                 }
-            }, 1000);
+            }, 1000);           
 
-            if (filterData.table_config?.dueDate?.value != null) {
-                filterData['table_config']['dueDate'].value = new Date(filterData['table_config']['dueDate'].value);
+            if (filterData['table_config']['dueDate']?.value != null && filterData['table_config']['dueDate'].value.length) {
+                this._filterService.updateSelectedOption('custom_date_range');
+                this._filterService.rangeDateConvert(filterData['table_config']['dueDate']);
             }
-            if (filterData.table_config?.expiryDate?.value != null) {
-                filterData['table_config']['expiryDate'].value = new Date(filterData['table_config']['expiryDate'].value);
-            }
+
+            if (filterData['table_config']['expiryDate']?.value != null && filterData['table_config']['expiryDate'].value.length) {
+                this._filterService.updatedSelectionOptionTwo('custom_date_range');
+                this._filterService.rangeDateConvert(filterData['table_config']['expiryDate']);
+            }    
 
             this.primengTable['filters'] = filterData['table_config'];
             // this.primengTable['_sortField'] = filterData['sortColumn'];
