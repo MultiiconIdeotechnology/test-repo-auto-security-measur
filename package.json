@@ -58,7 +58,7 @@
         "slick-carousel": "^1.8.1",
         "summernote": "^0.8.20",
         "sweetalert2": "^11.12.3",
-        "tslib": "2.5.2",
+        "tslib": "2.8.1",
         "xlsx": "^0.18.5",
         "zone.js": "0.13.0"
     },
