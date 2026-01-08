@@ -75,7 +75,7 @@
         "@types/lodash": "4.14.195",
         "@types/lodash-es": "4.17.7",
         "@types/luxon": "3.3.0",
-        "autoprefixer": "10.4.14",
+        "autoprefixer": "10.4.23",
         "chroma-js": "2.4.2",
         "jasmine-core": "5.0.0",
         "karma": "6.4.2",
