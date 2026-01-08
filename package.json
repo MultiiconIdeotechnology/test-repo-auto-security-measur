@@ -42,7 +42,7 @@
         "lodash-es": "4.17.21",
         "luxon": "^3.3.0",
         "ng-apexcharts": "1.8.0",
-        "ng-otp-input": "^1.9.3",
+        "ng-otp-input": "^2.0.9",
         "ngx-mat-select-search": "^7.0.2",
         "ngx-mat-timepicker": "^16.0.2",
         "ngx-quill": "22.0.0",
